@@ -1,0 +1,271 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Кнопка</title>
+<style>
+    button
+    {
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+        font: 13px/26px Arial;
+        padding: 0 10px;
+        cursor: pointer;
+    }
+    button:hover
+    {
+        border-color: rgba(0, 0, 0, 0.3);
+    }
+    button:focus
+    {
+        outline: 0;
+        border-color: #ffdb4d;
+        box-shadow: inset 0 0 0 1px #ffdb4d;
+    }
+    button:active
+    {
+        background: #f3f1ed;
+    }
+    button::-moz-focus-inner
+    {
+        border:0;
+    }
+</style>
+<button>Кнопка</button>
+<hr>
+<style>
+    button[aria-pressed=true]
+    {
+        background: #ffeba0;
+        border-color: rgba(153, 122, 0, 0.5);
+    }
+    button[aria-pressed=true]:hover
+    {
+        border-color: rgba(129, 103, 0, 0.6);
+    }
+    button[aria-pressed=true]:active
+    {
+        background: #fee481;
+    }
+</style>
+<button aria-pressed=false>Кнопка-переключатель</button>
+<script>
+    document
+        .querySelector('button[aria-pressed]')
+        .addEventListener('click', function() {
+            this.setAttribute('aria-pressed',
+                String(this.getAttribute('aria-pressed') === 'false'));
+        });
+</script>
+<hr>
+<style>
+    button[disabled]
+    {
+        background: rgba(0, 0, 0, 0.08);
+        border-color: transparent;
+        cursor: default;
+    }
+</style>
+<button disabled>Заблокированная кнопка</button>
+<hr>
+<style>
+    button[aria-pressed=true][disabled]
+    {
+        background: rgba(0, 0, 0, 0.15);
+        border-color: transparent;
+    }
+</style>
+<button aria-pressed=true disabled>Заблокированная кнопка-переключатель в нажатом состоянии</button>
+<hr>
+<style>
+    button.accent
+    {
+        background: #ffdb4d;
+        border-color: transparent;
+    }
+    button.accent:hover
+    {
+        background: #ffd633;
+    }
+    button.accent:focus
+    {
+        border-color: transparent;
+        box-shadow: none;
+        animation-name: focus-ground;
+        animation-delay: 0;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+    @keyframes focus-ground {
+        from, to
+        {
+            background: #ffcc00;
+        }
+        40%, 60%
+        {
+            background: #ffe066;
+        }
+    }
+    button.accent:active
+    {
+        background: #ffcc00;
+    }
+</style>
+<button class=accent>Кнопка с акцентом</button>
+<hr>
+<style>
+    button.transparent
+    {
+        background: transparent;
+    }
+    button.transparent:active
+    {
+        background: rgba(0, 0, 0, 0.05);
+    }
+</style>
+<div style="background: url('bg-pattern.svg'); padding: 15px 0;">
+    <button class=transparent>Прозрачная кнопка</button>
+</div>
+<hr>
+<style>
+    button.icon
+    {
+        line-height: 0;
+        padding: 5px 3px;
+    }
+    button.icon:not(:focus)
+    {
+        border-color: transparent;
+    }
+    button.icon img
+    {
+        opacity: 0.25;
+    }
+    button.icon:hover img,
+    button.icon:active img
+    {
+        opacity: 1;
+    }
+</style>
+<button title="Кнопка в виде иконки" class="transparent icon">
+    <img role=presentation src=settings.svg>
+</button>
+<hr>
+<style>
+    button.shadow
+    {
+        border-color: transparent;
+        box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.12), 0 5px 10px -3px rgba(0, 0, 0, 0.3);
+    }
+    button.shadow:focus
+    {
+        border-color: #ffdb4d;
+        box-shadow: inset 0 0 0 1px #ffdb4d, 0 1px 0 0 rgba(0, 0, 0, 0.12), 0 5px 10px -3px rgba(0, 0, 0, 0.3);
+    }
+</style>
+<div style="background: url('bg-pattern.svg'); padding: 15px 0;">
+    <button class=shadow>Кнопка с тенью</button>
+</div>
+<hr>
+<style>
+    button.small
+    {
+        line-height: 22px;
+        padding: 0 9px;
+    }
+</style>
+<button class=small>Маленькая кнопка</button>
+<hr>
+<style>
+    button.large
+    {
+        font-size: 15px;
+        line-height: 30px;
+        padding: 0 14px;
+    }
+</style>
+<button class="large">Большая кнопка</button>
+<hr>
+<style>
+    button.next:after
+    {
+        content: url(arrow.svg);
+        vertical-align: middle;
+        margin-left: 6px;
+    }
+</style>
+<button class=next>Кнопка &laquo;дальше&raquo;</button>
+<hr>
+<style>
+    button.prev:before
+    {
+        content: url(arrow.svg);
+        line-height: 12px;
+        margin-right: 6px;
+        display: inline-block;
+        transform: rotate(180deg);
+    }
+</style>
+<button class=prev>Кнопка &laquo;назад&raquo;</button>
+<hr>
+<style>
+    button.close:after
+    {
+        content: url(close.svg);
+        vertical-align: middle;
+        margin-left: 6px;
+    }
+</style>
+<button class=close>Кнопка &laquo;закрыть&raquo;</button>
+<hr>
+<style>
+    button.stretched
+    {
+        width: 100%;
+    }
+</style>
+<button class=stretched>Кнопка, растянутая по всей ширине контейнера</button>
+<hr>
+<style>
+    button.round
+    {
+        border-radius: 14px;
+    }
+</style>
+<button class=round>Круглая кнопка</button>
+<button class="icon round" title="Круглая кнопка в виде иконки">
+    <img src=settings.svg role=presentation>
+</button>
+<hr>
+<style>
+    button.rect
+    {
+        border-radius: 0;
+    }
+</style>
+<button class=rect>Прямоугольная кнопка</button>
+<hr>
+<style>
+    button.link
+    {
+        background: transparent;
+        border: none;
+        color: #0044bb;
+        cursor: pointer;
+        font: 15px/15px Arial;
+        padding: 0;
+    }
+    button.link:focus
+    {
+        box-shadow: 0 0 0 2px #ffdb4d;
+    }
+    button.link:hover
+    {
+        color: #cc0000;
+    }
+</style>
+<button class=link>Кнопка в виде ссылки</button>
+<hr>
+<a href=//yandex.ru>
+    <button>Ссылка в виде кнопки</button>
+</a>

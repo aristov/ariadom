@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Ссылка</title>
+<style>
+    a:link,
+    a:visited
+    {
+        font-family: Arial;
+        text-decoration: none;
+        color: #04b;
+    }
+    a:focus
+    {
+        box-shadow: 0 0 0 2px #ffdb4d;
+        outline: none;
+        border-radius: 2px;
+    }
+    a[href]:hover
+    {
+        color: #c00;
+    }
+</style>
+<a href=//yandex.ru>Ссылка</a>
+<hr>
+<style>
+    a.minor
+    {
+        color: #669;
+    }
+</style>
+<a class=minor href=//yandex.ru>Неяркая ссылка</a>
+<hr>
+<style>
+    a.dim
+    {
+        color: #999;
+    }
+    a.dim:hover
+    {
+        color: #000;
+    }
+</style>
+<a class=dim href=//yandex.ru>Приглушенная ссылка</a>
+<hr>
+<style>
+    a.external
+    {
+        color: #070;
+    }
+</style>
+<a class=external href=//google.ru>Внешняя ссылка</a>
+<hr>
+<style>
+    a.strong
+    {
+        font-weight: bold;
+    }
+</style>
+<a class=strong href=//yandex.ru>Ссылка для заголовков</a>
+<hr>
+<style>
+    a.masked
+    {
+        color: #000;
+    }
+</style>
+<a class=masked href=//yandex.ru>Ссылка в виде текста</a>
+<hr>
+<style>
+    a.icon:before
+    {
+        content: url(duru.gif);
+        vertical-align: middle;
+        margin-right: 4px;
+    }
+</style>
+<a class=icon href=//yandex.ru>Ссылка с иконкой</a>
+

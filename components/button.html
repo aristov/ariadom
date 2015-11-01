@@ -49,12 +49,19 @@
 </style>
 <button aria-pressed=false>Кнопка-переключатель</button>
 <script>
-    document
+    /*document
         .querySelector('button[aria-pressed]')
         .addEventListener('click', function() {
             this.setAttribute('aria-pressed',
                 String(this.getAttribute('aria-pressed') === 'false'));
-        });
+        });*/
+    document.addEventListener('click', function(e) {
+        var target = e.target;
+        if(target.hasAttribute('aria-pressed')) {
+            target.setAttribute('aria-pressed',
+                String(target.getAttribute('aria-pressed') === 'false'));
+        }
+    });
 </script>
 <hr>
 <style>

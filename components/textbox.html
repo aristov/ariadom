@@ -1,0 +1,132 @@
+<!doctype html>
+<meta charset=utf-8>
+<style>
+    body
+    {
+        font-family: Arial;
+    }
+</style>
+<title>Текстовое поле</title>
+<style>
+    input[type=text]
+    {
+        font: 13px Arial;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        padding: 5px 8px;
+    }
+    input[type=text]:hover
+    {
+        border-color: rgba(0, 0, 0, 0.3);
+    }
+    input[type=text]:focus
+    {
+        border-color: #ffdb4d;
+        box-shadow: inset 0 0 0 1px #ffdb4d;
+        outline: none;
+    }
+</style>
+<label>Текстовое поле<br><input type=text></label>
+<hr>
+<label>Текстовое поле<br>
+    <input type=text value=текст>
+</label>
+<hr>
+<style>
+    input[type=text].clear
+    {
+        padding-right: 22px;
+    }
+    input[type=text].clear + span.clear
+    {
+        display: inline-block;
+        background: url(cross.svg) center center no-repeat;
+        margin-left: -26px;
+        height: 26px;
+        width: 26px;
+        opacity: 0.3;
+        cursor: pointer;
+        position: absolute;
+        margin-top: 1px;
+    }
+    input[type=text].clear + span.clear:hover
+    {
+        opacity: 1;
+    }
+    input[type=text].clear[value=''] + span.clear,
+    input[type=text].clear:not([value]) + span.clear,
+    input[type=text].clear[disabled] + span.clear
+    {
+        display: none;
+    }
+</style>
+<label>Текстовое поле<br>
+    <input class=clear type=text value="с крестиком" oninput="this.setAttribute('value', this.value)"
+    ><span class=clear onclick="
+        this.previousSibling.value = '';
+        this.previousSibling.setAttribute('value', '');
+    "></span>
+</label>
+<hr>
+<style>
+    input[type=text][disabled]
+    {
+        color: #aaa;
+        border-color: #fff;
+        background: rgba(0, 0, 0, 0.08);
+    }
+</style>
+<label>Текстовое поле<br><input type=text value=заблокировано disabled></label>
+<hr>
+<style>
+    input[type=text].shadow
+    {
+        box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.12), 0 5px 10px -3px rgba(0, 0, 0, 0.3);
+    }
+    input[type=text].shadow:not(:focus)
+    {
+        border-color: transparent;
+    }
+    input[type=text].shadow:focus
+    {
+        box-shadow: inset 0 0 0 1px #ffdb4d, 0 1px 0 0 rgba(0, 0, 0, 0.12), 0 5px 10px -3px rgba(0, 0, 0, 0.3);
+    }
+</style>
+<div style="background: url('bg-pattern.svg'); padding: 15px 0;">
+    <label>Текстовое поле<br>
+        <input class=shadow type=text value="с тенью">
+    </label>
+</div>
+<hr>
+<style>
+    input[type=text].small
+    {
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+</style>
+<label>Текстовое поле<br>
+    <input class=small type=text value=мелкое>
+</label>
+<hr>
+<style>
+    input[type=text].large
+    {
+        font-size: 15px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+</style>
+<label>Текстовое поле<br>
+    <input class=large type=text value=крупное>
+</label>
+<hr>
+<style>
+    input[type=text]::-moz-placeholder,
+    input[type=text]::-webkit-input-placeholder
+    {
+        color: #999;
+    }
+</style>
+<label>Текстовое поле<br>
+    <input type=text placeholder=подсказка>
+</label>

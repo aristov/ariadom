@@ -59,12 +59,12 @@
 <a class=strong href=//yandex.ru>Ссылка для заголовков</a>
 <hr>
 <style>
-    a.masked
+    a.astext
     {
         color: #000;
     }
 </style>
-<a class=masked href=//yandex.ru>Ссылка в виде текста</a>
+<a class=astext href=//yandex.ru>Ссылка в виде текста</a>
 <hr>
 <style>
     a.icon:before
@@ -75,4 +75,31 @@
     }
 </style>
 <a class=icon href=//yandex.ru>Ссылка с иконкой</a>
-
+<hr>
+<style>
+    a.button
+    {
+        background: white;
+        display: inline-block;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+        font: 13px/13px Arial;
+        padding: 6px 10px;
+        cursor: pointer;
+    }
+    a.button:hover
+    {
+        border-color: rgba(0, 0, 0, 0.3);
+    }
+    a.button:focus
+    {
+        outline: 0;
+        border-color: #ffdb4d;
+        box-shadow: inset 0 0 0 1px #ffdb4d;
+    }
+    a.button:active
+    {
+        background: #f3f1ed;
+    }
+</style>
+<a class=button href=//yandex.ru>Ссылка в виде кнопки</a>

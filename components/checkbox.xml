@@ -1,0 +1,19 @@
+<checkbox name="cb" checked label="Флажок" />
+
+<checkinput/>
+
+<checkbox/>
+
+<checkbutton/>
+
+<checkgroup/>
+
+<togglebutton/>
+
+<radioinput/>
+
+<radiobox/>
+
+<radiobutton/>
+
+<radiogroup/>

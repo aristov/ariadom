@@ -5,7 +5,8 @@
 (function() {
     var indexOf = Array.prototype.indexOf;
 
-    function switchRadio(current, target) {
+    function switchRadio(target) {
+        var current = getRadioGroup(target).querySelector('button[aria-checked=true]');
         if(current){
             current.removeAttribute('aria-checked');
             current.setAttribute('tabindex', '-1');
@@ -43,20 +44,18 @@
         var target = e.target;
         if(target.getAttribute('role') === 'radio') {
             if(target.getAttribute('aria-checked') !== 'true') {
-                switchRadio(
-                    getRadioGroup(target).querySelector('button[aria-checked=true]'),
-                    target);
+                switchRadio(target);
             }
             target.focus();
         }
     });
 
     document.addEventListener('keydown', function(e) {
-        var target = e.target;
-        if(e.keyCode >= 37 && e.keyCode <=40 && target.getAttribute('role') === 'radio') {
-            var next = e.keyCode >= 39? nextRadio(target) : previousRadio(target);
-            e.ctrlKey || switchRadio(target, next);
-            next.focus();
+        var current = e.target;
+        if(e.keyCode >= 37 && e.keyCode <=40 && current.getAttribute('role') === 'radio') {
+            var target = e.keyCode >= 39? nextRadio(current) : previousRadio(current);
+            e.ctrlKey || switchRadio(target);
+            target.focus();
         }
     });
 })();
@@ -121,10 +120,6 @@
     {
         border-color: rgba(153, 122, 0, 0.5);
     }
-    /*span[role=radiogroup] button[role=radio][aria-checked=true]:hover
-    {
-        border-color: rgba(129, 103, 0, 0.6);
-    }*/
     span[role=radiogroup] button[role=radio][aria-checked=true]:active
     {
         background: #fee481;

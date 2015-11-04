@@ -22,13 +22,13 @@
         input && (input.value = current.value);
     }
 
-    function nextRadio(element) {
+    function getNextButton(element) {
         var buttons = getRadioGroup(element).querySelectorAll('button[role=radio]'),
             index = indexOf.call(buttons, element) + 1;
         return index >= buttons.length? buttons[0] : buttons[index];
     }
 
-    function previousRadio(element) {
+    function getPreviousButton(element) {
         var buttons = getRadioGroup(element).querySelectorAll('button[role=radio]'),
             index = indexOf.call(buttons, element) - 1;
         return index < 0? buttons[buttons.length - 1] : buttons[index];
@@ -53,24 +53,12 @@
     document.addEventListener('keydown', function(e) {
         var current = e.target;
         if(e.keyCode >= 37 && e.keyCode <=40 && current.getAttribute('role') === 'radio') {
-            var target = e.keyCode >= 39? nextRadio(current) : previousRadio(current);
+            var target = e.keyCode >= 39? getNextButton(current) : getPreviousButton(current);
             e.ctrlKey || switchRadio(target);
             target.focus();
         }
     });
 })();
-</script>
-<script>
-    /*document.addEventListener('click', function(e) {
-        var target = e.target;
-        if(target.nodeName === 'LABEL') {
-            var parent = getRadioGroup(target);
-            if(parent.getAttribute('role') === 'radiogroup') {
-                firstRadio = parent.querySelector('button[role=radio]');
-                firstRadio && firstRadio.focus();
-            }
-        }
-    });*/
 </script>
 <style>
     body
@@ -126,16 +114,16 @@
     }
 </style>
 <style>
-    /*span[role=radiogroup] > label:first-of-type
+    span[role=radiogroup] > label.leading
     {
         display: inline-block;
         margin-bottom: 6px;
         margin-right: 6px;
-    }*/
+    }
 </style>
 <form>
-    <label for=radioinput>Нативная радиогруппа</label><br>
-    <label><input type=radio name=radioinput value=one id=radioinput>Раз</label>
+    <label>Нативная радиогруппа</label><br>
+    <label><input type=radio name=radioinput value=one>Раз</label>
     <label><input type=radio name=radioinput value=two>Два</label>
     <label><input type=radio name=radioinput value=three>Три</label>
     <hr>
@@ -153,6 +141,10 @@
         {
             border-left-width: 0;
         }
+        span[role=radiogroup].radiobar button[role=radio][aria-checked=true] + button[role=radio]:not(:focus)
+        {
+            border-left-color: rgba(153, 122, 0, 0.5);
+        }
         span[role=radiogroup].radiobar button[role=radio]:first-of-type
         {
             border-top-left-radius: 3px;
@@ -166,7 +158,7 @@
     </style>
     <span role=radiogroup class=radiobar>
         <input type=hidden name=radiobar>
-        <label>Радиобар</label><br>
+        <label class=leading>Радиобар</label><br>
         <button type=button role=radio value=one>Раз</button
         ><button type=button role=radio tabindex=-1 value=two>Два</button
         ><button type=button role=radio tabindex=-1 value=three>Три</button>
@@ -204,7 +196,7 @@
     </style>
     <span role=radiogroup class=radiogroup>
         <input type=hidden name=radiogroup value=one>
-        <label>Радиогруппа</label><br>
+        <label class=leading>Радиогруппа</label><br>
         <label><button type=button role=radio aria-checked=true value=one></button>Раз</label>
         <label><button type=button role=radio tabindex=-1 value=two></button>Два</label>
         <label><button type=button role=radio tabindex=-1 value=three></button>Три</label>
@@ -212,7 +204,7 @@
     <hr>
     <span role=radiogroup class=radiogroup>
         <input type=hidden name=vradiogroup value=one>
-        <label>Вертикальная радиогруппа</label><br>
+        <label class=leading>Вертикальная радиогруппа</label><br>
         <label><button type=button role=radio aria-checked=true value=one></button>Раз</label><br>
         <label><button type=button role=radio tabindex=-1 value=two></button>Два</label><br>
         <label><button type=button role=radio tabindex=-1 value=three></button>Три</label>

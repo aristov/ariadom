@@ -63,21 +63,21 @@
 </script>
 <form>
     <!--<label>
-        <input type=checkbox name=cb-native>
+        <input type=checkbox name=native>
         Нативный флажок
     </label>
     <br>
     <br>-->
     <label>
-        <button type=button role=checkbox aria-checked=false>
-            <input type=hidden name=cb value=on disabled>
+        <button type=button role=checkbox>
+            <input type=hidden name=checkbox value=on disabled>
         </button>
         <span>Флажок</span>
     </label>
     <hr>
     <label>
         <button type=button role=checkbox aria-checked=true>
-            <input type=hidden name=cb-checked value=on>
+            <input type=hidden name=checked value=on>
         </button>
         <span>Флажок отмечен</span>
     </label>
@@ -90,8 +90,8 @@
     </style>
     <div style="background: url('bg-pattern.svg'); padding: 15px 0;">
         <label>
-            <button type=button role=checkbox aria-checked=false class=transparent>
-                <input type=hidden name=cb-transparent value=on disabled>
+            <button type=button role=checkbox class=transparent>
+                <input type=hidden name=transparent value=on disabled>
             </button>
             <span>Прозрачный флажок</span>
         </label>
@@ -118,15 +118,15 @@
         }
     </style>
     <label>
-        <button type=button role=checkbox aria-checked=false disabled>
-            <input type=hidden name=cb-disabled value=on disabled>
+        <button type=button role=checkbox disabled>
+            <input type=hidden name=disabled value=on disabled>
         </button>
         <span>Заблокированный флажок</span>
     </label>
     <hr>
     <label>
         <button type=button role=checkbox aria-checked=true disabled>
-            <input type=hidden name=cb-checked-disabled value=on disabled>
+            <input type=hidden name=checked-disabled value=on disabled>
         </button>
         <span>Заблокированный флажок отмечен</span>
     </label>
@@ -149,8 +149,8 @@
         }
     </style>
     <label>
-        <button type=button role=checkbox aria-checked=false class=large>
-            <input type=hidden name=cb-large value=on disabled>
+        <button type=button role=checkbox class=large>
+            <input type=hidden name=large value=on disabled>
         </button>
         <span>Крупный флажок</span>
     </label>

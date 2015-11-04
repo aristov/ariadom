@@ -46,8 +46,8 @@
                 switchRadio(
                     getRadioGroup(target).querySelector('button[aria-checked=true]'),
                     target);
-                target.focus();
             }
+            target.focus();
         }
     });
 
@@ -86,54 +86,57 @@
     }
 </style>
 <style>
-    button[role=radio]
+    span[role=radiogroup] button[role=radio]
     {
         margin: 0;
         border: 1px solid rgba(0, 0, 0, 0.2);
         background: #fff;
         cursor: pointer;
     }
-    button[role=radio]:hover
+    span[role=radiogroup] button[role=radio]:hover
     {
         border-color: rgba(0, 0, 0, 0.3);
     }
-    button[role=radio]:focus
+    span[role=radiogroup] button[role=radio]:focus
     {
         border-color: #ffdb4d;
         box-shadow: inset 0 0 0 1px #ffdb4d;
         outline: 0;
     }
-    button[role=radio]:active
+    span[role=radiogroup] button[role=radio]:active
     {
         background: #f3f1ed;
     }
-    button[role=radio]::-moz-focus-inner
+    span[role=radiogroup] button[role=radio]::-moz-focus-inner
     {
         border: 0;
     }
 </style>
 <style>
-    button[role=radio][aria-checked=true]
+    span[role=radiogroup] button[role=radio][aria-checked=true]
     {
-        border-color: rgba(153, 122, 0, 0.5);
         background: #ffeba0;
     }
-    button[role=radio][aria-checked=true]:hover
+    span[role=radiogroup] button[role=radio][aria-checked=true]:not(:focus)
+    {
+        border-color: rgba(153, 122, 0, 0.5);
+    }
+    /*span[role=radiogroup] button[role=radio][aria-checked=true]:hover
     {
         border-color: rgba(129, 103, 0, 0.6);
-    }
-    button[role=radio][aria-checked=true]:active
+    }*/
+    span[role=radiogroup] button[role=radio][aria-checked=true]:active
     {
         background: #fee481;
     }
 </style>
 <style>
-    span[role=radiogroup] > label:first-of-type
+    /*span[role=radiogroup] > label:first-of-type
     {
         display: inline-block;
         margin-bottom: 6px;
         margin-right: 6px;
-    }
+    }*/
 </style>
 <form>
     <label for=radioinput>Нативная радиогруппа</label><br>
@@ -142,21 +145,25 @@
     <label><input type=radio name=radioinput value=three>Три</label>
     <hr>
     <style>
-        span[role=radiogroup].radiobar > button[role=radio]
+        span[role=radiogroup].radiobar button[role=radio]
         {
             padding: 6px 10px;
             font: 13px/13px Arial;
         }
-        span[role=radiogroup].radiobar > button[role=radio]:not(:last-of-type)
+        span[role=radiogroup].radiobar button[role=radio]:not(:focus):not(:last-of-type)
         {
             border-right-width: 0;
         }
-        span[role=radiogroup].radiobar > button[role=radio]:first-of-type
+        span[role=radiogroup].radiobar button[role=radio]:focus + button[role=radio]
+        {
+            border-left-width: 0;
+        }
+        span[role=radiogroup].radiobar button[role=radio]:first-of-type
         {
             border-top-left-radius: 3px;
             border-bottom-left-radius: 3px;
         }
-        span[role=radiogroup].radiobar > button[role=radio]:last-of-type
+        span[role=radiogroup].radiobar button[role=radio]:last-of-type
         {
             border-top-right-radius: 3px;
             border-bottom-right-radius: 3px;
@@ -171,11 +178,11 @@
     </span>
     <hr>
     <style>
-        span[role=radiogroup].radiogroup > label
+        span[role=radiogroup].radiogroup label
         {
             display: inline-block;
         }
-        span[role=radiogroup].radiogroup > label > button[role=radio]
+        span[role=radiogroup].radiogroup label > button[role=radio]
         {
             text-align: center;
             width: 14px;
@@ -187,7 +194,7 @@
             position: relative;
             top: -2px;
         }
-        span[role=radiogroup].radiogroup > label > button[aria-checked="true"]::before
+        span[role=radiogroup].radiogroup label > button[aria-checked="true"]::before
         {
             content: '';
             display: inline-block;
@@ -205,6 +212,14 @@
         <label>Радиогруппа</label><br>
         <label><button type=button role=radio aria-checked=true value=one></button>Раз</label>
         <label><button type=button role=radio tabindex=-1 value=two></button>Два</label>
+        <label><button type=button role=radio tabindex=-1 value=three></button>Три</label>
+    </span>
+    <hr>
+    <span role=radiogroup class=radiogroup>
+        <input type=hidden name=vradiogroup value=one>
+        <label>Вертикальная радиогруппа</label><br>
+        <label><button type=button role=radio aria-checked=true value=one></button>Раз</label><br>
+        <label><button type=button role=radio tabindex=-1 value=two></button>Два</label><br>
         <label><button type=button role=radio tabindex=-1 value=three></button>Три</label>
     </span>
     <hr>

@@ -1,13 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>Радиогруппа</title>
-<!--<label>
-    <input type=radio name=native>Раз
-</label>
-<label>
-    <input type=radio name=native>Два
-</label>
-<hr>-->
 <style>
     body
     {
@@ -77,20 +70,46 @@
         background: #fee481;
     }
 </style>
+<style>
+    span[role=radiogroup] > label
+    {
+        display: inline-block;
+        margin-bottom: 3px;
+        margin-right: 6px;
+    }
+</style>
 <script>
 (function() {
-    function switchRadio(previous, current) {
-        if(previous){
-            previous.removeAttribute('aria-checked');
-            previous.setAttribute('tabindex', '-1');
+    function switchRadio(current, target) {
+        if(current){
+            current.removeAttribute('aria-checked');
+            current.setAttribute('tabindex', '-1');
         }
-        current.setAttribute('aria-checked', 'true');
-        current.removeAttribute('tabindex');
+        target.setAttribute('aria-checked', 'true');
+        target.removeAttribute('tabindex');
+
+        updateValue(target);
+    }
+
+    function updateValue(current) {
+        var input = current.parentElement.querySelector('input[type=hidden]');
+        input && (input.value = current.value);
+    }
+
+    function nextRadio(element) {
+        do element = element.nextElementSibling || element.parentElement.firstElementChild;
+        while(element.getAttribute('role') !== 'radio');
+        return element;
+    }
+
+    function previousRadio(element) {
+        do element = element.previousElementSibling || element.parentElement.lastElementChild;
+        while(element.getAttribute('role') !== 'radio');
+        return element;
     }
 
     document.addEventListener('click', function(e) {
         var target = e.target;
-
         if(target.getAttribute('role') === 'radio') {
             if(target.getAttribute('aria-checked') !== 'true') {
                 switchRadio(
@@ -104,24 +123,38 @@
     document.addEventListener('keypress', function(e) {
         var target = e.target;
         if(e.keyCode >= 37 && e.keyCode <=40 && target.getAttribute('role') === 'radio') {
-            var next = e.keyCode >= 39?
-                    target.nextElementSibling || target.parentElement.firstElementChild :
-                    target.previousElementSibling || target.parentElement.lastElementChild;
-
+            var next = e.keyCode >= 39? nextRadio(target) : previousRadio(target);
             e.ctrlKey || switchRadio(target, next);
             next.focus();
         }
     });
 })();
 </script>
-<button>prev</button>
-<br>
-<br>
-<span role=radiogroup
-    ><button role=radio>Раз</button
-    ><button role=radio tabindex=-1>Два</button
-    ><button role=radio tabindex=-1>Три</button
-></span>
-<br>
-<br>
-<button>next</button>
+<script>
+    document.addEventListener('click', function(e) {
+        var target = e.target;
+        if(target.nodeName === 'LABEL') {
+            var parent = target.parentElement;
+            if(parent.getAttribute('role') === 'radiogroup') {
+                firstRadio = parent.querySelector('button[role=radio]');
+                firstRadio && firstRadio.focus();
+            }
+        }
+    });
+</script>
+<form>
+    <label for=radioinput>Нативная радиогруппа</label><br>
+    <label><input type=radio name=radioinput value=one id=radioinput>Раз</label>
+    <label><input type=radio name=radioinput value=two>Два</label>
+    <label><input type=radio name=radioinput value=three>Три</label>
+    <hr>
+    <span role=radiogroup>
+        <input type=hidden name=radiobar>
+        <label>Радиобар</label><br>
+        <button type=button role=radio value=one>Раз</button
+        ><button type=button role=radio tabindex=-1 value=two>Два</button
+        ><button type=button role=radio tabindex=-1 value=three>Три</button>
+    </span>
+    <hr>
+    <input type=submit>
+</form>

@@ -1,6 +1,78 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>Радиогруппа</title>
+<script>
+(function() {
+    var indexOf = Array.prototype.indexOf;
+
+    function switchRadio(current, target) {
+        if(current){
+            current.removeAttribute('aria-checked');
+            current.setAttribute('tabindex', '-1');
+        }
+        target.setAttribute('aria-checked', 'true');
+        target.removeAttribute('tabindex');
+
+        updateValue(target);
+    }
+
+    function updateValue(current) {
+        var input = getRadioGroup(current).querySelector('input[type=hidden]');
+        input && (input.value = current.value);
+    }
+
+    function nextRadio(element) {
+        var buttons = getRadioGroup(element).querySelectorAll('button[role=radio]'),
+            index = indexOf.call(buttons, element) + 1;
+        return index >= buttons.length? buttons[0] : buttons[index];
+    }
+
+    function previousRadio(element) {
+        var buttons = getRadioGroup(element).querySelectorAll('button[role=radio]'),
+            index = indexOf.call(buttons, element) - 1;
+        return index < 0? buttons[buttons.length - 1] : buttons[index];
+    }
+
+    function getRadioGroup(element) {
+        do element = element.parentElement;
+        while(element.getAttribute('role') !== 'radiogroup');
+        return element;
+    }
+
+    document.addEventListener('click', function(e) {
+        var target = e.target;
+        if(target.getAttribute('role') === 'radio') {
+            if(target.getAttribute('aria-checked') !== 'true') {
+                switchRadio(
+                    getRadioGroup(target).querySelector('button[aria-checked=true]'),
+                    target);
+                target.focus();
+            }
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        var target = e.target;
+        if(e.keyCode >= 37 && e.keyCode <=40 && target.getAttribute('role') === 'radio') {
+            var next = e.keyCode >= 39? nextRadio(target) : previousRadio(target);
+            e.ctrlKey || switchRadio(target, next);
+            next.focus();
+        }
+    });
+})();
+</script>
+<script>
+    /*document.addEventListener('click', function(e) {
+        var target = e.target;
+        if(target.nodeName === 'LABEL') {
+            var parent = getRadioGroup(target);
+            if(parent.getAttribute('role') === 'radiogroup') {
+                firstRadio = parent.querySelector('button[role=radio]');
+                firstRadio && firstRadio.focus();
+            }
+        }
+    });*/
+</script>
 <style>
     body
     {
@@ -16,25 +88,10 @@
 <style>
     button[role=radio]
     {
-        background: #fff;
+        margin: 0;
         border: 1px solid rgba(0, 0, 0, 0.2);
-        font: 13px/13px Arial;
-        padding: 6px 10px;
+        background: #fff;
         cursor: pointer;
-    }
-    button[role=radio]:not(:last-of-type)
-    {
-        border-right-width: 0;
-    }
-    button[role=radio]:first-of-type
-    {
-        border-top-left-radius: 3px;
-        border-bottom-left-radius: 3px;
-    }
-    button[role=radio]:last-of-type
-    {
-        border-top-right-radius: 3px;
-        border-bottom-right-radius: 3px;
     }
     button[role=radio]:hover
     {
@@ -42,9 +99,9 @@
     }
     button[role=radio]:focus
     {
-        outline: 0;
         border-color: #ffdb4d;
         box-shadow: inset 0 0 0 1px #ffdb4d;
+        outline: 0;
     }
     button[role=radio]:active
     {
@@ -58,8 +115,8 @@
 <style>
     button[role=radio][aria-checked=true]
     {
-        background: #ffeba0;
         border-color: rgba(153, 122, 0, 0.5);
+        background: #ffeba0;
     }
     button[role=radio][aria-checked=true]:hover
     {
@@ -71,89 +128,84 @@
     }
 </style>
 <style>
-    span[role=radiogroup] > label
+    span[role=radiogroup] > label:first-of-type
     {
         display: inline-block;
-        margin-bottom: 3px;
+        margin-bottom: 6px;
         margin-right: 6px;
     }
 </style>
-<script>
-(function() {
-    function switchRadio(current, target) {
-        if(current){
-            current.removeAttribute('aria-checked');
-            current.setAttribute('tabindex', '-1');
-        }
-        target.setAttribute('aria-checked', 'true');
-        target.removeAttribute('tabindex');
-
-        updateValue(target);
-    }
-
-    function updateValue(current) {
-        var input = current.parentElement.querySelector('input[type=hidden]');
-        input && (input.value = current.value);
-    }
-
-    function nextRadio(element) {
-        do element = element.nextElementSibling || element.parentElement.firstElementChild;
-        while(element.getAttribute('role') !== 'radio');
-        return element;
-    }
-
-    function previousRadio(element) {
-        do element = element.previousElementSibling || element.parentElement.lastElementChild;
-        while(element.getAttribute('role') !== 'radio');
-        return element;
-    }
-
-    document.addEventListener('click', function(e) {
-        var target = e.target;
-        if(target.getAttribute('role') === 'radio') {
-            if(target.getAttribute('aria-checked') !== 'true') {
-                switchRadio(
-                    target.parentElement.querySelector('button[aria-checked=true]'),
-                    target);
-                target.focus();
-            }
-        }
-    });
-
-    document.addEventListener('keypress', function(e) {
-        var target = e.target;
-        if(e.keyCode >= 37 && e.keyCode <=40 && target.getAttribute('role') === 'radio') {
-            var next = e.keyCode >= 39? nextRadio(target) : previousRadio(target);
-            e.ctrlKey || switchRadio(target, next);
-            next.focus();
-        }
-    });
-})();
-</script>
-<script>
-    document.addEventListener('click', function(e) {
-        var target = e.target;
-        if(target.nodeName === 'LABEL') {
-            var parent = target.parentElement;
-            if(parent.getAttribute('role') === 'radiogroup') {
-                firstRadio = parent.querySelector('button[role=radio]');
-                firstRadio && firstRadio.focus();
-            }
-        }
-    });
-</script>
 <form>
     <label for=radioinput>Нативная радиогруппа</label><br>
     <label><input type=radio name=radioinput value=one id=radioinput>Раз</label>
     <label><input type=radio name=radioinput value=two>Два</label>
     <label><input type=radio name=radioinput value=three>Три</label>
     <hr>
-    <span role=radiogroup>
+    <style>
+        span[role=radiogroup].radiobar > button[role=radio]
+        {
+            padding: 6px 10px;
+            font: 13px/13px Arial;
+        }
+        span[role=radiogroup].radiobar > button[role=radio]:not(:last-of-type)
+        {
+            border-right-width: 0;
+        }
+        span[role=radiogroup].radiobar > button[role=radio]:first-of-type
+        {
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+        }
+        span[role=radiogroup].radiobar > button[role=radio]:last-of-type
+        {
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+    </style>
+    <span role=radiogroup class=radiobar>
         <input type=hidden name=radiobar>
         <label>Радиобар</label><br>
         <button type=button role=radio value=one>Раз</button
         ><button type=button role=radio tabindex=-1 value=two>Два</button
         ><button type=button role=radio tabindex=-1 value=three>Три</button>
+    </span>
+    <hr>
+    <style>
+        span[role=radiogroup].radiogroup > label
+        {
+            display: inline-block;
+        }
+        span[role=radiogroup].radiogroup > label > button[role=radio]
+        {
+            text-align: center;
+            width: 14px;
+            height: 14px;
+            margin: 5px;
+            padding: 0;
+            border-radius: 7px;
+            vertical-align: middle;
+            position: relative;
+            top: -2px;
+        }
+        span[role=radiogroup].radiogroup > label > button[aria-checked="true"]::before
+        {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            vertical-align: middle;
+            border-radius: 3px;
+            background: #000;
+            position: relative;
+            top: -2px;
+        }
+    </style>
+    <span role=radiogroup class=radiogroup>
+        <input type=hidden name=radiogroup value=one>
+        <label>Радиогруппа</label><br>
+        <label><button type=button role=radio aria-checked=true value=one></button>Раз</label>
+        <label><button type=button role=radio tabindex=-1 value=two></button>Два</label>
+        <label><button type=button role=radio tabindex=-1 value=three></button>Три</label>
     </span>
     <hr>
     <input type=submit>

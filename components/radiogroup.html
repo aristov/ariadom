@@ -8,48 +8,10 @@
     <input type=radio name=native>Два
 </label>
 <hr>-->
-<script>
-    /*document.addEventListener('focusin', function(e) {
-        console.log(arguments);
-        /!*var target = e.target;
-        if(target.getAttribute('role') === 'radiogroup') {
-            console.log(arguments);
-        }*!/
-    });*/
-</script>
 <style>
-    span[role=radio]
+    body
     {
-        display: inline-block;
-        background: #fff;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        border-radius: 3px;
-        font: 13px/13px Arial;
-        padding: 6px 10px;
-        cursor: pointer;
-    }
-    span[role=radio]:hover
-    {
-        border-color: rgba(0, 0, 0, 0.3);
-    }
-    span[role=radio]:active
-    {
-        background: #f3f1ed;
-    }
-</style>
-<style>
-    span[role=radio][aria-checked=true]
-    {
-        background: #ffeba0;
-        border-color: rgba(153, 122, 0, 0.5);
-    }
-    span[role=radio][aria-checked=true]:hover
-    {
-        border-color: rgba(129, 103, 0, 0.6);
-    }
-    span[role=radio][aria-checked=true]:active
-    {
-        background: #fee481;
+        font: 13px Arial;
     }
 </style>
 <style>
@@ -57,41 +19,109 @@
     {
         display: inline-block;
     }
-    span[role=radiogroup]:focus
+</style>
+<style>
+    button[role=radio]
     {
-        outline: none;
-    }
-    span[role=radiogroup] > span
-    {
+        background: #fff;
         border: 1px solid rgba(0, 0, 0, 0.2);
+        font: 13px/13px Arial;
+        padding: 6px 10px;
+        cursor: pointer;
     }
-    span[role=radiogroup]:focus > span[aria-checked=true]
+    button[role=radio]:not(:last-of-type)
     {
+        border-right-width: 0;
+    }
+    button[role=radio]:first-of-type
+    {
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+    }
+    button[role=radio]:last-of-type
+    {
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+    }
+    button[role=radio]:hover
+    {
+        border-color: rgba(0, 0, 0, 0.3);
+    }
+    button[role=radio]:focus
+    {
+        outline: 0;
         border-color: #ffdb4d;
         box-shadow: inset 0 0 0 1px #ffdb4d;
     }
+    button[role=radio]:active
+    {
+        background: #f3f1ed;
+    }
+    button[role=radio]::-moz-focus-inner
+    {
+        border: 0;
+    }
+</style>
+<style>
+    button[role=radio][aria-checked=true]
+    {
+        background: #ffeba0;
+        border-color: rgba(153, 122, 0, 0.5);
+    }
+    button[role=radio][aria-checked=true]:hover
+    {
+        border-color: rgba(129, 103, 0, 0.6);
+    }
+    button[role=radio][aria-checked=true]:active
+    {
+        background: #fee481;
+    }
 </style>
 <script>
+(function() {
+    function switchRadio(previous, current) {
+        if(previous){
+            previous.removeAttribute('aria-checked');
+            previous.setAttribute('tabindex', '-1');
+        }
+        current.setAttribute('aria-checked', 'true');
+        current.removeAttribute('tabindex');
+    }
+
     document.addEventListener('click', function(e) {
         var target = e.target;
+
         if(target.getAttribute('role') === 'radio') {
             if(target.getAttribute('aria-checked') !== 'true') {
-                target
-                    .parentElement
-                    .querySelector('span[aria-checked=true]')
-                    .removeAttribute('aria-checked');
-                target.setAttribute('aria-checked', 'true');
+                switchRadio(
+                    target.parentElement.querySelector('button[aria-checked=true]'),
+                    target);
+                target.focus();
             }
         }
     });
+
     document.addEventListener('keypress', function(e) {
         var target = e.target;
-        if(target.getAttribute('role') === 'radiogroup' && e.code === 'Space') {
-            console.log(e);
+        if(e.keyCode >= 37 && e.keyCode <=40 && target.getAttribute('role') === 'radio') {
+            var next = e.keyCode >= 39?
+                    target.nextElementSibling || target.parentElement.firstElementChild :
+                    target.previousElementSibling || target.parentElement.lastElementChild;
+
+            e.ctrlKey || switchRadio(target, next);
+            next.focus();
         }
     });
+})();
 </script>
-<span role=radiogroup tabindex=0
-    ><span role=radio aria-checked=true>Раз</span
-    ><span role=radio>Два</span
+<button>prev</button>
+<br>
+<br>
+<span role=radiogroup
+    ><button role=radio>Раз</button
+    ><button role=radio tabindex=-1>Два</button
+    ><button role=radio tabindex=-1>Три</button
 ></span>
+<br>
+<br>
+<button>next</button>

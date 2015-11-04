@@ -1,0 +1,97 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Радиогруппа</title>
+<!--<label>
+    <input type=radio name=native>Раз
+</label>
+<label>
+    <input type=radio name=native>Два
+</label>
+<hr>-->
+<script>
+    /*document.addEventListener('focusin', function(e) {
+        console.log(arguments);
+        /!*var target = e.target;
+        if(target.getAttribute('role') === 'radiogroup') {
+            console.log(arguments);
+        }*!/
+    });*/
+</script>
+<style>
+    span[role=radio]
+    {
+        display: inline-block;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+        font: 13px/13px Arial;
+        padding: 6px 10px;
+        cursor: pointer;
+    }
+    span[role=radio]:hover
+    {
+        border-color: rgba(0, 0, 0, 0.3);
+    }
+    span[role=radio]:active
+    {
+        background: #f3f1ed;
+    }
+</style>
+<style>
+    span[role=radio][aria-checked=true]
+    {
+        background: #ffeba0;
+        border-color: rgba(153, 122, 0, 0.5);
+    }
+    span[role=radio][aria-checked=true]:hover
+    {
+        border-color: rgba(129, 103, 0, 0.6);
+    }
+    span[role=radio][aria-checked=true]:active
+    {
+        background: #fee481;
+    }
+</style>
+<style>
+    span[role=radiogroup]
+    {
+        display: inline-block;
+    }
+    span[role=radiogroup]:focus
+    {
+        outline: none;
+    }
+    span[role=radiogroup] > span
+    {
+        border: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    span[role=radiogroup]:focus > span[aria-checked=true]
+    {
+        border-color: #ffdb4d;
+        box-shadow: inset 0 0 0 1px #ffdb4d;
+    }
+</style>
+<script>
+    document.addEventListener('click', function(e) {
+        var target = e.target;
+        if(target.getAttribute('role') === 'radio') {
+            if(target.getAttribute('aria-checked') !== 'true') {
+                target
+                    .parentElement
+                    .querySelector('span[aria-checked=true]')
+                    .removeAttribute('aria-checked');
+                target.setAttribute('aria-checked', 'true');
+            }
+        }
+    });
+    document.addEventListener('keypress', function(e) {
+        var target = e.target;
+        if(target.getAttribute('role') === 'radiogroup' && e.code === 'Space') {
+            console.log(e);
+        }
+    });
+</script>
+<span role=radiogroup tabindex=0
+    ><span role=radio aria-checked=true>Раз</span
+    ><span role=radio>Два</span
+></span>

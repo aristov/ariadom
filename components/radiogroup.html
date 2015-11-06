@@ -146,12 +146,62 @@
     </span>
     <hr>
     <span role=radiogroup class=radiogroup>
-        <input type=hidden name=vradiogroup value=one>
+        <input type=hidden name=vradiogroup value=two>
         <label class=leading>Вертикальная радиогруппа</label><br>
-        <label><button type=button role=radio aria-checked=true value=one></button>Раз</label><br>
-        <label><button type=button role=radio tabindex=-1 value=two></button>Два</label><br>
+        <label><button type=button role=radio tabindex=-1 value=one></button>Раз</label><br>
+        <label><button type=button role=radio aria-checked=true value=two></button>Два</label><br>
         <label><button type=button role=radio tabindex=-1 value=three></button>Три</label>
+    </span>
+    <hr>
+    <style>
+        span[role=radiogroup] button[role=radio][disabled]
+        {
+            background: rgba(0, 0, 0, 0.08);
+            border-color: transparent;
+            cursor: default;
+        }
+        span[role=radiogroup] button[role=radio][aria-checked=true][disabled]
+        {
+            background: rgba(0, 0, 0, 0.15);
+            border-color: transparent;
+        }
+        span[role=radiogroup].radiogroup label > button[role=radio][aria-checked=true][disabled]::before
+        {
+            opacity: 0.4;
+        }
+        span[role=radiogroup] button[role=radio][disabled] + span
+        {
+            opacity: 0.5;
+        }
+    </style>
+    <span role=radiogroup class=radiogroup>
+        <input type=hidden name=second-disabled value=trhee>
+        <label class=leading>Заблокированная радиогруппа</label><br>
+        <label>
+            <button type=button role=radio value=one></button
+            ><span>Раз</span>
+        </label>
+        <label>
+            <button type=button role=radio value=two disabled></button
+            ><span>Два</span>
+        </label>
+        <label>
+            <button type=button role=radio aria-checked=true disabled value=three></button
+            ><span>Три</span>
+        </label>
+        <label>
+            <button type=button role=radio tabindex=-1 value=four></button
+            ><span>Четыре</span>
+        </label>
     </span>
     <hr>
     <input type=submit>
 </form>
+
+<template>
+    <radiogroup view=buttonbar name=transformed label="Шаблонизированная радиогруппа">
+        <radio value=one label=Раз />
+        <radio value=two label=Два checked />
+        <radio value=three label=Три />
+    </radiogroup>
+</template>

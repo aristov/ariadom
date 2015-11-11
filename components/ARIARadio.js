@@ -111,6 +111,7 @@ ARIARadio.onFocus = function(e, element) {
 }
 
 ARIARadio.onClick = function(e, element) {
+    e.preventDefault();
     this.getRadio(element).check();
 }
 

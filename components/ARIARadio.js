@@ -2,13 +2,14 @@ function ARIARadioGroup(element) {
     element.ariaradiogroup = this;
     this.element = element;
     this.checked = null;
-    this.create();
+    this.input = element.querySelector('input');
+    this.initialize();
 }
 
 ARIARadioGroup.prototype.forEach = Array.prototype.forEach;
 ARIARadioGroup.prototype.push = Array.prototype.push;
 
-ARIARadioGroup.prototype.create = function() {
+ARIARadioGroup.prototype.initialize = function() {
     var first;
     this.forEach.call(
         this.element.querySelectorAll('[role=radio]'),
@@ -25,10 +26,28 @@ ARIARadioGroup.prototype.setChecked = function(radio) {
     var checked = this.checked;
     checked? checked.setChecked('false') : this[0].setFocusable(false);
     (this.checked = radio).setChecked('true');
+    this.input && (this.input.value = radio.getValue());
 }
 
 ARIARadioGroup.prototype.focus = function() {
     (this.checked || this[0]).element.focus();
+}
+
+ARIARadioGroup.prototype.getValue = function() {
+    return this.input?
+        this.input.value :
+        this.checked? this.checked.getValue() : '';
+}
+
+ARIARadioGroup.prototype.setValue = function(value) {
+    var first = this[0],
+        radio = first;
+    do {
+        if(radio.getValue() === value) {
+            this.setChecked(radio);
+            break;
+        }
+    } while((radio = radio.next) !== first);
 }
 
 ARIARadioGroup.getGroup = function(element) {
@@ -42,6 +61,10 @@ function ARIARadio(element) {
     this.element = element;
     this.setFocusable(this.isChecked());
     this.group = this.getGroup();
+}
+
+ARIARadio.prototype.getValue = function() {
+    return this.element.value;
 }
 
 ARIARadio.prototype.getGroup = function() {

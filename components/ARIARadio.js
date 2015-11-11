@@ -61,6 +61,15 @@ function ARIARadio(element) {
     this.element = element;
     this.setFocusable(this.isChecked());
     this.group = this.getGroup();
+    element.addEventListener('keydown', this.onKeydown.bind(this));
+}
+
+ARIARadio.prototype.onKeydown = function(e) {
+    var keyCode = e.keyCode;
+    if(keyCode >= 37 && keyCode <=40) {
+        var target = keyCode >= 39? this.next : this.prev;
+        this.group.setChecked(target);
+    }
 }
 
 ARIARadio.prototype.getValue = function() {

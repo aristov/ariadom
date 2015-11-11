@@ -8,32 +8,24 @@
 </style>
 <title>Текстовое поле</title>
 <style>
-    span[role=textbox]
+    input[type=text]
     {
         font: 13px Arial;
         border: 1px solid rgba(0, 0, 0, 0.2);
         padding: 5px 8px;
-        width: 200px;
-        display: inline-block;
-        height: 15px;
-        overflow: hidden;
-        cursor: text;
     }
-    span[role=textbox]:hover
+    input[type=text]:hover
     {
         border-color: rgba(0, 0, 0, 0.3);
     }
-    span[role=textbox]:focus
+    input[type=text]:focus
     {
         border-color: #ffdb4d;
         box-shadow: inset 0 0 0 1px #ffdb4d;
         outline: none;
     }
 </style>
-<label>Текстовое поле<br>
-    <span role=textbox contenteditable></span>
-</label>
-<!--
+<label>Текстовое поле<br><input type=text></label>
 <hr>
 <label>Текстовое поле<br>
     <input type=text value=текст>
@@ -138,4 +130,3 @@
 <label>Текстовое поле<br>
     <input type=text placeholder=подсказка>
 </label>
--->

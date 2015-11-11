@@ -34,7 +34,7 @@ ARIARadioGroup.prototype.setChecked = function(button) {
 
 ARIARadioGroup.prototype.updateValue = function(value) {
     var input = this.getInput();
-    input? input.value = value : (this.dataset.value = value);
+    input? input.value = value : (this.value = value);
 }
 
 ARIARadioGroup.prototype.nextOf = function(button) {

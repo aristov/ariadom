@@ -10,16 +10,24 @@ ARIARadioGroup.prototype.forEach = Array.prototype.forEach;
 ARIARadioGroup.prototype.push = Array.prototype.push;
 
 ARIARadioGroup.prototype.initialize = function() {
-    var first;
+    var first, checked;
     this.forEach.call(
         this.element.querySelectorAll('[role=radio]'),
         function(element, i) {
             var radio = ARIARadio.getRadio(element);
-            if(radio.isChecked()) this.checked = radio;
+            if(radio.isChecked()) this.checked = checked = radio;
             this.push(i? ((radio.prev = this[i - 1]).next = radio) : (first = radio));
         }, this);
     (first.prev = this[this.length - 1]).next = first;
-    this.checked || first.setFocusable(true);
+    if(!checked || checked.isDisabled()) {
+        var focusable = first;
+        do {
+            if(!focusable.isDisabled()) {
+                focusable.setFocusable(true);
+                break;
+            }
+        } while((focusable = focusable.next) !== first);
+    }
 }
 
 ARIARadioGroup.prototype.setChecked = function(radio) {
@@ -59,7 +67,7 @@ ARIARadioGroup.getGroup = function(element) {
 function ARIARadio(element) {
     element.ariaradio = this;
     this.element = element;
-    this.setFocusable(this.isChecked());
+    this.setFocusable(this.isChecked() && !this.isDisabled());
     this.group = this.getGroup();
     element.addEventListener('keydown', this.onKeydown.bind(this));
 }
@@ -67,9 +75,19 @@ function ARIARadio(element) {
 ARIARadio.prototype.onKeydown = function(e) {
     var keyCode = e.keyCode;
     if(keyCode >= 37 && keyCode <=40) {
-        var target = keyCode >= 39? this.next : this.prev;
-        this.group.setChecked(target);
+        var direction = keyCode < 39? 'prev' : 'next',
+            target = this[direction];
+        do {
+            if(!target.isDisabled()) {
+                this.group.setChecked(target);
+                break;
+            }
+        } while((target = target[direction]) !== this);
     }
+}
+
+ARIARadio.prototype.isDisabled = function() {
+    return this.element.disabled;
 }
 
 ARIARadio.prototype.getValue = function() {

@@ -20,12 +20,12 @@ ARIARadioGroup.prototype.initialize = function() {
             var radio = ARIARadio.getRadio(element);
 
             if(radio.isChecked()) this.checked = checked = radio;
-
             if(!focusable && !radio.isDisabled()) focusable = radio;
 
-            this.push(i?
-                ((radio.prev = this[i - 1]).next = radio) :
-                (first = radio));
+            if(i) (radio.prev = this[i - 1]).next = radio;
+            else first = radio;
+
+            this.push(radio);
         }, this);
 
     (first.prev = this[this.length - 1]).next = first;
@@ -35,8 +35,11 @@ ARIARadioGroup.prototype.initialize = function() {
     }
 }
 
-ARIARadioGroup.prototype.setDisabled = function(value) {
-    value?
+ARIARadioGroup.prototype.setDisabled = function(disabled) {
+    this.forEach(function(radio) {
+        radio.setDisabled(disabled);
+    });
+    disabled?
         this.element.setAttribute('aria-disabled', 'true') :
         this.element.removeAttribute('aria-disabled');
 }
@@ -57,6 +60,10 @@ ARIARadioGroup.prototype.setChecked = function(radio) {
 ARIARadioGroup.prototype.focus = function() {
     var focusable = this.element.querySelector('[tabindex="0"]');
     focusable && focusable.focus();
+}
+
+ARIARadioGroup.prototype.setFocusable = function() {
+
 }
 
 ARIARadioGroup.prototype.getValue = function() {
@@ -100,7 +107,7 @@ ARIARadio.prototype.onKeydown = function(e) {
         var direction = keyCode < 39? 'prev' : 'next',
             target = this[direction];
 
-        e.preventDefault();
+        e.preventDefault(); // prevent page scrolling
 
         do {
             if(!target.isDisabled()) {
@@ -109,6 +116,11 @@ ARIARadio.prototype.onKeydown = function(e) {
             }
         } while((target = target[direction]) !== this);
     }
+}
+
+ARIARadio.prototype.setDisabled = function(disabled) {
+    this.element.disabled = disabled;
+    //if(disabled && this.isChecked()) this.group.setFocusable();
 }
 
 ARIARadio.prototype.isDisabled = function() {
@@ -127,14 +139,14 @@ ARIARadio.prototype.check = function() {
     this.isChecked() || this.group.setChecked(this);
 }
 
-ARIARadio.prototype.setFocusable = function(value) {
-    this.element.tabIndex = value? 0 : -1;
+ARIARadio.prototype.setFocusable = function(focusable) {
+    this.element.tabIndex = focusable? 0 : -1;
 }
 
-ARIARadio.prototype.setChecked = function(value) {
+ARIARadio.prototype.setChecked = function(checked) {
     var element = this.element;
 
-    if(value === 'true') {
+    if(checked === 'true') {
         this.setFocusable(true);
         element.setAttribute('aria-checked', 'true');
         element.focus();
@@ -164,7 +176,7 @@ ARIARadio.onFocus = function(e, element) {
 }
 
 ARIARadio.onClick = function(e, element) {
-    e.preventDefault();
+    e.preventDefault(); // prevent form submit
     this.getRadio(element).check();
 }
 

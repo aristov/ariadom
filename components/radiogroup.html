@@ -139,7 +139,7 @@
     <span role=radiogroup class=radiogroup>
         <input type=hidden name=radiogroup value=one>
         <label class=leading>Радиогруппа</label><br>
-        <label><button role=radio aria-checked=true value=one></button>Раз</label>
+        <label><button role=radio disabled value=one></button>Раз</label>
         <label><button role=radio value=two></button>Два</label>
         <label><button role=radio value=three></button>Три</label>
     </span>
@@ -174,8 +174,8 @@
         }
     </style>
     <span role=radiogroup class=radiogroup>
-        <input type=hidden name=second-disabled value=trhee>
-        <label class=leading>Заблокированная радиогруппа</label><br>
+        <input type=hidden name=part-disabled value=trhee>
+        <label class=leading>Частично заблокированная радиогруппа</label><br>
         <label>
             <button role=radio value=one disabled></button
             ><span>Раз</span>
@@ -194,7 +194,34 @@
         </label>
     </span>
     <hr>
-    <input type=submit>
+    <style>
+        span[role=radiogroup][aria-disabled=true] label.leading
+        {
+            opacity: 0.5;
+        }
+    </style>
+    <span role=radiogroup class=radiogroup aria-disabled=true>
+        <input type=hidden name=full-disabled value=trhee>
+        <label class=leading>Полностью заблокированная радиогруппа</label><br>
+        <label>
+            <button role=radio value=one disabled></button
+            ><span>Раз</span>
+        </label>
+        <label>
+            <button role=radio value=two disabled></button
+            ><span>Два</span>
+        </label>
+        <label>
+            <button role=radio aria-checked=true disabled value=three></button
+            ><span>Три</span>
+        </label>
+        <label>
+            <button role=radio value=four disabled></button
+            ><span>Четыре</span>
+        </label>
+    </span>
+    <hr>
+    <input>
 </form>
 
 <template>

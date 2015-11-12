@@ -8,6 +8,15 @@ function ARIARadioGroup(element) {
     this.initialize();
 }
 
+Object.defineProperty(ARIARadioGroup.prototype, 'disabled', {
+    get : function() {
+        return this.element.hasAttribute('aria-disabled');
+    },
+    set : function(value) {
+        this.setDisabled(value);
+    }
+});
+
 ARIARadioGroup.prototype.forEach = Array.prototype.forEach;
 ARIARadioGroup.prototype.push = Array.prototype.push;
 

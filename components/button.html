@@ -1,6 +1,17 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>Кнопка</title>
+<script>
+    Object.defineProperty(HTMLButtonElement.prototype, 'ariaPressed', {
+        enumerable : true,
+        get : function() {
+            return this.getAttribute('aria-pressed') || '';
+        },
+        set : function(value) {
+            this.setAttribute('aria-pressed', String(value));
+        }
+    });
+</script>
 <style>
     button
     {

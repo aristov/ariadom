@@ -213,13 +213,109 @@
         </label>
     </span>
     <hr>
-    <input>
+    <div id=transformed></div>
+    <hr>
+    <input type=submit>
 </form>
 
-<template>
-    <radiogroup view=buttonbar name=transformed label="Шаблонизированная радиогруппа">
-        <radio value=one label=Раз />
-        <radio value=two label=Два checked />
-        <radio value=three label=Три />
+<script type=xml>
+    <radiogroup view="radiobar" name="transformed" label="Шаблонизированная радиогруппа">
+        <radio value="one" label="Раз"/>
+        <radio value="two" label="Два" checked="true"/>
+        <radio value="three" label="Три"/>
     </radiogroup>
+</script>
+<template>
+    <span role=radiogroup class=radiobar>
+        <input type=hidden name=transformed>
+        <label class=leading>Шаблонизированная радиогруппа</label><br>
+        <button role=radio value=one>Раз</button>
+        <button role=radio value=two aria-checked=true>Два</button>
+        <button role=radio value=three>Три</button>
+    </span>
 </template>
+<script>
+(function() {
+    var parser = new DOMParser(),
+        source = document.querySelector('script[type=xml]').innerHTML,
+        parsedDocument = parser.parseFromString(source.trim(), 'application/xml')/*,
+        element = parsedDocument.documentElement,
+        target*/;
+
+    //document.getElementById('transformed').appendChild(element);
+
+    function transform(element, data) {
+        var result;
+
+        if(element.tagName === 'radiogroup') {
+            result = document.createElement('span');
+            result.setAttribute('role', 'radiogroup');
+
+            var view = element.getAttribute('view');
+            if(view) result.classList.add(view);
+
+            var name = element.getAttribute('name');
+            if(name) {
+                var inputElement = document.createElement('input');
+                inputElement.setAttribute('type', 'hidden');
+                inputElement.setAttribute('name', name);
+                result.appendChild(inputElement);
+            }
+
+            var label = element.getAttribute('label');
+            if(label) {
+                var labelElement = document.createElement('label');
+                labelElement.classList.add('leading');
+                labelElement.textContent = label;
+                result.appendChild(labelElement);
+                result.appendChild(document.createElement('br'));
+            }
+        }
+
+        if(element.tagName === 'radio') {
+            result = document.createElement('button');
+            result.setAttribute('role', 'radio');
+
+            var label = element.getAttribute('label');
+            if(label) result.textContent = label;
+
+            var value = element.getAttribute('value');
+            if(value) result.setAttribute('value', value);
+
+            var checked = element.getAttribute('checked');
+            if(checked) {
+                result.setAttribute('aria-checked', checked);
+                if(value) {
+                    var inputElement = data.inputElement;
+                    if(inputElement) inputElement.setAttribute('value', value);
+                }
+            }
+        }
+
+        /*var next;
+        if(next = element.firstElementChild) {
+            result.appendChild(transform(next));
+        }
+        if(next = element.nextElementSibling) {
+            result.parentElement && result.parentElement.appendChild(transform(next));
+        }*/
+
+        Array.prototype.forEach.call(element.children, function(child) {
+            result.appendChild(transform(child, { inputElement: inputElement }));
+        });
+
+        return result;
+    }
+
+    document
+        .getElementById('transformed')
+        .appendChild(transform(parsedDocument.documentElement));
+
+    /*while(element) {
+        console.log(element);
+
+        target = document.createElement('span');
+        element = element.firstElementChild || element.nextElementSibling;
+    }*/
+})();
+</script>

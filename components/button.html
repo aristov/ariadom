@@ -2,7 +2,7 @@
 <meta charset=utf-8>
 <title>Кнопка</title>
 <script>
-    Object.defineProperty(HTMLButtonElement.prototype, 'ariaPressed', {
+    /*Object.defineProperty(HTMLButtonElement.prototype, 'ariaPressed', {
         enumerable : true,
         get : function() {
             return this.getAttribute('aria-pressed') || '';
@@ -10,7 +10,7 @@
         set : function(value) {
             this.setAttribute('aria-pressed', String(value));
         }
-    });
+    });*/
 </script>
 <style>
     button
@@ -59,6 +59,7 @@
     }
 </style>
 <button aria-pressed=false>Кнопка-переключатель</button>
+<script src=ARIAButton.js></script>
 <script>
     /*document
         .querySelector('button[aria-pressed]')
@@ -66,13 +67,13 @@
             this.setAttribute('aria-pressed',
                 String(this.getAttribute('aria-pressed') === 'false'));
         });*/
-    document.addEventListener('click', function(e) {
+    /*document.addEventListener('click', function(e) {
         var target = e.target;
         if(target.hasAttribute('aria-pressed')) {
             target.setAttribute('aria-pressed',
                 String(target.getAttribute('aria-pressed') === 'false'));
         }
-    });
+    });*/
 </script>
 <hr>
 <style>

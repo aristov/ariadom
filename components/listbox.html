@@ -1,8 +1,8 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>Выпадающий список</title>
+<title>Список выбора</title>
 <style>
-    select
+    /*select
     {
         -moz-appearance: none;
         -webkit-appearance: none;
@@ -40,13 +40,21 @@
     option:active
     {
         background: #ffeba0;
-    }
+    }*/
 </style>
 <label>
-    Нативный выпадающий список<br>
+    Нативный список выбора<br>
     <select>
         <option>Раз</option>
         <option>Два</option>
         <option>Три</option>
     </select>
 </label>
+<hr>
+<button>Раз</button>
+<ul role=listbox tabindex=0>
+    <li role=option>Раз</li>
+    <li role=option>Два</li>
+    <li role=option>Три</li>
+</ul>
+<a href=//ya.ru tabindex="-1" onclick=event.preventDefault()>link</a>

@@ -98,7 +98,7 @@
             border-bottom-right-radius: 3px;
         }
     </style>
-    <span role=radiogroup class=radiobar>
+    <span role=radiogroup class=radiobar> <!--div?-->
         <input type=hidden name=radiobar>
         <label class=leading>Радиобар</label><br>
         <button role=radio value=one>Раз</button
@@ -218,7 +218,7 @@
     <input type=submit>
 </form>
 
-<script type=xml>
+<script type=ariaml id=radiogroup-source>
     <radiogroup view="radiobar" name="transformed" label="Шаблонизированная радиогруппа">
         <radio value="one" label="Раз"/>
         <radio value="two" label="Два" checked="true"/>
@@ -227,7 +227,7 @@
 </script>
 <template>
     <span role=radiogroup class=radiobar>
-        <input type=hidden name=transformed>
+        <input type=hidden name=transformed value=two>
         <label class=leading>Шаблонизированная радиогруппа</label><br>
         <button role=radio value=one>Раз</button>
         <button role=radio value=two aria-checked=true>Два</button>
@@ -237,72 +237,68 @@
 <script>
 (function() {
     var parser = new DOMParser(),
-        source = document.querySelector('script[type=xml]').innerHTML,
-        parsedDocument = parser.parseFromString(source.trim(), 'application/xml')/*,
-        element = parsedDocument.documentElement,
-        target*/;
+        source = document.getElementById('radiogroup-source').innerHTML,
+        parsedDocument = parser.parseFromString(source.trim(), 'application/xml');
 
     //document.getElementById('transformed').appendChild(element);
 
     function transform(element, data) {
-        var result;
+        var tagName = element.tagName,
+            result;
 
-        if(element.tagName === 'radiogroup') {
+        if(tagName === 'radiogroup') {
             result = document.createElement('span');
-            result.setAttribute('role', 'radiogroup');
+            result.setAttribute('role', tagName);
 
-            var view = element.getAttribute('view');
-            if(view) result.classList.add(view);
+            if(element.hasAttribute('view'))
+                result.classList.add(element.getAttribute('view'));
 
-            var name = element.getAttribute('name');
-            if(name) {
-                var inputElement = document.createElement('input');
-                inputElement.setAttribute('type', 'hidden');
-                inputElement.setAttribute('name', name);
-                result.appendChild(inputElement);
+            if(element.hasAttribute('name')) {
+                var input = document.createElement('input'),
+                    checkedRadio = element.querySelector('radio[checked=true]');
+                input.type = 'hidden';
+                input.name = element.getAttribute('name');
+                if(checkedRadio) input.value = checkedRadio.getAttribute('value');
+                result.appendChild(input);
             }
 
-            var label = element.getAttribute('label');
-            if(label) {
-                var labelElement = document.createElement('label');
-                labelElement.classList.add('leading');
-                labelElement.textContent = label;
-                result.appendChild(labelElement);
+            if(element.hasAttribute('label')) {
+                var label = document.createElement('label');
+                label.classList.add('leading');
+                label.textContent = element.getAttribute('label');
+                result.appendChild(label);
                 result.appendChild(document.createElement('br'));
             }
         }
 
-        if(element.tagName === 'radio') {
+        if(tagName === 'radio') {
             result = document.createElement('button');
-            result.setAttribute('role', 'radio');
+            result.setAttribute('role', tagName);
 
             var label = element.getAttribute('label');
             if(label) result.textContent = label;
 
             var value = element.getAttribute('value');
-            if(value) result.setAttribute('value', value);
+            if(value) result.value = value;
 
             var checked = element.getAttribute('checked');
             if(checked) {
                 result.setAttribute('aria-checked', checked);
-                if(value) {
+                /*if(value) {
                     var inputElement = data.inputElement;
-                    if(inputElement) inputElement.setAttribute('value', value);
-                }
+                    if(inputElement) inputElement.value = value;
+                }*/
             }
         }
 
-        /*var next;
-        if(next = element.firstElementChild) {
-            result.appendChild(transform(next));
-        }
-        if(next = element.nextElementSibling) {
-            result.parentElement && result.parentElement.appendChild(transform(next));
-        }*/
+        var child = element.firstElementChild;
+        if(child) do {
+            result.appendChild(transform(child, { inputElement: input }));
+        } while(child = child.nextElementSibling);
 
-        Array.prototype.forEach.call(element.children, function(child) {
+        /*Array.prototype.forEach.call(element.children, function(child) {
             result.appendChild(transform(child, { inputElement: inputElement }));
-        });
+        });*/
 
         return result;
     }
@@ -310,12 +306,5 @@
     document
         .getElementById('transformed')
         .appendChild(transform(parsedDocument.documentElement));
-
-    /*while(element) {
-        console.log(element);
-
-        target = document.createElement('span');
-        element = element.firstElementChild || element.nextElementSibling;
-    }*/
 })();
 </script>

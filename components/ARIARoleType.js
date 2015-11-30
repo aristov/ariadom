@@ -17,6 +17,3 @@ Object.defineProperty(Element.prototype, 'ariaDisabled', {
         this.onAriaDisabled();
     }
 });
-
-
-

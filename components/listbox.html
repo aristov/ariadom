@@ -64,6 +64,17 @@
             min-width: 200px;
             padding: 4px 0;
         }
+        [role=listbox][aria-label]:before
+        {
+            content: attr(aria-label);
+        }
+        [role=listbox][aria-label]:before,
+        [role=listbox] label
+        {
+            display: inline-block;
+            margin-bottom: 6px;
+            margin-right: 6px;
+        }
         [role=option]
         {
             height: 24px;
@@ -76,11 +87,12 @@
         }
     </style>
     <script src=ARIAListBox.js></script>
-    <div role=listbox tabindex=0>
-        <div role=option aria-selected=true>Раз</div>
-        <div role=option>Два</div>
-        <div role=option>Три</div>
-    </div>
+        <div role=listbox tabindex=0 aria-label="Список выбора">
+            <!--<label>Список выбора</label>-->
+            <div role=option aria-selected=true><input type=hidden name=listbox value=one>Раз</div>
+            <div role=option>Два</div>
+            <div role=option>Три</div>
+        </div>
     <hr>
     <input type=submit>
 </form>

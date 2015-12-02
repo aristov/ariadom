@@ -25,7 +25,7 @@ ARIAListBox.prototype.createList = function() {
 }
 
 ARIAListBox.prototype.unselect = function() {
-    this.forEach(function(option) {
+    this.selected.forEach(function(option) {
         option.selected = 'false';
     });
 }
@@ -82,12 +82,15 @@ Object.defineProperty(ARIAOption.prototype, 'selected', {
     }
 });
 
-ARIAOption.prototype.getListBox = function() {
-    return ARIAListBox.getListBox(this.element.closest('[role=listbox]'));
-}
+Object.defineProperty(ARIAOption.prototype, 'listBox', {
+    enumerable : true,
+    get : function() {
+        return ARIAListBox.getListBox(this.element.closest('[role=listbox]'));
+    }
+});
 
 ARIAOption.prototype.onMouseDown = function(e) {
-    this.getListBox().unselect();
+    this.listBox.unselect();
     this.selected = 'true';
     this.element.dispatchEvent(new Event('change'));
 }

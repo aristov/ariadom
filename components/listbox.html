@@ -45,7 +45,16 @@
 <form>
     <label>
         Нативный список выбора<br>
-        <select multiple name=native>
+        <select name=native>
+            <option value=one>Раз</option>
+            <option value=two>Два</option>
+            <option value=three>Три</option>
+        </select>
+    </label>
+    <hr>
+    <label>
+        Нативный список выбора<br>
+        <select multiple name=native-multiple>
             <option value=one>Раз</option>
             <option value=two>Два</option>
             <option value=three>Три</option>
@@ -88,10 +97,11 @@
     </style>
     <script src=ARIAListBox.js></script>
         <div role=listbox tabindex=0 aria-label="Список выбора">
+            <input type=hidden name=listbox value=one>
             <!--<label>Список выбора</label>-->
-            <div role=option aria-selected=true><input type=hidden name=listbox value=one>Раз</div>
-            <div role=option>Два</div>
-            <div role=option>Три</div>
+            <div role=option data-value=one aria-selected=true>Раз</div>
+            <div role=option data-value=two>Два</div>
+            <div role=option data-value=three>Три</div>
         </div>
     <hr>
     <input type=submit>

@@ -1,7 +1,15 @@
+Object.defineProperty(Element.prototype, 'role', {
+    enumerable : true,
+    get : function() {
+        return this.getAttribute('role') || '';
+    }
+});
+
 function ARIAListBox(element) {
     element.aria = this;
     this.element = element;
     this.createList();
+    this.input = element.querySelector('input') || document.createElement('input');
     element.addEventListener('keydown', this.onKeyDown.bind(this));
 }
 
@@ -13,6 +21,16 @@ Object.defineProperty(ARIAListBox.prototype, 'selected', {
         return this.filter(function(option) {
             return option.selected === 'true';
         });
+    }
+});
+
+Object.defineProperty(ARIAListBox.prototype, 'value', {
+    enumerable : true,
+    get : function() {
+        return this.input.value;
+    },
+    set : function(value) {
+        this.input.value = value;
     }
 });
 
@@ -46,9 +64,7 @@ ARIAListBox.prototype.onKeyDown = function(e) {
 }
 
 ARIAListBox.isListBox = function(element) {
-    return Boolean(element.aria) ||
-        (typeof element.getAttribute === 'function' &&
-            element.getAttribute('role') === 'listbox');
+    return element.role === 'listbox';
 }
 
 ARIAListBox.getListBox = function(element) {
@@ -79,6 +95,14 @@ Object.defineProperty(ARIAOption.prototype, 'selected', {
     set : function(value) {
         value = String(value);
         this.element.setAttribute('aria-selected', value);
+        this.listBox.value = this.value; // move to checked
+    }
+});
+
+Object.defineProperty(ARIAOption.prototype, 'value', {
+    enumerable : true,
+    get : function() {
+        return this.element.dataset.value;
     }
 });
 
@@ -96,9 +120,7 @@ ARIAOption.prototype.onMouseDown = function(e) {
 }
 
 ARIAOption.isOption = function(element) {
-    return Boolean(element.aria) ||
-        (typeof element.getAttribute === 'function' &&
-            element.getAttribute('role') === 'option');
+    return element.role === 'option';
 }
 
 ARIAOption.getOption = function(element) {

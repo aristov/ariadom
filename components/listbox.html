@@ -42,19 +42,39 @@
         background: #ffeba0;
     }*/
 </style>
-<label>
-    Нативный список выбора<br>
-    <select>
-        <option>Раз</option>
-        <option>Два</option>
-        <option>Три</option>
-    </select>
-</label>
-<hr>
-<button>Раз</button>
-<ul role=listbox tabindex=0>
-    <li role=option>Раз</li>
-    <li role=option>Два</li>
-    <li role=option>Три</li>
-</ul>
-<a href=//ya.ru tabindex="-1" onclick=event.preventDefault()>link</a>
+<form>
+    <label>
+        Нативный список выбора<br>
+        <select multiple name=native>
+            <option value=one>Раз</option>
+            <option value=two>Два</option>
+            <option value=three>Три</option>
+        </select>
+    </label>
+    <hr>
+    <!--<button>Раз</button>-->
+    <style>
+        [role=listbox]
+        {
+            display: inline-block;
+            min-width: 200px;
+        }
+        [role=option]
+        {
+            display: block;
+        }
+        [role=option][aria-selected=true]
+        {
+            background-color: yellow;
+        }
+    </style>
+    <script src=ARIAListBox.js></script>
+    <span role=listbox tabindex=0>
+        <span role=option aria-selected=true>Раз</span>
+        <span role=option>Два</span>
+        <span role=option>Три</span>
+    </span>
+    <hr>
+    <input type=submit>
+</form>
+<!--<a href=//ya.ru tabindex="-1" onclick=event.preventDefault()>link</a>-->

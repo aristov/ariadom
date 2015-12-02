@@ -54,26 +54,33 @@
     <hr>
     <!--<button>Раз</button>-->
     <style>
+        body
+        {
+            font: 13px Arial;
+        }
         [role=listbox]
         {
             display: inline-block;
             min-width: 200px;
+            padding: 4px 0;
         }
         [role=option]
         {
-            display: block;
+            height: 24px;
+            padding: 0 13px;
+            line-height: 25px;
         }
         [role=option][aria-selected=true]
         {
-            background-color: yellow;
+            background-color: #ffeba0;
         }
     </style>
     <script src=ARIAListBox.js></script>
-    <span role=listbox tabindex=0>
-        <span role=option aria-selected=true>Раз</span>
-        <span role=option>Два</span>
-        <span role=option>Три</span>
-    </span>
+    <div role=listbox tabindex=0>
+        <div role=option aria-selected=true>Раз</div>
+        <div role=option>Два</div>
+        <div role=option>Три</div>
+    </div>
     <hr>
     <input type=submit>
 </form>

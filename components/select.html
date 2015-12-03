@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Список выбора</title>
+<style>
+    select
+    {
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+        font: 13px/13px Arial;
+        outline: medium none;
+        padding: 3px 6px;
+        cursor: pointer;
+    }
+    select:hover
+    {
+        border-color: rgba(0, 0, 0, 0.3);
+    }
+    select:focus
+    {
+        outline: 0;
+        border-color: #ffdb4d;
+        box-shadow: inset 0 0 0 1px #ffdb4d;
+    }
+    select:active
+    {
+        background: #f3f1ed;
+    }
+    select::-moz-focus-inner
+    {
+        border: 0;
+    }
+    option
+    {
+        padding: 3px 6px;
+        background: #fff;
+    }
+    option:active
+    {
+        background: #ffeba0;
+    }
+</style>
+<label>
+    Нативный список выбора<br>
+    <select name=native>
+        <option value=one>Раз</option>
+        <option value=two>Два</option>
+        <option value=three>Три</option>
+    </select>
+</label>

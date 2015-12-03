@@ -45,6 +45,26 @@ Object.defineProperty(ARIAListBox.prototype, 'value', {
     }
 });
 
+Object.defineProperty(ARIAListBox.prototype, 'disabled', {
+    enumerable : true,
+    get : function() {
+        return this.element.getAttribute('aria-disabled') || '';
+    },
+    set : function(value) {
+        var element = this.element;
+
+        if(String(value) === 'true') {
+            element.setAttribute('aria-disabled', 'true');
+            element.removeAttribute('tabindex');
+            this.input.disabled = true;
+        } else {
+            element.removeAttribute('aria-disabled');
+            element.setAttribute('tabindex', '0');
+            this.input.disabled = false;
+        }
+    }
+});
+
 ARIAListBox.prototype.createList = function() {
     this.forEach.call(
         this.element.querySelectorAll('[role=option]'),
@@ -128,7 +148,6 @@ function ARIAOption(element) {
 
     this.listBox = ARIAListBox.getListBox(element.closest('[role=listbox]'));
 
-    this.on('mouseleave', this.onMouseLeave);
     this.on('mousedown', this.onMouseDown);
 }
 
@@ -155,6 +174,17 @@ Object.defineProperty(ARIAOption.prototype, 'checked', {
     }
 });
 
+Object.defineProperty(ARIAOption.prototype, 'disabled', {
+    enumerable : true,
+    get : function() {
+        return this.listBox.disabled || this.element.getAttribute('aria-disabled') || '';
+    },
+    set : function(value) {
+        value = String(value);
+        this.element.setAttribute('aria-disabled', value);
+    }
+});
+
 Object.defineProperty(ARIAOption.prototype, 'value', {
     enumerable : true,
     get : function() {
@@ -167,22 +197,22 @@ ARIAOption.prototype.on = function(eventType, callback) {
 }
 
 ARIAOption.prototype.onMouseDown = function(e) {
-    var listBox = this.listBox;
-        value = listBox.value;
+    if(this.disabled !== 'true') {
+        var listBox = this.listBox;
+            value = listBox.value;
 
-    listBox.uncheck();
-    this.checked = 'true';
+        listBox.uncheck();
+        this.checked = 'true';
 
-    listBox.value === value || listBox.element.dispatchEvent(new Event('change'));
-}
-
-ARIAOption.prototype.onMouseLeave = function(e) {
-    this.selected = 'false';
+        listBox.value === value || listBox.element.dispatchEvent(new Event('change'));
+    }
 }
 
 ARIAOption.prototype.onMouseEnter = function(e) {
-    this.listBox.unselect();
-    this.selected = 'true';
+    if(this.disabled !== 'true') {
+        this.listBox.unselect();
+        this.selected = 'true';
+    }
 }
 
 ARIAOption.isOption = function(element) {

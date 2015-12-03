@@ -53,7 +53,7 @@
     </label>
     <hr>
     <label>
-        Нативный список выбора<br>
+        Нативный список множественного выбора<br>
         <select multiple name=native-multiple>
             <option value=one>Раз</option>
             <option value=two>Два</option>
@@ -73,34 +73,53 @@
             min-width: 200px;
             padding: 4px 0;
         }
-        [role=listbox][aria-label]:before
+        [role=listbox][aria-label]::before
         {
             content: attr(aria-label);
         }
-        [role=listbox][aria-label]:before,
+        [role=listbox][aria-label]::before,
         [role=listbox] label
         {
             display: inline-block;
             margin-bottom: 6px;
             margin-right: 6px;
         }
+        /*button[role=option]
+        {
+            font: 13px Arial;
+            display: block;
+            background: #fff;
+            border: none;
+            text-align: left;
+            width: 100%;
+        }*/
         [role=option]
         {
+            position: relative;
             height: 24px;
-            padding: 0 13px;
+            padding: 0 13px 0 30px;
             line-height: 25px;
+            -moz-user-select: none;
         }
         [role=option][aria-selected=true]
         {
             background-color: #ffeba0;
+            cursor: pointer;
+        }
+        [role=option][aria-checked=true]::before
+        {
+            content: url(checkmark.svg);
+            position: absolute;
+            top: 2px;
+            left: 10px;
         }
     </style>
     <script src=ARIAListBox.js></script>
-        <div role=listbox tabindex=0 aria-label="Список выбора">
-            <input type=hidden name=listbox value=one>
+        <div role=listbox tabindex=0>
+            <input type=hidden name=listbox value=two>
             <!--<label>Список выбора</label>-->
-            <div role=option data-value=one aria-selected=true>Раз</div>
-            <div role=option data-value=two>Два</div>
+            <div role=option data-value=one>Раз</div>
+            <div role=option data-value=two aria-checked=true>Два</div>
             <div role=option data-value=three>Три</div>
         </div>
     <hr>

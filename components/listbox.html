@@ -81,8 +81,8 @@
         [role=listbox] label
         {
             display: inline-block;
+            margin-left: 6px;
             margin-bottom: 6px;
-            margin-right: 6px;
         }
         /*button[role=option]
         {
@@ -115,13 +115,13 @@
         }
     </style>
     <script src=ARIAListBox.js></script>
-        <div role=listbox tabindex=0>
-            <input type=hidden name=listbox value=two>
-            <!--<label>Список выбора</label>-->
-            <div role=option data-value=one>Раз</div>
-            <div role=option data-value=two aria-checked=true>Два</div>
-            <div role=option data-value=three>Три</div>
-        </div>
+    <div role=listbox tabindex=0 aria-label="Список выбора">
+        <input type=hidden name=listbox value=two>
+        <!--<label>Список выбора</label>-->
+        <div role=option data-value=one>Раз</div>
+        <div role=option data-value=two aria-checked=true>Два</div>
+        <div role=option data-value=three>Три</div>
+    </div>
     <hr>
     <input type=submit>
 </form>

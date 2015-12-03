@@ -89,10 +89,14 @@ ARIAListBox.prototype.handleKeyboardSelect = function(keyCode) {
 }
 
 ARIAListBox.prototype.handleKeyboardCheck = function() {
+    var value = this.value;
+
     this.uncheck();
     this.selected.forEach(function(option) {
         option.checked = 'true';
     });
+
+    this.value === value || this.element.dispatchEvent(new Event('change'));
 }
 
 ARIAListBox.prototype.onFocus = function(e) {
@@ -124,8 +128,8 @@ function ARIAOption(element) {
 
     this.listBox = ARIAListBox.getListBox(element.closest('[role=listbox]'));
 
-    this.addEventListener('mouseleave', this.onMouseLeave);
-    this.addEventListener('mousedown', this.onMouseDown);
+    this.on('mouseleave', this.onMouseLeave);
+    this.on('mousedown', this.onMouseDown);
 }
 
 Object.defineProperty(ARIAOption.prototype, 'selected', {
@@ -158,13 +162,18 @@ Object.defineProperty(ARIAOption.prototype, 'value', {
     }
 });
 
-ARIAOption.prototype.addEventListener = function(type, listener, useCapture) {
-    this.element.addEventListener(type, listener.bind(this), useCapture);
+ARIAOption.prototype.on = function(eventType, callback) {
+    this.element.addEventListener(eventType, callback.bind(this));
 }
 
 ARIAOption.prototype.onMouseDown = function(e) {
-    this.listBox.uncheck();
+    var listBox = this.listBox;
+        value = listBox.value;
+
+    listBox.uncheck();
     this.checked = 'true';
+
+    listBox.value === value || listBox.element.dispatchEvent(new Event('change'));
 }
 
 ARIAOption.prototype.onMouseLeave = function(e) {
@@ -174,7 +183,6 @@ ARIAOption.prototype.onMouseLeave = function(e) {
 ARIAOption.prototype.onMouseEnter = function(e) {
     this.listBox.unselect();
     this.selected = 'true';
-    this.element.dispatchEvent(new Event('change'));
 }
 
 ARIAOption.isOption = function(element) {

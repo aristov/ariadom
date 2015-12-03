@@ -9,7 +9,12 @@ function ARIAListBox(element) {
     element.aria = this;
     this.element = element;
 
-    this.createList();
+    this.forEach.call(
+        this.element.querySelectorAll('[role=option]'),
+        function(element, i) {
+            this.push(ARIAOption.getOption(element));
+        }, this);
+
     this.input = element.querySelector('input') || document.createElement('input');
 
     element.addEventListener('keydown', this.onKeyDown.bind(this));
@@ -32,6 +37,14 @@ Object.defineProperty(ARIAListBox.prototype, 'checked', {
         return this.filter(function(option) {
             return option.checked === 'true';
         });
+    },
+    set : function(options) {
+        var value = this.value;
+        this.uncheck();
+        options.forEach(function(option) {
+            option.checked = 'true';
+        });
+        this.value === value || this.element.dispatchEvent(new Event('change'));
     }
 });
 
@@ -64,14 +77,6 @@ Object.defineProperty(ARIAListBox.prototype, 'disabled', {
         }
     }
 });
-
-ARIAListBox.prototype.createList = function() {
-    this.forEach.call(
-        this.element.querySelectorAll('[role=option]'),
-        function(element, i) {
-            this.push(ARIAOption.getOption(element));
-        }, this);
-}
 
 ARIAListBox.prototype.unselect = function() {
     this.selected.forEach(function(option) {
@@ -109,14 +114,7 @@ ARIAListBox.prototype.handleKeyboardSelect = function(keyCode) {
 }
 
 ARIAListBox.prototype.handleKeyboardCheck = function() {
-    var value = this.value;
-
-    this.uncheck();
-    this.selected.forEach(function(option) {
-        option.checked = 'true';
-    });
-
-    this.value === value || this.element.dispatchEvent(new Event('change'));
+    this.checked = this.selected;
 }
 
 ARIAListBox.prototype.onFocus = function(e) {
@@ -148,7 +146,7 @@ function ARIAOption(element) {
 
     this.listBox = ARIAListBox.getListBox(element.closest('[role=listbox]'));
 
-    this.on('mousedown', this.onMouseDown);
+    element.addEventListener('mousedown', this.onMouseDown.bind(this));
 }
 
 Object.defineProperty(ARIAOption.prototype, 'selected', {
@@ -192,20 +190,8 @@ Object.defineProperty(ARIAOption.prototype, 'value', {
     }
 });
 
-ARIAOption.prototype.on = function(eventType, callback) {
-    this.element.addEventListener(eventType, callback.bind(this));
-}
-
 ARIAOption.prototype.onMouseDown = function(e) {
-    if(this.disabled !== 'true') {
-        var listBox = this.listBox;
-            value = listBox.value;
-
-        listBox.uncheck();
-        this.checked = 'true';
-
-        listBox.value === value || listBox.element.dispatchEvent(new Event('change'));
-    }
+    if(this.disabled !== 'true') this.listBox.checked = [this];
 }
 
 ARIAOption.prototype.onMouseEnter = function(e) {

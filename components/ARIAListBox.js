@@ -22,6 +22,17 @@ function ARIAListBox(element) {
 
 ARIAListBox.prototype = new Array();
 
+Object.defineProperty(ARIAListBox.prototype, 'hidden', {
+    enumerable : true,
+    get : function() {
+        return String(this.element.hidden);
+    },
+    set : function(value) {
+        value = String(value);
+        this.element.hidden = value === 'true';
+    }
+});
+
 Object.defineProperty(ARIAListBox.prototype, 'selected', {
     enumerable : true,
     get : function() {
@@ -98,7 +109,10 @@ ARIAListBox.prototype.onKeyDown = function(e) {
         this.handleKeyboardSelect(keyCode);
     }
 
-    if(keyCode === 13 || keyCode === 32) this.handleKeyboardCheck();
+    if(keyCode === 13 || keyCode === 32) {
+        e.preventDefault(); // prevent page scrolling
+        this.handleKeyboardCheck();
+    }
 }
 
 ARIAListBox.prototype.handleKeyboardSelect = function(keyCode) {

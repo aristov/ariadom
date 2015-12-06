@@ -12,12 +12,13 @@
     {
         font: 13px Arial;
         border: 1px solid rgba(0, 0, 0, 0.2);
-        padding: 5px 8px;
-        width: 200px;
+        padding: 5px 0;
+        width: 150px;
         display: inline-block;
         height: 15px;
         overflow: hidden;
         cursor: text;
+        white-space: nowrap;
     }
     span[role=textbox]:hover
     {
@@ -29,113 +30,99 @@
         box-shadow: inset 0 0 0 1px #ffdb4d;
         outline: none;
     }
-</style>
-<label>Текстовое поле<br>
-    <span role=textbox contenteditable></span>
-</label>
-<!--
-<hr>
-<label>Текстовое поле<br>
-    <input type=text value=текст>
-</label>
-<hr>
-<style>
-    input[type=text].clear
+    span[role=textbox] span.box
     {
-        padding-right: 22px;
+        display: block;
+        margin: 0 8px;
+        overflow: hidden;
     }
-    input[type=text].clear + span.clear
+    span[role=textbox]:focus span.caret
     {
         display: inline-block;
-        background: url(cross.svg) center center no-repeat;
-        margin-left: -26px;
-        height: 26px;
-        width: 26px;
-        opacity: 0.3;
-        cursor: pointer;
+        width: 1px;
+        height: 15px;
+        background-color: #000;
         position: absolute;
-        margin-top: 1px;
+
+        animation-name: textbox-caret;
+        animation-delay: 500ms;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: step-start;
     }
-    input[type=text].clear + span.clear:hover
-    {
-        opacity: 1;
-    }
-    input[type=text].clear[value=''] + span.clear,
-    input[type=text].clear:not([value]) + span.clear,
-    input[type=text].clear[disabled] + span.clear
-    {
-        display: none;
-    }
-</style>
-<label>Текстовое поле<br>
-    <input class=clear type=text value="с крестиком" oninput="this.setAttribute('value', this.value)"
-    ><span class=clear onclick="
-        this.previousSibling.value = '';
-        this.previousSibling.setAttribute('value', '');
-    "></span>
-</label>
-<hr>
-<style>
-    input[type=text][disabled]
-    {
-        color: #aaa;
-        border-color: #fff;
-        background: rgba(0, 0, 0, 0.08);
-    }
-</style>
-<label>Текстовое поле<br><input type=text value=заблокировано disabled></label>
-<hr>
-<style>
-    input[type=text].shadow
-    {
-        box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.12), 0 5px 10px -3px rgba(0, 0, 0, 0.3);
-    }
-    input[type=text].shadow:not(:focus)
-    {
-        border-color: transparent;
-    }
-    input[type=text].shadow:focus
-    {
-        box-shadow: inset 0 0 0 1px #ffdb4d, 0 1px 0 0 rgba(0, 0, 0, 0.12), 0 5px 10px -3px rgba(0, 0, 0, 0.3);
-    }
-</style>
-<div style="background: url('bg-pattern.svg'); padding: 15px 0;">
-    <label>Текстовое поле<br>
-        <input class=shadow type=text value="с тенью">
-    </label>
-</div>
-<hr>
-<style>
-    input[type=text].small
-    {
-        padding-top: 3px;
-        padding-bottom: 3px;
+    @keyframes textbox-caret {
+        0%
+        {
+            background-color: #000;
+        }
+        50%
+        {
+            background-color: #fff;
+        }
     }
 </style>
 <label>Текстовое поле<br>
-    <input class=small type=text value=мелкое>
+    <span role=textbox tabindex=0>
+        <span class=box>
+            <span class=text></span>
+        </span>
+    </span>
 </label>
-<hr>
-<style>
-    input[type=text].large
-    {
-        font-size: 15px;
-        padding-top: 6px;
-        padding-bottom: 6px;
-    }
-</style>
-<label>Текстовое поле<br>
-    <input class=large type=text value=крупное>
-</label>
-<hr>
-<style>
-    input[type=text]::-moz-placeholder,
-    input[type=text]::-webkit-input-placeholder
-    {
-        color: #999;
-    }
-</style>
-<label>Текстовое поле<br>
-    <input type=text placeholder=подсказка>
-</label>
--->
+<script>
+    document
+        .querySelector('[role=textbox]')
+        .addEventListener('focus', function(e) {
+            var textBox = e.target,
+                textElement = textBox.querySelector('.text'),
+                caret = textElement.querySelector('.caret');
+
+            if(!caret) {
+                caret = document.createElement('span');
+                caret.classList.add('caret');
+                textElement.appendChild(caret);
+            }
+        });
+    document
+        .querySelector('[role=textbox]')
+        .addEventListener('keydown', function(e) {
+            var key = e.key,
+                textBox = e.target,
+                boxElement = textBox.querySelector('.box'),
+                textElement = textBox.querySelector('.text'),
+                caret = textElement.removeChild(textElement.querySelector('.caret')),
+                textContent = textElement.textContent;
+
+            if(key === 'Backspace') {
+                textElement.textContent = textContent.substring(0, textContent.length - 1);
+            /*} else if(e.keyCode >= 65 && e.keyCode <= 90) {*/
+            } else if(key === ' ') {
+                textElement.innerHTML += '&nbsp;';
+            } else if(key === 'Meta' ||
+                      key === 'Shift' ||
+                      key === 'Control' ||
+                      key === 'Alt' ||
+                      key === 'Tab' ||
+                      key === 'Enter' ||
+                      key === 'ArrowUp' ||
+                      key === 'ArrowDown' ||
+                      key === 'ArrowLeft' ||
+                      /*key === 'ArrowRight' ||*/
+                      key === 'Escape' ||
+                      key === 'CapsLock') {
+                void 0;
+            } else {
+                textElement.textContent += key;
+            }
+
+            if(key === 'ArrowLeft') {
+                var length = textElement.firstChild.data.length;
+                textElement.textContent = textContent.substring(0, length - 1);
+                textElement.appendChild(caret);
+                textElement.appendChild(document.createTextNode(textContent.substring(length - 1)));
+            } else {
+                textElement.appendChild(caret);
+            }
+
+            textElement.style.float = textElement.clientWidth > boxElement.clientWidth? 'right' : 'left';
+        });
+</script>

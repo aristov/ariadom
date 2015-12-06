@@ -28,11 +28,14 @@
         }
         [role=listbox]
         {
-            display: inline-block;
             min-width: 200px;
             padding: 4px 0;
 
             border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+        [role=listbox]:not([hidden])
+        {
+            display: inline-block;
         }
         [role=listbox]:hover:not([aria-disabled=true])
         {
@@ -70,6 +73,7 @@
             padding: 0 13px 0 30px;
             line-height: 25px;
             -moz-user-select: none;
+            -webkit-user-select: none;
             cursor: pointer;
         }
         [role=listbox]:focus [role=option][aria-selected=true],
@@ -110,6 +114,70 @@
         <div role=option data-value=two aria-selected=true>Два</div>
         <div role=option data-value=three>Три</div>
     </div>
+    <hr>
+    <script src=ARIAComboBox.js></script>
+    <style>
+        [role=combobox]
+        {
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+            font: 13px/13px Arial;
+            padding: 6px 10px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        [role=combobox]:hover
+        {
+            border-color: rgba(0, 0, 0, 0.3);
+        }
+        [role=combobox]:focus
+        {
+            outline: 0;
+            border-color: #ffdb4d;
+            box-shadow: inset 0 0 0 1px #ffdb4d;
+        }
+        [role=combobox]:active
+        {
+            background: #f3f1ed;
+        }
+        [role=combobox]::-moz-focus-inner
+        {
+            border: 0;
+        }
+        [role=combobox]
+        {
+            position: relative;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+        }
+        [role=combobox] [role=listbox]
+        {
+            position: absolute;
+            text-align: left;
+            background: #fff;
+            left: -1px;
+            top: 30px;
+            border: none;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 10px 20px -5px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+    <span role=combobox tabindex=0>
+        Выпадающий список
+        <div role=listbox hidden>
+            <input type=hidden name=combobox>
+            <div role=option data-value=one>Раз</div>
+            <div role=option data-value=two>Два</div>
+            <div role=option data-value=three>Три</div>
+        </div>
+    </span>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     <hr>
     <input type=submit>
 </form>

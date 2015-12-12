@@ -234,7 +234,68 @@
         <button role=radio value=three>Три</button>
     </span>
 </template>
+<script type=tmp>
+    function DOMTransform(node) {
+        (this.constructor[node.nodeName] || this.element).call(this, node);
+        return this.result;
+    }
+
+    DOMTransform['#text'] = function(node) {
+        this.result = document.createTextNode(node.textContent);
+    }
+
+    DOMTransform.prototype.element = function(element) {
+        this.result = document.createElement(element.tagName);
+
+        if(element.hasAttributes())
+            Array.prototype.forEach.call(element.attributes, function(attribute) {
+                this.attr(attribute, element);
+            }, this);
+
+        if(element.hasChildNodes())
+            Array.prototype.forEach.call(element.childNodes, function(node) {
+                this.child(node);
+            }, this);
+    }
+
+    DOMTransform.prototype.attr = function(attribute, element) {
+        this.result.setAttribute(attribute.name, attribute.value);
+    }
+
+    DOMTransform.prototype.child = function(node) {
+        this.result.appendChild(new DOMTransform(node));
+    }
+</script>
 <script>
+(function() {
+    var ts = Date.now(),
+        parser = new DOMParser(),
+        source = document.getElementById('radiogroup-source').innerHTML.trim(),
+        parsedDocument = parser.parseFromString(source, 'application/xml'),
+        forEach = Array.prototype.forEach;
+
+    function transform(node) {
+        var nodeType = node.nodeType;
+
+        if(nodeType === 1) {
+            var result = document.createElement(node.nodeName);
+            forEach.call(node.attributes, function(attribute) {
+                result.setAttribute(attribute.name, attribute.value);
+            });
+            forEach.call(node.childNodes, function(child) {
+                result.appendChild(transform(child));
+            });
+        } else if(nodeType === 3) {
+            result = document.createTextNode(node.nodeValue);
+        }
+        return result;
+    }
+
+    console.log(transform(parsedDocument.documentElement));
+    console.log(Date.now() - ts);
+})();
+</script>
+<script type=tmp>
 (function() {
     var parser = new DOMParser(),
         source = document.getElementById('radiogroup-source').innerHTML,

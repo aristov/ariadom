@@ -1,107 +1,39 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>Ссылка</title>
+<script src=ARIALink.js></script>
 <style>
-    a:link,
-    a:visited
+    body
     {
-        font-family: Arial;
-        text-decoration: none;
-        color: #04b;
+        font: 16px Arial;
     }
-    a:focus
+</style>
+<style>
+    [role=link]
     {
-        /*box-shadow: 0 0 0 2px #ffdb4d;
-        border-radius: 2px;*/
+        color: #04b;
+        cursor: pointer;
+    }
+    [role=link]:focus
+    {
         text-decoration: underline;
         outline: none;
     }
-    a[href]:hover
+    [role=link]:hover
     {
         color: #c00;
     }
-</style>
-<a href=//yandex.ru>Ссылка</a>
-<hr>
-<style>
-    a.minor
+    #href
     {
-        color: #669;
+        font-size: 12px;
+        color: #666;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        padding: 4px;
+        border-top: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        border-top-right-radius: 3px;
     }
 </style>
-<a class=minor href=//yandex.ru>Неяркая ссылка</a>
-<hr>
-<style>
-    a.dim
-    {
-        color: #999;
-    }
-    a.dim:hover
-    {
-        color: #000;
-    }
-</style>
-<a class=dim href=//yandex.ru>Приглушенная ссылка</a>
-<hr>
-<style>
-    a.external
-    {
-        color: #070;
-    }
-</style>
-<a class=external href=//google.ru>Внешняя ссылка</a> <!-- rel=external -->
-<hr>
-<style>
-    a.strong
-    {
-        font-weight: bold;
-    }
-</style>
-<a class=strong href=//yandex.ru>Ссылка для заголовков</a> <!-- h1-h6 -->
-<hr>
-<style>
-    a.astext
-    {
-        color: #000;
-    }
-</style>
-<a class=astext href=//yandex.ru>Ссылка в виде текста</a>
-<hr>
-<style>
-    a.icon:before
-    {
-        content: url(duru.gif);
-        vertical-align: middle;
-        margin-right: 4px;
-    }
-</style>
-<a class=icon href=//yandex.ru>Ссылка с иконкой</a>
-<hr>
-<style>
-    a.button
-    {
-        background: white;
-        display: inline-block;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        border-radius: 3px;
-        font: 13px/13px Arial;
-        padding: 6px 10px;
-        cursor: pointer;
-    }
-    a.button:hover
-    {
-        border-color: rgba(0, 0, 0, 0.3);
-    }
-    a.button:focus
-    {
-        outline: 0;
-        border-color: #ffdb4d;
-        box-shadow: inset 0 0 0 1px #ffdb4d;
-        text-decoration: none;
-    }
-    a.button:active
-    {
-        background: #f3f1ed;
-    }
-</style>
-<a class=button href=//yandex.ru>Ссылка в виде кнопки</a>
+<span role=link tabindex=0 data-href=//yandex.ru>Ссылка</span>

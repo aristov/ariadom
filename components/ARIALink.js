@@ -15,16 +15,16 @@ function ARIALink(element) {
 }
 
 Object.defineProperty(ARIALink, 'hrefElement', {
+    configurable : true,
     get : function() {
-        var hrefElement = document.getElementById('href');
-        if(!hrefElement) {
-            hrefElement = document.createElement('div');
-            hrefElement.id = 'href';
-            hrefElement.hidden = true;
-            hrefElement.setAttribute('role', 'presentation');
-            document.body.appendChild(hrefElement);
-        }
-        return hrefElement;
+        var hrefElement = document.createElement('div');
+
+        hrefElement.id = 'href';
+        hrefElement.hidden = true;
+        hrefElement.setAttribute('role', 'presentation');
+
+        delete this.hrefElement;
+        return this.hrefElement = document.body.appendChild(hrefElement);
     }
 });
 

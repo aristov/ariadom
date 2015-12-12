@@ -1,45 +1,12 @@
-Object.defineProperty(Element.prototype, 'role', {
-    enumerable : true,
-    get : function() {
-        return this.getAttribute('role') || '';
-    }
-});
-
 function ARIALink(element) {
     element.aria = this;
     this.element = element;
+    this.statusBar = ARIAStatus.getStatus(document.getElementById('statusbar'));
 
     element.addEventListener('keydown', this.onKeyDown.bind(this));
     element.addEventListener('blur', this.onBlur.bind(this));
     element.addEventListener('mouseleave', this.onMouseLeave.bind(this));
 }
-
-Object.defineProperty(ARIALink, 'hrefElement', {
-    configurable : true,
-    get : function() {
-        var hrefElement = document.createElement('div');
-
-        hrefElement.id = 'href';
-        hrefElement.hidden = true;
-        hrefElement.setAttribute('role', 'presentation');
-
-        delete this.hrefElement;
-        return this.hrefElement = document.body.appendChild(hrefElement);
-    }
-});
-
-Object.defineProperty(ARIALink, 'href', {
-    set : function(href) {
-        var hrefElement = this.hrefElement;
-        if(href) {
-            hrefElement.textContent = href.replace(/^\w*\:?\/\//, '');
-            hrefElement.hidden = false;
-        } else {
-            hrefElement.textContent = href;
-            hrefElement.hidden = true;
-        }
-    }
-});
 
 Object.defineProperty(ARIALink.prototype, 'href', {
     enumerable : true,
@@ -55,24 +22,29 @@ ARIALink.prototype.activate = function() {
     window.location.href = this.href;
 }
 
+ARIALink.prototype.updateStatusBar = function(href) {
+    var statusBar = this.statusBar;
+    if(statusBar) statusBar.text = href;
+}
+
 ARIALink.prototype.onClick = function(e) {
     this.activate();
 }
 
 ARIALink.prototype.onFocus = function(e) {
-    this.constructor.href = this.href;
+    this.updateStatusBar(this.href);
 }
 
 ARIALink.prototype.onBlur = function(e) {
-    this.constructor.href = '';
+    this.updateStatusBar('');
 }
 
 ARIALink.prototype.onMouseEnter = function(e) {
-    this.constructor.href = this.href;
+    this.updateStatusBar(this.href);
 }
 
 ARIALink.prototype.onMouseLeave = function(e) {
-    this.constructor.href = '';
+    this.updateStatusBar('');
 }
 
 ARIALink.prototype.onKeyDown = function(e) {

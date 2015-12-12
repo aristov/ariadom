@@ -1,7 +1,9 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>Ссылка</title>
+<script src=role.js></script>
 <script src=ARIALink.js></script>
+<script src=ARIAStatus.js></script>
 <style>
     body
     {
@@ -23,7 +25,7 @@
     {
         color: #c00;
     }
-    #href
+    #statusbar
     {
         font-size: 12px;
         color: #666;
@@ -37,3 +39,4 @@
     }
 </style>
 <span role=link tabindex=0 data-href=//yandex.ru>Ссылка</span>
+<div role=status aria-live=off id=statusbar hidden></div>

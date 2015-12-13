@@ -16,6 +16,16 @@ Object.defineProperty(ARIAButton.prototype, 'pressed', {
     }
 });
 
+Object.defineProperty(ARIAButton.prototype, 'disabled', {
+    enumerable : true,
+    get : function() {
+        return this.element.getAttribute('aria-disabled') || '';
+    },
+    set : function(value) {
+        this.element.setAttribute('aria-disabled', String(value));
+    }
+});
+
 ARIAButton.prototype.onKeyDown = function(event) {
     var keyCode = event.keyCode;
 
@@ -36,10 +46,12 @@ ARIAButton.prototype.onKeyUp = function(event) {
 }
 
 ARIAButton.prototype.onClick = function(event) {
-    if(this.pressed) {
+    if(this.disabled) {
+        event.stopImmediatePropagation();
+    } else if(this.pressed) {
         this.pressed = this.pressed === 'true'? 'false' : 'true';
         this.element.dispatchEvent(new Event('change'));
-    };
+    }
 }
 
 ARIAButton.getButton = function(element) {

@@ -57,9 +57,16 @@
         cursor: default;
         color: rgba(0, 0, 0, 0.5);
     }
+    .button[aria-pressed=true][aria-disabled=true]
+    {
+        background: rgba(0, 0, 0, 0.15);
+        border-color: transparent;
+    }
 </style>
 <span role=button class=button tabindex=0>Button</span>
 <hr>
 <span role=button class=button tabindex=0 aria-pressed=false>Toggle button</span>
 <hr>
 <span role=button class=button aria-disabled=true>Disabled button</span>
+<hr>
+<span role=button class=button aria-disabled=true aria-pressed=true>Disabled pressed toggle button</span>

@@ -1,6 +1,9 @@
 function ARIAButton(element) {
     element.aria = this;
     this.element = element;
+
+    element.addEventListener('keydown', this.onKeyDown.bind(this));
+    element.addEventListener('keyup', this.onKeyUp.bind(this));
 }
 
 Object.defineProperty(ARIAButton.prototype, 'pressed', {
@@ -13,15 +16,30 @@ Object.defineProperty(ARIAButton.prototype, 'pressed', {
     }
 });
 
-ARIAButton.prototype.onClick = function(e) {
+ARIAButton.prototype.onKeyDown = function(event) {
+    var keyCode = event.keyCode;
+
+    if(keyCode === 13)
+        this.element.dispatchEvent(new Event('click'));
+
+    if(keyCode === 32 && !event.repeat)
+        this.element.classList.add('active');
+}
+
+ARIAButton.prototype.onKeyUp = function(event) {
+    if(event.keyCode === 32) {
+        var element = this.element;
+
+        element.classList.remove('active');
+        element.dispatchEvent(new Event('click'));
+    }
+}
+
+ARIAButton.prototype.onClick = function(event) {
     if(this.pressed) {
         this.pressed = this.pressed === 'true'? 'false' : 'true';
         this.element.dispatchEvent(new Event('change'));
     };
-}
-
-ARIAButton.isButton = function(element) {
-    return element.tagName === 'BUTTON';
 }
 
 ARIAButton.getButton = function(element) {
@@ -29,8 +47,13 @@ ARIAButton.getButton = function(element) {
 }
 
 ARIAButton.attachToDocument = function() {
-    document.addEventListener('click', function(e) {
-        if(this.isButton(e.target)) this.getButton(e.target).onClick(e);
+    document.addEventListener('focus', function(event) {
+        var element = event.target;
+        if(element.role === 'button') this.getButton(element);
+    }.bind(this), true);
+    document.addEventListener('click', function(event) {
+        var element = event.target;
+        if(element.role === 'button') this.getButton(element).onClick(event);
     }.bind(this), true);
 }
 

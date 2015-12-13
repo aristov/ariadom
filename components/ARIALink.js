@@ -52,7 +52,7 @@ ARIALink.prototype.onKeyDown = function(e) {
 }
 
 ARIALink.isLink = function(element) {
-    return Boolean(element.aria) || element.role === 'link';
+    return element.role === 'link';
 }
 
 ARIALink.getLink = function(element) {

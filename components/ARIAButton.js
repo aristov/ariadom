@@ -21,7 +21,7 @@ ARIAButton.prototype.onClick = function(e) {
 }
 
 ARIAButton.isButton = function(element) {
-    return Boolean(element.aria) || element.tagName === 'BUTTON';
+    return element.tagName === 'BUTTON';
 }
 
 ARIAButton.getButton = function(element) {
@@ -29,11 +29,9 @@ ARIAButton.getButton = function(element) {
 }
 
 ARIAButton.attachToDocument = function() {
-    var _this = this;
-
     document.addEventListener('click', function(e) {
-        if(_this.isButton(e.target)) _this.getButton(e.target).onClick(e);
-    }, true);
+        if(this.isButton(e.target)) this.getButton(e.target).onClick(e);
+    }.bind(this), true);
 }
 
 ARIAButton.attachToDocument();

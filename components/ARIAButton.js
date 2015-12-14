@@ -56,13 +56,14 @@ ARIAButton.prototype.onClick = function(event) {
 }
 
 ARIAButton.getButton = function(element) {
-    return element.aria || new ARIAButton(element);
+    return element.role === 'button'?
+        element.aria || new ARIAButton(element) :
+        null;
 }
 
 ARIAButton.attachToDocument = function() {
     document.addEventListener('focus', function(event) {
-        var element = event.target;
-        if(element.role === 'button') this.getButton(element);
+        this.getButton(event.target);
     }.bind(this), true);
 }
 

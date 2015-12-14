@@ -2,6 +2,7 @@ function ARIAButton(element) {
     element.aria = this;
     this.element = element;
 
+    element.addEventListener('click', this.onClick.bind(this));
     element.addEventListener('keydown', this.onKeyDown.bind(this));
     element.addEventListener('keyup', this.onKeyUp.bind(this));
 }
@@ -62,10 +63,6 @@ ARIAButton.attachToDocument = function() {
     document.addEventListener('focus', function(event) {
         var element = event.target;
         if(element.role === 'button') this.getButton(element);
-    }.bind(this), true);
-    document.addEventListener('click', function(event) {
-        var element = event.target;
-        if(element.role === 'button') this.getButton(element).onClick(event);
     }.bind(this), true);
 }
 

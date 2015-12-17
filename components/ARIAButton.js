@@ -68,3 +68,5 @@ ARIAButton.attachToDocument = function() {
 }
 
 ARIAButton.attachToDocument();
+
+document.addEventListener('click', function() {}); // hack for iOS

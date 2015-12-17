@@ -1,0 +1,38 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,maximum-scale=1,initial-scale=1,user-scalable=0">
+<title>Button</title>
+<script src="https://code.jquery.com/pep/0.3.0/pep.js"></script>
+<style>
+    div
+    {
+        height: 100px;
+        background: cyan;
+        border: 10px solid white;
+    }
+    div:focus
+    {
+        border-color: red;
+    }
+</style>
+<div tabindex=0>TARGET</div>
+<br>
+<div tabindex=0 id=target>OTHER</div>
+<script>
+    var target = document.getElementById('target');
+
+    console = {
+        log : function(e) {
+            document.body.appendChild(document.createTextNode(e.type));
+            document.body.appendChild(document.createElement('br'));
+        }
+    }
+
+    /*target.addEventListener('focus', console.log);
+    target.addEventListener('blur', console.log);
+    target.addEventListener('mousedown', console.log);
+    target.addEventListener('mouseup', console.log);*/
+    target.addEventListener('pointerclick', console.log);
+
+    /*target.addEventListener('pointerdown', console.log);*/
+</script>

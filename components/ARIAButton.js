@@ -47,7 +47,7 @@ ARIAButton.prototype.onKeyUp = function(event) {
 }
 
 ARIAButton.prototype.onClick = function(event) {
-    if(this.disabled) {
+    if(this.disabled === 'true') {
         event.stopImmediatePropagation();
     } else if(this.pressed) {
         this.pressed = this.pressed === 'true'? 'false' : 'true';

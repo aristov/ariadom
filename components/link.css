@@ -1,0 +1,19 @@
+.link
+{
+    color: #04b;
+    text-decoration: none;
+}
+.link:focus
+{
+    outline: none;
+    text-decoration: underline;
+}
+.link:hover
+{
+    color: #c00;
+}
+
+.link[rel~=external]:not(:hover)
+{
+    color: #070;
+}

@@ -1,0 +1,122 @@
+body
+{
+    font: 13px Arial;
+}
+
+/* widget */
+
+.button,
+.checkbox,
+.radio,
+.listbox,
+.textbox
+{
+    display: inline-block;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+.button:hover,
+.checkbox:hover,
+.radio:hover,
+.listbox:hover,
+.textbox:hover
+{
+    border-color: rgba(0, 0, 0, 0.3);
+}
+.button:focus,
+.checkbox:focus,
+.radio:focus,
+.listbox:focus,
+.textbox:focus
+{
+    outline: 0;
+    border-color: #ffdb4d;
+    box-shadow: inset 0 0 0 1px #ffdb4d;
+}
+.button:active, .button.active,
+.checkbox:active, .checkbox.active,
+.radio:active, .radio.active,
+.listbox:active, .listbox.active,
+.textbox:active, .textbox.active
+{
+    background: #f3f1ed;
+}
+
+.button[aria-disabled=true],
+.checkbox[aria-disabled=true],
+.radio[aria-disabled=true],
+.listbox[aria-disabled=true],
+.textbox[aria-disabled=true]
+{
+    background: rgba(0, 0, 0, 0.08);
+    border-color: transparent;
+    cursor: default;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+/* pressed/checked */
+
+.button[aria-pressed=true],
+.checkbox[aria-checked=true]
+{
+    background: #ffeba0;
+    border-color: rgba(153, 122, 0, 0.5);
+}
+.button[aria-pressed=true]:hover,
+.checkbox[aria-checked=true]:hover
+{
+    border-color: rgba(129, 103, 0, 0.6);
+}
+.button[aria-pressed=true]:active,
+.button[aria-pressed=true].active,
+.checkbox[aria-checked=true]:active,
+.checkbox[aria-checked=true].active
+{
+    background: #fee481;
+}
+.button[aria-pressed=true][aria-disabled=true],
+.checkbox[aria-checked=true][aria-disabled=true]
+{
+    background: rgba(0, 0, 0, 0.15);
+    border-color: transparent;
+}
+
+.button,
+.checkbox
+{
+    border-radius: 3px;
+}
+
+/* button */
+
+.button
+{
+    padding: 5px 12px;
+}
+
+/* checkbox */
+
+.checkbox
+{
+    position: relative;
+    width: 12px;
+    height: 12px;
+}
+.checkbox[aria-checked=true]::before
+{
+    content: url(checkbox-tick.svg);
+    position: absolute;
+    top: -6px;
+    left: 1px;
+}
+/*.checkbox[aria-label]::after
+{
+    content: attr(aria-label);
+    margin-left: 15px;
+    white-space: nowrap;
+    padding: 5px;
+}*/

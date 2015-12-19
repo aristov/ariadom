@@ -1,9 +1,9 @@
-Object.defineProperty(Element.prototype, 'role', {
+/*Object.defineProperty(Element.prototype, 'role', {
     enumerable : true,
     get : function() {
         return this.getAttribute('role') || '';
     }
-});
+});*/
 
 function ARIAListBox(element) {
     element.aria = this;

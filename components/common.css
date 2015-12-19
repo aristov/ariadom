@@ -1,6 +1,7 @@
 body
 {
     font: 13px Arial;
+    margin: 0;
 }
 
 /* widget */
@@ -102,6 +103,7 @@ body
     display: inline-block;
     width: 12px;
     height: 12px;
+    margin-right: 6px;
     position: relative;
     vertical-align: top;
 }
@@ -111,8 +113,4 @@ body
     position: absolute;
     top: -6px;
     left: 1px;
-}
-.checkbox .label
-{
-    margin-left: 2px;
 }

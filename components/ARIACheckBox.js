@@ -2,14 +2,7 @@ function ARIACheckBox(element) {
     element.aria = this;
     this.element = element;
 
-    var input = element.querySelector('input');
-    if(!input) {
-        input = document.createElement('input');
-        input.setAttribute('type', 'hidden');
-        input.name = element.dataset.name;
-        input.value = element.dataset.value;
-    }
-    element.appendChild(this.input = input);
+    this.input = this.getInput();
 
     element.addEventListener('click', this.onClick.bind(this));
     element.addEventListener('keydown', this.onKeyDown.bind(this));
@@ -58,6 +51,30 @@ Object.defineProperty(ARIACheckBox.prototype, 'value', {
         this.input.value = value;
     }
 });
+
+ARIACheckBox.prototype.getInput = function() {
+    var element = this.element,
+        input = element.querySelector('input');
+
+    if(!input) {
+        var dataset = element.dataset;
+
+        input = document.createElement('input');
+        input.setAttribute('type', 'hidden');
+
+        if(dataset.name) {
+            input.name = dataset.name;
+            delete dataset.name;
+        }
+        if(dataset.value) {
+            input.value = dataset.value;
+            delete dataset.value;
+        }
+
+        if(this.checked) element.appendChild(input);
+    }
+    return input;
+}
 
 ARIACheckBox.prototype.onKeyDown = function(event) {
     var keyCode = event.keyCode;

@@ -6,89 +6,86 @@ body
 /* widget */
 
 .button,
-.checkbox,
-.radio,
-.listbox,
-.textbox
+.checkbox
 {
     display: inline-block;
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.2);
     cursor: pointer;
+    outline: 0;
+    white-space: nowrap;
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
 }
+.button,
+.checkbox .box
+{
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
 .button:hover,
-.checkbox:hover,
-.radio:hover,
-.listbox:hover,
-.textbox:hover
+.checkbox:hover .box
 {
     border-color: rgba(0, 0, 0, 0.3);
 }
 .button:focus,
-.checkbox:focus,
-.radio:focus,
-.listbox:focus,
-.textbox:focus
+.checkbox:focus .box
 {
-    outline: 0;
     border-color: #ffdb4d;
     box-shadow: inset 0 0 0 1px #ffdb4d;
 }
-.button:active, .button.active,
-.checkbox:active, .checkbox.active,
-.radio:active, .radio.active,
-.listbox:active, .listbox.active,
-.textbox:active, .textbox.active
+.button:active,
+.button.active,
+.checkbox:active .box,
+.checkbox.active .box
 {
     background: #f3f1ed;
-}
-
-.button[aria-disabled=true],
-.checkbox[aria-disabled=true],
-.radio[aria-disabled=true],
-.listbox[aria-disabled=true],
-.textbox[aria-disabled=true]
-{
-    background: rgba(0, 0, 0, 0.08);
-    border-color: transparent;
-    cursor: default;
-    color: rgba(0, 0, 0, 0.5);
 }
 
 /* pressed/checked */
 
 .button[aria-pressed=true],
-.checkbox[aria-checked=true]
+.checkbox[aria-checked=true] .box
 {
     background: #ffeba0;
     border-color: rgba(153, 122, 0, 0.5);
 }
 .button[aria-pressed=true]:hover,
-.checkbox[aria-checked=true]:hover
+.checkbox[aria-checked=true]:hover .box
 {
     border-color: rgba(129, 103, 0, 0.6);
 }
 .button[aria-pressed=true]:active,
 .button[aria-pressed=true].active,
-.checkbox[aria-checked=true]:active,
-.checkbox[aria-checked=true].active
+.checkbox[aria-checked=true]:active .box,
+.checkbox[aria-checked=true].active .box
 {
     background: #fee481;
 }
+
+/* disabled */
+
+.button[aria-disabled=true],
+.checkbox[aria-disabled=true]
+{
+    cursor: default;
+    color: rgba(0, 0, 0, 0.5);
+}
+.button[aria-disabled=true],
+.checkbox[aria-disabled=true] .box
+{
+    background: rgba(0, 0, 0, 0.08);
+    border-color: transparent;
+}
 .button[aria-pressed=true][aria-disabled=true],
-.checkbox[aria-checked=true][aria-disabled=true]
+.checkbox[aria-checked=true][aria-disabled=true] .box
 {
     background: rgba(0, 0, 0, 0.15);
     border-color: transparent;
 }
-
-.button,
-.checkbox
+.checkbox[aria-checked=true][aria-disabled=true] .box::before
 {
-    border-radius: 3px;
+    opacity: 0.4;
 }
 
 /* button */
@@ -100,23 +97,22 @@ body
 
 /* checkbox */
 
-.checkbox
+.checkbox .box
 {
-    position: relative;
+    display: inline-block;
     width: 12px;
     height: 12px;
+    position: relative;
+    vertical-align: top;
 }
-.checkbox[aria-checked=true]::before
+.checkbox[aria-checked=true] .box::before
 {
     content: url(checkbox-tick.svg);
     position: absolute;
     top: -6px;
     left: 1px;
 }
-/*.checkbox[aria-label]::after
+.checkbox .label
 {
-    content: attr(aria-label);
-    margin-left: 15px;
-    white-space: nowrap;
-    padding: 5px;
-}*/
+    margin-left: 2px;
+}

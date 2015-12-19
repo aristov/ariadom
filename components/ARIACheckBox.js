@@ -9,7 +9,7 @@ function ARIACheckBox(element) {
         input.name = element.dataset.name;
         input.value = element.dataset.value;
     }
-    this.input = input;
+    element.appendChild(this.input = input);
 
     element.addEventListener('click', this.onClick.bind(this));
     element.addEventListener('keydown', this.onKeyDown.bind(this));
@@ -22,12 +22,11 @@ Object.defineProperty(ARIACheckBox.prototype, 'checked', {
         return this.element.getAttribute('aria-checked') || '';
     },
     set : function(value) {
-        value = String(value);
+        var element = this.element,
+            checked = String(value);
 
-        var element = this.element;
-
-        element.setAttribute('aria-checked', value);
-        value === 'true'?
+        element.setAttribute('aria-checked', checked);
+        checked === 'true'?
             element.appendChild(this.input) :
             element.removeChild(this.input);
     }
@@ -39,7 +38,14 @@ Object.defineProperty(ARIACheckBox.prototype, 'disabled', {
         return this.element.getAttribute('aria-disabled') || '';
     },
     set : function(value) {
-        this.element.setAttribute('aria-disabled', String(value));
+        var element = this.element,
+            disabled = String(value);
+
+        element.setAttribute('aria-disabled', disabled);
+        if(this.input.disabled = disabled === 'true')
+            element.removeAttribute('tabindex');
+        else
+            element.setAttribute('tabindex', '0');
     }
 });
 
@@ -68,7 +74,7 @@ ARIACheckBox.prototype.onKeyUp = function(event) {
     }
 }
 
-ARIACheckBox.prototype.onClick = function(e) {
+ARIACheckBox.prototype.onClick = function(event) {
     if(this.disabled === 'true') {
         event.stopImmediatePropagation();
     } else {
@@ -87,9 +93,6 @@ ARIACheckBox.attachToDocument = function() {
     document.addEventListener('focus', function(event) {
         this.getCheckBox(event.target);
     }.bind(this), true);
-    /*document.addEventListener('click', function(event) {
-        this.getCheckBox(event.target).onClick(event);
-    }.bind(this), true);*/
 }
 
 ARIACheckBox.attachToDocument();

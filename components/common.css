@@ -4,10 +4,11 @@ body
     margin: 0;
 }
 
-/* widget */
+/* common */
 
 .button,
-.checkbox
+.checkbox,
+.radiobox
 {
     display: inline-block;
     cursor: pointer;
@@ -18,19 +19,26 @@ body
     -ms-user-select: none;
 }
 .button,
-.checkbox .box
+.checkbox .box,
+.radiobox .box
 {
     background: #fff;
     border: 1px solid rgba(0, 0, 0, 0.2);
+}
+.button,
+.checkbox .box
+{
     border-radius: 3px;
 }
 .button:hover,
-.checkbox:hover .box
+.checkbox:hover .box,
+.radiobox:hover .box
 {
     border-color: rgba(0, 0, 0, 0.3);
 }
 .button:focus,
-.checkbox:focus .box
+.checkbox:focus .box,
+.radiobox:focus .box
 {
     border-color: #ffdb4d;
     box-shadow: inset 0 0 0 1px #ffdb4d;
@@ -38,7 +46,9 @@ body
 .button:active,
 .button.active,
 .checkbox:active .box,
-.checkbox.active .box
+.checkbox.active .box,
+.radiobox:active .box,
+.radiobox.active .box
 {
     background: #f3f1ed;
 }
@@ -46,20 +56,17 @@ body
 /* pressed/checked */
 
 .button[aria-pressed=true],
-.checkbox[aria-checked=true] .box
+.checkbox[aria-checked=true] .box,
+.radiobox[aria-checked=true] .box
 {
     background: #ffeba0;
-    border-color: rgba(153, 122, 0, 0.5);
-}
-.button[aria-pressed=true]:hover,
-.checkbox[aria-checked=true]:hover .box
-{
-    border-color: rgba(129, 103, 0, 0.6);
 }
 .button[aria-pressed=true]:active,
 .button[aria-pressed=true].active,
 .checkbox[aria-checked=true]:active .box,
-.checkbox[aria-checked=true].active .box
+.checkbox[aria-checked=true].active .box,
+.radiobox[aria-checked=true]:active .box,
+.radiobox[aria-checked=true].active .box
 {
     background: #fee481;
 }
@@ -67,24 +74,33 @@ body
 /* disabled */
 
 .button[aria-disabled=true],
-.checkbox[aria-disabled=true]
+.checkbox[aria-disabled=true],
+.radiobox[aria-disabled=true],
+.radiogroup[aria-disabled=true],
+.radiogroup[aria-disabled=true] .radiobox
 {
     cursor: default;
     color: rgba(0, 0, 0, 0.5);
 }
 .button[aria-disabled=true],
-.checkbox[aria-disabled=true] .box
+.checkbox[aria-disabled=true] .box,
+.radiobox[aria-disabled=true] .box,
+.radiogroup[aria-disabled=true] .radiobox .box
 {
     background: rgba(0, 0, 0, 0.08);
     border-color: transparent;
 }
 .button[aria-pressed=true][aria-disabled=true],
-.checkbox[aria-checked=true][aria-disabled=true] .box
+.checkbox[aria-checked=true][aria-disabled=true] .box,
+.radiobox[aria-checked=true][aria-disabled=true] .box,
+.radiogroup[aria-disabled=true] .radiobox[aria-checked=true] .box
 {
     background: rgba(0, 0, 0, 0.15);
     border-color: transparent;
 }
-.checkbox[aria-checked=true][aria-disabled=true] .box::before
+.checkbox[aria-checked=true][aria-disabled=true] .box::before,
+.radiobox[aria-checked=true][aria-disabled=true] .box::before,
+.radiogroup[aria-disabled=true] .radiobox[aria-checked=true] .box::before
 {
     opacity: 0.4;
 }
@@ -98,7 +114,8 @@ body
 
 /* checkbox */
 
-.checkbox .box
+.checkbox .box,
+.radiobox .box
 {
     display: inline-block;
     width: 12px;
@@ -113,4 +130,37 @@ body
     position: absolute;
     top: -6px;
     left: 1px;
+}
+
+/* radiobox, radiogroup */
+
+.radiobox
+{
+    margin-right: 10px;
+}
+.radiobox .box
+{
+    border-radius: 7px;
+}
+.radiobox[aria-checked=true] .box::before
+{
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background: #000;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+}
+.radiogroup
+{
+    display: inline-block;
+}
+.radiogroup[aria-label]::before
+{
+    content: attr(aria-label);
+    margin-right: 10px;
+    margin-bottom: 5px;
+    cursor: default;
 }

@@ -1,100 +1,182 @@
 function ARIARadioGroup(element) {
+    element.aria = this;
     this.element = element;
-    element.radioGroup = this;
+
+    this.forEach.call(
+        element.querySelectorAll('[role=radio]'),
+        function(element) {
+            this.push(ARIARadio.getRadio(element));
+        }, this);
+
+    this.input = element.querySelector('input') || document.createElement('input');
 }
 
-ARIARadioGroup.prototype.getGroup = function() {
-    return this.group || (this.group = this.element.querySelectorAll('button[role=radio]'));
-}
+ARIARadioGroup.prototype = new Array();
 
-ARIARadioGroup.prototype.getChecked = function() {
-    return this.element.querySelector('button[role=radio][aria-checked=true]');
-}
+Object.defineProperty(ARIARadioGroup.prototype, 'disabled', {
+    enumerable : true,
+    get : function() {
+        return this.element.getAttribute('aria-disabled') || '';
+    },
+    set : function(value) {
+        var element = this.element,
+            disabled = String(value),
+            checked;
 
-ARIARadioGroup.prototype.getInput = function() {
-    return this.input || (this.input = this.element.querySelector('input[type=hidden]'));
-}
+        if(disabled === 'true') {
+            element.setAttribute('aria-disabled', 'true');
+            this.input.disabled = true;
+            this.forEach(function(radio) {
+                radio.element.removeAttribute('tabindex');
+            });
+        } else {
+            element.removeAttribute('aria-disabled');
+            this.input.disabled = false;
+            this.forEach(function(radio, i) {
+                radio.element.tabIndex = -1;
+                if(radio.checked === 'true') checked = radio;
+            });
+            if(checked) checked.element.tabIndex = 0;
+            else this[0].element.tabIndex = 0;
+        }
+    }
+});
+
+Object.defineProperty(ARIARadioGroup.prototype, 'value', {
+    enumerable : true,
+    get : function() {
+        return this.input.value;
+    },
+    set : function(value) {
+        this.input.value = value;
+    }
+});
 
 ARIARadioGroup.prototype.uncheck = function() {
-    var checked = this.getChecked();
-    if(checked) {
-        checked.removeAttribute('aria-checked');
-        checked.setAttribute('tabindex', '-1');
-    }
-}
-
-ARIARadioGroup.prototype.indexOf = function(button) {
-    return Array.prototype.indexOf.call(this.getGroup(), button);
-}
-
-ARIARadioGroup.prototype.setChecked = function(button) {
-    button.setAttribute('aria-checked', 'true');
-    button.removeAttribute('tabindex');
-}
-
-ARIARadioGroup.prototype.updateValue = function(value) {
-    var input = this.getInput();
-    input? input.value = value : (this.value = value);
-}
-
-ARIARadioGroup.prototype.nextOf = function(button) {
-    var group = this.getGroup(),
-        index = this.indexOf(button) + 1;
-    return index >= group.length? group[0] : group[index];
-}
-
-ARIARadioGroup.prototype.previousOf = function(button) {
-    var group = this.getGroup(),
-        index = this.indexOf(button) - 1;
-    return index < 0? group[group.length - 1] : group[index];
-}
-
-ARIARadioGroup.prototype.switch = function(button) {
-    if(button.getAttribute('aria-checked') !== 'true') {
-        this.uncheck();
-        this.setChecked(button);
-        this.updateValue(button.value);
-    }
-    button.focus();
-}
-
-ARIARadioGroup.getOrNewByButton = function(button) {
-    if(button.radioGroup) return button.radioGroup;
-    return button.radioGroup = new ARIARadioGroup(this.getElementByButton(button));
-}
-
-ARIARadioGroup.getElementByButton = function(element) {
-    do element = element.parentElement;
-    while(element.getAttribute('role') !== 'radiogroup');
-    return element;
-}
-
-ARIARadioGroup.onButtonClick = function(e, button) {
-    this.getOrNewByButton(button).switch(button);
-}
-
-ARIARadioGroup.onButtonKeydown = function(e, button) {
-    if(e.keyCode >= 37 && e.keyCode <=40) {
-        var radioGroup = this.getOrNewByButton(button),
-            target = e.keyCode >= 39?
-                radioGroup.nextOf(button) :
-                radioGroup.previousOf(button);
-        if(!target.disabled) e.ctrlKey? target.focus() : radioGroup.switch(target);
-    }
-}
-
-ARIARadioGroup.isRadioButton = function(target) {
-    return !!target.radioGroup || target.getAttribute('role') === 'radio';
-}
-
-ARIARadioGroup.attachToDocument = function(root) {
-    var _this = this;
-    root.addEventListener('click', function(e) {
-        if(_this.isRadioButton(e.target)) _this.onButtonClick(e, e.target);
-    });
-    root.addEventListener('keydown', function(e) {
-        if(_this.isRadioButton(e.target)) _this.onButtonKeydown(e, e.target);
+    this.forEach(function(radio) {
+        radio.checked = 'false';
     });
 }
 
-ARIARadioGroup.attachToDocument(window.document);
+ARIARadioGroup.getRadioGroup = function(element) {
+    return element.role === 'radiogroup'?
+        element.aria || new ARIARadioGroup(element) :
+        null;
+}
+
+////////////////////////////////////////////////////////////////
+
+function ARIARadio(element) {
+    element.aria = this;
+    this.element = element;
+
+    this.group = this.getGroup();
+
+    element.addEventListener('click', this.onClick.bind(this));
+    element.addEventListener('keydown', this.onKeyDown.bind(this));
+}
+
+Object.defineProperty(ARIARadio.prototype, 'checked', {
+    enumerable : true,
+    get : function() {
+        return this.element.getAttribute('aria-checked') || '';
+    },
+    set : function(value) {
+        var element = this.element,
+            checked = String(value);
+
+        element.setAttribute('tabindex', checked === 'true'? '0' : '-1');
+        element.setAttribute('aria-checked', checked);
+        this.group.value = this.value;
+    }
+});
+
+Object.defineProperty(ARIARadio.prototype, 'disabled', {
+    enumerable : true,
+    get : function() {
+        return this.group.disabled === 'true'?
+            'true' :
+            this.element.getAttribute('aria-disabled') || '';
+    },
+    set : function(value) {
+        var element = this.element,
+            disabled = String(value);
+
+        if(disabled === 'true') {
+            element.setAttribute('aria-disabled', 'true');
+            element.removeAttribute('tabindex');
+        } else {
+            element.removeAttribute('aria-disabled');
+            element.tabIndex = -1;
+        }
+    }
+});
+
+Object.defineProperty(ARIARadio.prototype, 'value', {
+    enumerable : true,
+    get : function() {
+        return this.element.dataset.value;
+    }
+});
+
+ARIARadio.prototype.getGroup = function() {
+    var element = this.element,
+        group = element.closest('[role=radiogroup]');
+
+    if(group) return ARIARadioGroup.getRadioGroup(group);
+    else throw Error('radio requires an ancestor with radiogroup role assigned');
+}
+
+ARIARadio.prototype.onClick = function(event) {
+    if(this.disabled)
+        event.stopImmediatePropagation();
+    else {
+        this.group.uncheck();
+        this.checked = 'true';
+    }
+}
+
+ARIARadio.prototype.onKeyDown = function(event) {
+    var keyCode = event.keyCode;
+
+    if(keyCode >= 37 && keyCode <= 40) {
+        event.preventDefault(); // prevent page scrolling
+        this.onArrowKeyDown(event);
+    }
+
+    if(keyCode === 32) {
+        event.preventDefault(); // prevent page scrolling
+        this.onSpaceKeyDown(event);
+    }
+}
+
+ARIARadio.prototype.onArrowKeyDown = function(event) {
+    var direction = event.keyCode < 39? -1 : 1,
+        group = this.group,
+        index = group.indexOf(this) + direction;
+
+    if(index === group.length) index = 0;
+    if(index < 0) index = group.length - 1;
+
+    group.uncheck();
+    group[index].checked = true;
+    group[index].element.focus();
+}
+
+ARIARadio.prototype.onSpaceKeyDown = function(event) {
+    this.element.dispatchEvent(new Event('click'));
+}
+
+ARIARadio.getRadio = function(element) {
+    return element.role === 'radio'?
+        element.aria || new ARIARadio(element) :
+        null;
+}
+
+ARIARadio.attachToDocument = function() {
+    document.addEventListener('focus', function(event) {
+        this.getRadio(event.target);
+    }.bind(this), true);
+}
+
+ARIARadio.attachToDocument();

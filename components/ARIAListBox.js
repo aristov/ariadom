@@ -1,17 +1,10 @@
-/*Object.defineProperty(Element.prototype, 'role', {
-    enumerable : true,
-    get : function() {
-        return this.getAttribute('role') || '';
-    }
-});*/
-
 function ARIAListBox(element) {
     element.aria = this;
     this.element = element;
 
     this.forEach.call(
-        this.element.querySelectorAll('[role=option]'),
-        function(element, i) {
+        element.querySelectorAll('[role=option]'),
+        function(element) {
             this.push(ARIAOption.getOption(element));
         }, this);
 

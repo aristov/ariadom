@@ -9,6 +9,7 @@
     <script src=role.js></script>
     <script src=ARIAButton.js></script>
     <script src=ARIACheckbox.js></script>
+    <script src=ARIARadioGroup.js></script>
 
     <link rel=stylesheet href=common.css>
     <link rel=stylesheet href=link.css>
@@ -69,6 +70,51 @@
             <span role=checkbox aria-disabled=true aria-checked=true class=checkbox>
                 <span class=box></span>Checked disabled
                 <input type=hidden name=checkbox-checked-disabled value=on disabled>
+            </span>
+        </p>
+    </section>
+    <section>
+        <h1>Radio group</h1>
+        <p>
+            <span role=radiogroup aria-label=Simple class=radiogroup>
+                <input type=hidden name=radiogroup>
+                <span role=radio tabindex=0 data-value=first class=radiobox>
+                    <span class=box></span>First
+                </span>
+                <span role=radio tabindex=-1 data-value=second class=radiobox>
+                    <span class=box></span>Second
+                </span>
+                <span role=radio tabindex=-1 data-value=third class=radiobox>
+                    <span class=box></span>Third
+                </span>
+            </span>
+        </p>
+        <p>
+            <span role=radiogroup aria-label=Checked class=radiogroup>
+                <input type=hidden name=radiogroup value=second>
+                <span role=radio tabindex=-1 data-value=first class=radiobox>
+                    <span class=box></span>First
+                </span>
+                <span role=radio tabindex=0 aria-checked=true data-value=second class=radiobox>
+                    <span class=box></span>Second
+                </span>
+                <span role=radio tabindex=-1 data-value=third class=radiobox>
+                    <span class=box></span>Third
+                </span>
+            </span>
+        </p>
+        <p>
+            <span role=radiogroup aria-label=Disabled class=radiogroup aria-disabled=true>
+                <input type=hidden name=radiogroup value=third disabled>
+                <span role=radio data-value=first class=radiobox>
+                    <span class=box></span>First
+                </span>
+                <span role=radio data-value=second class=radiobox>
+                    <span class=box></span>Second
+                </span>
+                <span role=radio aria-checked=true data-value=third class=radiobox>
+                    <span class=box></span>Third
+                </span>
             </span>
         </p>
     </section>

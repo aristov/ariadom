@@ -32,7 +32,7 @@ Object.defineProperty(ARIARadioGroup.prototype, 'disabled', {
         } else {
             element.removeAttribute('aria-disabled');
             this.input.disabled = false;
-            this.forEach(function(radio, i) {
+            this.forEach(function(radio) {
                 radio.element.tabIndex = -1;
                 if(radio.checked === 'true') checked = radio;
             });

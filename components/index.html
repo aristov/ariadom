@@ -77,7 +77,7 @@
         <h1>Radio group</h1>
         <p>
             <span role=radiogroup aria-label=Simple class=radiogroup>
-                <input type=hidden name=radiogroup>
+                <input type=hidden name=radiogroup autocomplete=off>
                 <span role=radio tabindex=0 data-value=first class=radiobox>
                     <span class=box></span>First
                 </span>
@@ -91,7 +91,7 @@
         </p>
         <p>
             <span role=radiogroup aria-label=Checked class=radiogroup>
-                <input type=hidden name=radiogroup value=second>
+                <input type=hidden name=radiogroup-checked value=second autocomplete=off>
                 <span role=radio tabindex=-1 data-value=first class=radiobox>
                     <span class=box></span>First
                 </span>
@@ -104,8 +104,8 @@
             </span>
         </p>
         <p>
-            <span role=radiogroup aria-label=Disabled class=radiogroup aria-disabled=true>
-                <input type=hidden name=radiogroup value=third disabled>
+            <span role=radiogroup aria-label="Checked disabled" class=radiogroup aria-disabled=true>
+                <input type=hidden name=radiogroup-checked-disabled value=third autocomplete=off disabled>
                 <span role=radio data-value=first class=radiobox>
                     <span class=box></span>First
                 </span>

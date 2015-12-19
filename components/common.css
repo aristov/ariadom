@@ -8,10 +8,10 @@ body
 
 .button,
 .checkbox,
-.radiobox
+.radiobox,
+.listbox
 {
     display: inline-block;
-    cursor: pointer;
     outline: 0;
     white-space: nowrap;
     -moz-user-select: none;
@@ -19,8 +19,16 @@ body
     -ms-user-select: none;
 }
 .button,
+.checkbox,
+.radiobox,
+.listbox .option
+{
+    cursor: pointer;
+}
+.button,
 .checkbox .box,
-.radiobox .box
+.radiobox .box,
+.listbox
 {
     background: #fff;
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -32,15 +40,22 @@ body
 }
 .button:hover,
 .checkbox:hover .box,
-.radiobox:hover .box
+.radiobox:hover .box,
+.listbox
 {
     border-color: rgba(0, 0, 0, 0.3);
 }
 .button:focus,
 .checkbox:focus .box,
-.radiobox:focus .box
+.radiobox:focus .box,
+.listbox:focus
 {
     border-color: #ffdb4d;
+}
+.button:focus,
+.checkbox:focus .box,
+.radiobox:focus .box
+{
     box-shadow: inset 0 0 0 1px #ffdb4d;
 }
 .button:active,
@@ -48,7 +63,9 @@ body
 .checkbox:active .box,
 .checkbox.active .box,
 .radiobox:active .box,
-.radiobox.active .box
+.radiobox.active .box,
+.listbox .option:active,
+.listbox .option.active
 {
     background: #f3f1ed;
 }
@@ -57,7 +74,9 @@ body
 
 .button[aria-pressed=true],
 .checkbox[aria-checked=true] .box,
-.radiobox[aria-checked=true] .box
+.radiobox[aria-checked=true] .box,
+.listbox:focus .option[aria-selected=true],
+.listbox:hover .option[aria-selected=true]:hover
 {
     background: #ffeba0;
 }
@@ -66,7 +85,9 @@ body
 .checkbox[aria-checked=true]:active .box,
 .checkbox[aria-checked=true].active .box,
 .radiobox[aria-checked=true]:active .box,
-.radiobox[aria-checked=true].active .box
+.radiobox[aria-checked=true].active .box,
+.listbox .option[aria-selected=true]:active,
+.listbox .option[aria-selected=true].active
 {
     background: #fee481;
 }
@@ -164,4 +185,36 @@ body
     margin-right: 10px;
     margin-bottom: 5px;
     cursor: default;
+}
+
+/* listbox, option */
+
+.listbox
+{
+    padding: 4px 0;
+}
+.listbox:focus
+{
+    box-shadow: 0 0 0 1px #ffdb4d;
+}
+.listbox[aria-label]::before
+{
+    content: attr(aria-label);
+    display: block;
+    margin: 0 6px 6px;
+}
+
+.listbox .option
+{
+    position: relative;
+    height: 24px;
+    padding: 0 30px 0 30px;
+    line-height: 25px;
+}
+[role=listbox] [role=option][aria-checked=true]::before
+{
+    content: url(checkmark.svg);
+    position: absolute;
+    top: 2px;
+    left: 10px;
 }

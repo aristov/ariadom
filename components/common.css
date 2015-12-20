@@ -33,15 +33,10 @@ body
     background: #fff;
     border: 1px solid rgba(0, 0, 0, 0.2);
 }
-.button,
-.checkbox .box
-{
-    border-radius: 3px;
-}
 .button:hover,
 .checkbox:hover .box,
 .radiobox:hover .box,
-.listbox
+.listbox:hover
 {
     border-color: rgba(0, 0, 0, 0.3);
 }
@@ -63,9 +58,7 @@ body
 .checkbox:active .box,
 .checkbox.active .box,
 .radiobox:active .box,
-.radiobox.active .box,
-.listbox .option:active,
-.listbox .option.active
+.radiobox.active .box
 {
     background: #f3f1ed;
 }
@@ -86,8 +79,8 @@ body
 .checkbox[aria-checked=true].active .box,
 .radiobox[aria-checked=true]:active .box,
 .radiobox[aria-checked=true].active .box,
-.listbox .option[aria-selected=true]:active,
-.listbox .option[aria-selected=true].active
+.listbox:focus .option[aria-selected=true]:active,
+.listbox:focus .option[aria-selected=true].active
 {
     background: #fee481;
 }
@@ -98,7 +91,9 @@ body
 .checkbox[aria-disabled=true],
 .radiobox[aria-disabled=true],
 .radiogroup[aria-disabled=true],
-.radiogroup[aria-disabled=true] .radiobox
+.radiogroup[aria-disabled=true] .radiobox,
+.listbox[aria-disabled=true],
+.listbox[aria-disabled=true] .option
 {
     cursor: default;
     color: rgba(0, 0, 0, 0.5);
@@ -106,7 +101,8 @@ body
 .button[aria-disabled=true],
 .checkbox[aria-disabled=true] .box,
 .radiobox[aria-disabled=true] .box,
-.radiogroup[aria-disabled=true] .radiobox .box
+.radiogroup[aria-disabled=true] .radiobox .box,
+.listbox[aria-disabled=true]
 {
     background: rgba(0, 0, 0, 0.08);
     border-color: transparent;
@@ -121,19 +117,19 @@ body
 }
 .checkbox[aria-checked=true][aria-disabled=true] .box::before,
 .radiobox[aria-checked=true][aria-disabled=true] .box::before,
-.radiogroup[aria-disabled=true] .radiobox[aria-checked=true] .box::before
+.radiogroup[aria-disabled=true] .radiobox[aria-checked=true] .box::before,
+.listbox[aria-disabled=true] .option[aria-checked=true]::before
 {
     opacity: 0.4;
 }
 
-/* button */
+/* button, checkbox, radiobox */
 
-.button
+.button,
+.checkbox .box
 {
-    padding: 5px 12px;
+    border-radius: 3px;
 }
-
-/* checkbox */
 
 .checkbox .box,
 .radiobox .box
@@ -145,6 +141,16 @@ body
     position: relative;
     vertical-align: top;
 }
+
+/* button */
+
+.button
+{
+    padding: 5px 12px;
+}
+
+/* checkbox */
+
 .checkbox[aria-checked=true] .box::before
 {
     content: url(checkbox-tick.svg);
@@ -153,8 +159,20 @@ body
     left: 1px;
 }
 
-/* radiobox, radiogroup */
+/* radiogroup, radiobox */
 
+.radiogroup
+{
+    display: inline-block;
+}
+.radiogroup[aria-label]::before
+{
+    content: attr(aria-label);
+    display: block;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    cursor: default;
+}
 .radiobox
 {
     margin-right: 10px;
@@ -173,18 +191,6 @@ body
     position: absolute;
     top: 3px;
     left: 3px;
-}
-.radiogroup
-{
-    display: inline-block;
-}
-.radiogroup[aria-label]::before
-{
-    content: attr(aria-label);
-    display: block;
-    margin-right: 10px;
-    margin-bottom: 5px;
-    cursor: default;
 }
 
 /* listbox, option */
@@ -206,12 +212,13 @@ body
 
 .listbox .option
 {
+    display: block;
     position: relative;
     height: 24px;
-    padding: 0 30px 0 30px;
+    padding: 0 30px;
     line-height: 25px;
 }
-[role=listbox] [role=option][aria-checked=true]::before
+.listbox .option[aria-checked=true]::before
 {
     content: url(checkmark.svg);
     position: absolute;

@@ -11,6 +11,7 @@ function ARIAListBox(element) {
     this.input = element.querySelector('input') || document.createElement('input');
 
     element.addEventListener('keydown', this.onKeyDown.bind(this));
+    element.addEventListener('keyup', this.onKeyUp.bind(this));
 }
 
 ARIAListBox.prototype = new Array();
@@ -94,22 +95,22 @@ ARIAListBox.prototype.uncheck = function() {
     });
 }
 
-ARIAListBox.prototype.onKeyDown = function(e) {
-    var keyCode = e.keyCode;
+ARIAListBox.prototype.onKeyDown = function(event) {
+    var keyCode = event.keyCode;
 
     if(keyCode >= 37 && keyCode <= 40) {
-        e.preventDefault(); // prevent page scrolling
-        this.handleKeyboardSelect(keyCode);
+        event.preventDefault(); // prevent page scrolling
+        this.onArrowKeyDown(event);
     }
 
-    if(keyCode === 13 || keyCode === 32) {
-        e.preventDefault(); // prevent page scrolling
-        this.handleKeyboardCheck();
+    if(keyCode === 32) {
+        event.preventDefault(); // prevent page scrolling
+        this.onSpaceKeyDown(event);
     }
 }
 
-ARIAListBox.prototype.handleKeyboardSelect = function(keyCode) {
-    var direction = keyCode < 39? -1 : 1,
+ARIAListBox.prototype.onArrowKeyDown = function(event) {
+    var direction = event.keyCode < 39? -1 : 1,
         selected = this.selected[0],
         next = this.indexOf(selected) + direction;
 
@@ -120,27 +121,38 @@ ARIAListBox.prototype.handleKeyboardSelect = function(keyCode) {
     this[next].selected = true;
 }
 
-ARIAListBox.prototype.handleKeyboardCheck = function() {
-    this.checked = this.selected;
+ARIAListBox.prototype.onSpaceKeyDown = function(event) {
+    if(!event.repeat) {
+        this.selected.forEach(function(option) {
+            option.element.classList.add('active');
+        });
+    }
 }
 
-ARIAListBox.prototype.onFocus = function(e) {
+ARIAListBox.prototype.onKeyUp = function(event) {
+    if(event.keyCode === 32) {
+        this.checked = this.selected;
+        this.selected.forEach(function(option) {
+            option.element.classList.remove('active');
+        });
+    }
+}
+
+ARIAListBox.prototype.onFocus = function(event) {
     if(!this.selected.length) this[0].selected = 'true';
 }
 
-ARIAListBox.isListBox = function(element) {
-    return element.role === 'listbox';
-}
-
 ARIAListBox.getListBox = function(element) {
-    return element.aria || new ARIAListBox(element);
+    return element.role === 'listbox'?
+        element.aria || new ARIAListBox(element) :
+        null;
 }
 
 ARIAListBox.attachToDocument = function() {
-    var _this = this;
-    document.addEventListener('focus', function(e) {
-        if(_this.isListBox(e.target)) _this.getListBox(e.target).onFocus(e);
-    }, true);
+    document.addEventListener('focus', function(event) {
+        var listBox = this.getListBox(event.target);
+        if(listBox) listBox.onFocus(event);
+    }.bind(this), true);
 }
 
 ARIAListBox.attachToDocument();
@@ -153,7 +165,7 @@ function ARIAOption(element) {
 
     this.listBox = ARIAListBox.getListBox(element.closest('[role=listbox]'));
 
-    element.addEventListener('mousedown', this.onMouseDown.bind(this));
+    element.addEventListener('click', this.onClick.bind(this));
 }
 
 Object.defineProperty(ARIAOption.prototype, 'selected', {
@@ -197,30 +209,29 @@ Object.defineProperty(ARIAOption.prototype, 'value', {
     }
 });
 
-ARIAOption.prototype.onMouseDown = function(e) {
-    if(this.disabled !== 'true') this.listBox.checked = [this];
+ARIAOption.prototype.onClick = function(event) {
+    if(this.disabled === 'true') event.stopImmediatePropagation();
+    else this.listBox.checked = [this];
 }
 
-ARIAOption.prototype.onMouseEnter = function(e) {
+ARIAOption.prototype.onMouseEnter = function(event) {
     if(this.disabled !== 'true') {
         this.listBox.unselect();
         this.selected = 'true';
     }
 }
 
-ARIAOption.isOption = function(element) {
-    return element.role === 'option';
-}
-
 ARIAOption.getOption = function(element) {
-    return element.aria || new ARIAOption(element);
+    return element.role === 'option'?
+        element.aria || new ARIAOption(element) :
+        null;
 }
 
 ARIAOption.attachToDocument = function() {
-    var _this = this;
-    document.addEventListener('mouseenter', function(e) {
-        if(_this.isOption(e.target)) _this.getOption(e.target).onMouseEnter(e);
-    }, true);
+    document.addEventListener('mouseenter', function(event) {
+        var option = this.getOption(event.target);
+        if(option) option.onMouseEnter(event);
+    }.bind(this), true);
 }
 
 ARIAOption.attachToDocument();

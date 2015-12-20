@@ -122,12 +122,20 @@
     <section>
         <h1>List box</h1>
         <p>
-            <div role=listbox tabindex=0 aria-label=Simple class=listbox>
+            <span role=listbox tabindex=0 aria-label=Simple class=listbox>
                 <input type=hidden name=listbox value=two autocomplete=off>
-                <div role=option data-value=first class=option>First</div>
-                <div role=option data-value=second class=option>Second</div>
-                <div role=option data-value=third class=option>Third</div>
-            </div>
+                <span role=option data-value=first class=option>First</span>
+                <span role=option data-value=second class=option>Second</span>
+                <span role=option data-value=third class=option>Third</span>
+            </span>
+        </p>
+        <p>
+            <span role=listbox aria-disabled=true aria-label="Checked disabled" class=listbox>
+                <input type=hidden name=listbox value=two autocomplete=off disabled>
+                <span role=option data-value=first class=option>First</span>
+                <span role=option data-value=second aria-checked=true class=option>Second</span>
+                <span role=option data-value=third class=option>Third</span>
+            </span>
         </p>
     </section>
 </body>

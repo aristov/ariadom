@@ -1,13 +1,20 @@
+:link,
+:visited,
 .link
 {
     color: #04b;
     text-decoration: none;
+    cursor: pointer;
 }
+:link:focus,
+:visited:focus,
 .link:focus
 {
     outline: none;
     text-decoration: underline;
 }
+:link:hover,
+:visited:hover,
 .link:hover
 {
     color: #c00;
@@ -16,4 +23,12 @@
 .link[rel~=external]:not(:hover)
 {
     color: #070;
+}
+
+/* mixes */
+
+[role=button].link:focus
+{
+    text-decoration: none;
+    color: #c00;
 }

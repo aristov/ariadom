@@ -12,7 +12,7 @@ body
 .listbox
 {
     display: inline-block;
-    outline: 0;
+    outline: none;
     white-space: nowrap;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -28,8 +28,8 @@ body
 .button,
 .checkbox .box,
 .radiobox .box,
-.listbox,
-.textbox input
+.listbox .box,
+.textbox .box
 {
     background: #fff;
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -40,8 +40,8 @@ body
 .button:hover,
 .checkbox:hover .box,
 .radiobox:hover .box,
-.listbox:hover,
-.textbox:hover input
+.listbox:hover .box,
+.textbox:hover .box
 {
     border-color: rgba(0, 0, 0, 0.3);
 }
@@ -51,15 +51,15 @@ body
 .button:focus,
 .checkbox:focus .box,
 .radiobox:focus .box,
-.listbox:focus,
-.textbox input:focus
+.listbox:focus .box,
+.textbox .box:focus
 {
     border-color: #ffdb4d;
 }
 .button:focus,
 .checkbox:focus .box,
 .radiobox:focus .box,
-.textbox input:focus
+.textbox .box:focus
 {
     box-shadow: inset 0 0 0 1px #ffdb4d;
 }
@@ -79,6 +79,7 @@ body
 /* pressed/checked/selected */
 
 .button[aria-pressed=true],
+.button[aria-checked=true],
 .checkbox[aria-checked=true] .box,
 .radiobox[aria-checked=true] .box,
 .listbox:focus .option[aria-selected=true],
@@ -91,6 +92,8 @@ body
 
 .button[aria-pressed=true]:active,
 .button[aria-pressed=true].active,
+.button[aria-checked=true]:active,
+.button[aria-checked=true].active,
 .checkbox[aria-checked=true]:active .box,
 .checkbox[aria-checked=true].active .box,
 .radiobox[aria-checked=true]:active .box,
@@ -111,7 +114,7 @@ body
 .listbox[aria-disabled=true],
 .listbox[aria-disabled=true] .option,
 .textbox.disabled,
-.textbox input:disabled
+.textbox .box:disabled
 {
     cursor: default;
     color: rgba(0, 0, 0, 0.5);
@@ -120,8 +123,8 @@ body
 .checkbox[aria-disabled=true] .box,
 .radiobox[aria-disabled=true] .box,
 .radiogroup[aria-disabled=true] .radiobox .box,
-.listbox[aria-disabled=true],
-.textbox input:disabled
+.listbox[aria-disabled=true] .box,
+.textbox .box:disabled
 {
     background: rgba(0, 0, 0, 0.08);
     border-color: transparent;
@@ -169,6 +172,7 @@ body
 .button
 {
     padding: 5px 12px;
+    text-decoration: none;
 }
 
 /* checkbox */
@@ -186,14 +190,6 @@ body
 .radiogroup
 {
     display: inline-block;
-}
-.radiogroup[aria-label]::before
-{
-    content: attr(aria-label);
-    display: block;
-    margin-right: 10px;
-    margin-bottom: 5px;
-    cursor: default;
 }
 .radiogroup .radiobox
 {
@@ -217,19 +213,14 @@ body
 
 /* listbox, option */
 
-.listbox
+.listbox .box
 {
+    display: block;
     padding: 4px 0;
 }
-.listbox:focus
+.listbox:focus .box
 {
     box-shadow: 0 0 0 1px #ffdb4d;
-}
-.listbox[aria-label]::before
-{
-    content: attr(aria-label);
-    display: block;
-    margin: 0 5px 5px;
 }
 
 .listbox .option
@@ -254,14 +245,49 @@ body
 {
     display: inline-block;
 }
-.textbox input
+.textbox .box
 {
     font: 13px Arial;
     padding: 5px 8px;
 }
 
-.textbox .label
+/* buttongroup */
+
+.buttongroup
+{
+    display: inline-block;
+}
+.buttongroup .button:not(:focus):not(:last-of-type)
+{
+    border-right-width: 0;
+}
+.buttongroup .button:focus + .button
+{
+    border-left-width: 0;
+}
+.buttongroup .button[aria-checked=true] + .button:not(:focus)
+{
+    border-left-color: rgba(153, 122, 0, 0.5);
+}
+.buttongroup .button:not(:first-of-type)
+{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.buttongroup .button:not(:last-of-type)
+{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* label */
+
+.radiogroup .label,
+.listbox .label,
+.textbox .label,
+.buttongroup .label
 {
     display: block;
     margin-bottom: 5px;
+    cursor: default;
 }

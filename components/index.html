@@ -19,7 +19,7 @@
         {
             display: inline-block;
             padding: 0 20px;
-            margin-right: 100px;
+            margin-right: 50px;
             vertical-align: top;
         }
         section
@@ -109,7 +109,7 @@
             </span>
         </section>
         <section>
-            <span role=radiogroup aria-label="Checked disabled" class=radiogroup aria-disabled=true>
+            <span role=radiogroup aria-label=Disabled class=radiogroup aria-disabled=true>
                 <input type=hidden name=radiogroup-checked-disabled value=third autocomplete=off disabled>
                 <span role=radio data-value=first class=radiobox>
                     <span class=box></span>First
@@ -134,12 +134,33 @@
             </span>
         </section>
         <section>
-            <span role=listbox aria-disabled=true aria-label="Checked disabled" class=listbox>
+            <span role=listbox aria-disabled=true aria-label=Disabled class=listbox>
                 <input type=hidden name=listbox value=two autocomplete=off disabled>
                 <span role=option data-value=first class=option>First</span>
                 <span role=option data-value=second aria-checked=true class=option>Second</span>
                 <span role=option data-value=third class=option>Third</span>
             </span>
+        </section>
+    </article>
+    <article>
+        <h1>Text box</h1>
+        <section>
+            <label class=textbox>
+                <span class=label>Simple</span>
+                <input autocomplete=off>
+            </label>
+        </section>
+        <section>
+            <label class=textbox>
+                <span class=label>Filled</span>
+                <input value=Text autocomplete=off>
+            </label>
+        </section>
+        <section>
+            <label class="textbox disabled">
+                <span class=label>Disabled</span>
+                <input value=Text disabled autocomplete=off>
+            </label>
         </section>
     </article>
 </body>

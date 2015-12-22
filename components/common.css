@@ -148,6 +148,42 @@ body
     opacity: 0.4;
 }
 
+/* link */
+
+.link
+{
+    color: #04b;
+}
+.link:not(:focus):not(:hover)
+{
+    text-decoration: none;
+}
+.link:focus
+{
+    border-radius: 1px;
+    box-shadow: 0 0 0 2px #ffdb4d;
+    outline: none;
+}
+.link:hover
+{
+    color: #c00;
+    cursor: pointer;
+}
+
+/* external link */
+
+.link[rel~=external]:not(:hover)
+{
+    color: #070;
+}
+
+/* mixes */
+
+.button.link:focus
+{
+    box-shadow: inset 0 0 0 1px #ffdb4d;
+}
+
 /* button, checkbox, radiobox */
 
 .button,
@@ -172,7 +208,6 @@ body
 .button
 {
     padding: 5px 12px;
-    text-decoration: none;
 }
 
 /* checkbox */

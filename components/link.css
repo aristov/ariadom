@@ -3,16 +3,23 @@
     color: #04b;
     text-decoration: none;
     cursor: pointer;
+    outline: none;
+}
+.link:focus,
+.link:hover
+{
+    text-decoration: underline;
 }
 .link:focus
 {
-    outline: none;
-    text-decoration: underline;
+    box-shadow: 0 0 0px 2px #ffdb4d;
 }
 .link:hover
 {
     color: #c00;
 }
+
+/* external */
 
 .link[rel~=external]:not(:hover)
 {
@@ -24,5 +31,4 @@
 [role=button].link:focus
 {
     text-decoration: none;
-    color: #c00;
 }

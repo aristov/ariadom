@@ -1,0 +1,128 @@
+<!doctype html>
+
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,maximum-scale=1,initial-scale=1,user-scalable=0">
+
+<title>Dialog</title>
+
+<script src=role.js></script>
+<script src=ARIAButton.js></script>
+<script src=ARIARadioGroup.js></script>
+
+<link rel=stylesheet href=common.css>
+
+<style>
+    body
+    {
+        margin: 20px;
+    }
+    h1
+    {
+        font-size: 20px;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+    p
+    {
+        margin-bottom: 20px;
+    }
+    p:last-of-type
+    {
+        margin-bottom: 0;
+    }
+</style>
+<style>
+    .dialog
+    {
+        position: absolute;
+        background: #fff;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 10px 20px -5px rgba(0, 0, 0, 0.4);
+        padding: 20px;
+        margin-top: 8px;
+    }
+</style>
+<script>
+    Object.defineProperty(ARIAButton.prototype, 'haspopup', {
+        enumerable : true,
+        get : function() {
+            return this.element.getAttribute('aria-haspopup') || '';
+        }
+    });
+
+    Object.defineProperty(ARIAButton.prototype, 'expanded', {
+        enumerable : true,
+        get : function() {
+            return this.element.getAttribute('aria-expanded') || '';
+        },
+        set : function(value) {
+            var expanded = String(value),
+                element = this.element;
+
+            element.setAttribute('aria-expanded', expanded);
+
+            if(!this.dialog) {
+                var dialogElement = element.querySelector('[role=dialog]');
+                if(dialogElement) {
+                    this.dialog = ARIADialog.getDialog(dialogElement)
+                    element.parentNode.insertBefore(dialogElement, element.nextSibling);
+                }
+            }
+            if(this.dialog) this.dialog.hidden = expanded === 'false';
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        var button = ARIAButton.getButton(event.target);
+        if(button && button.haspopup === 'true' && button.expanded) {
+            button.expanded = button.expanded === 'true'? 'false' : 'true';
+        }
+    }, true);
+</script>
+<script>
+    function ARIADialog(element) {
+        element.aria = this;
+        this.element = element;
+    }
+
+    Object.defineProperty(ARIADialog.prototype, 'hidden', {
+        enumerable : true,
+        get : function() {
+            return String(this.element.getAttribute('hidden'));
+        },
+        set : function(value) {
+            this.element.hidden = String(value) === 'true';
+        }
+    });
+
+    ARIADialog.getDialog = function(element) {
+        return element.role === 'dialog'?
+            element.aria || new this(element) :
+            null
+    }
+</script>
+<span role=button tabindex=0 aria-haspopup=true aria-expanded=false class=button>
+    Show dialog
+    <div role=dialog class=dialog hidden>
+        <h1>Dialog</h1>
+        <p>
+            <label class=textbox>
+                <span class=label>Text box</span>
+                <input autocomplete=off class=box>
+            </label>
+        </p>
+        <p>
+            <span role=radiogroup class=radiogroup>
+                <span class=label>Radio group</span>
+                <span role=radio tabindex=0 class=radiobox>
+                    <span class=box></span>First
+                </span>
+                <span role=radio tabindex=-1 class=radiobox>
+                    <span class=box></span>Second
+                </span>
+            </span>
+        </p>
+        <p>
+            <span role=button tabindex=0 class=button>Submit button</span>
+        </p>
+    </div>
+</span>

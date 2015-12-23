@@ -63,7 +63,7 @@
             if(!this.dialog) {
                 var dialogElement = element.querySelector('[role=dialog]');
                 if(dialogElement) {
-                    this.dialog = ARIADialog.getDialog(dialogElement)
+                    this.dialog = ARIADialog.getDialog(dialogElement);
                     element.parentNode.insertBefore(dialogElement, element.nextSibling);
                 }
             }

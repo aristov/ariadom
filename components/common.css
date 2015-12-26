@@ -153,6 +153,7 @@ body
 .link
 {
     color: #04b;
+    border-radius: 1px;
 }
 .link:not(:focus):not(:hover)
 {
@@ -160,7 +161,6 @@ body
 }
 .link:focus
 {
-    border-radius: 1px;
     box-shadow: 0 0 0 2px #ffdb4d;
     outline: none;
 }

@@ -7,7 +7,8 @@
 
 <script src=role.js></script>
 <script src=ARIAButton.js></script>
-<script src=ARIARadioGroup.js></script>
+<script src=ARIACheckBox.js></script>
+<!--<script src=ARIARadioGroup.js></script>-->
 
 <link rel=stylesheet href=common.css>
 
@@ -49,6 +50,13 @@
         }
     });
 
+    Object.defineProperty(ARIAButton.prototype, 'dialog', {
+        enumerable : true,
+        get : function() {
+            return ARIADialog.getDialog(this.element.nextElementSibling);
+        }
+    });
+
     Object.defineProperty(ARIAButton.prototype, 'expanded', {
         enumerable : true,
         get : function() {
@@ -59,17 +67,26 @@
                 element = this.element;
 
             element.setAttribute('aria-expanded', expanded);
-
-            if(!this.dialog) {
-                var dialogElement = element.querySelector('[role=dialog]');
-                if(dialogElement) {
-                    this.dialog = ARIADialog.getDialog(dialogElement);
-                    element.parentNode.insertBefore(dialogElement, element.nextSibling);
-                }
+            if(this.dialog) {
+                this.dialog.trigger = expanded === 'true'? this : null;
+                this.dialog.hidden = expanded === 'false';
             }
-            if(this.dialog) this.dialog.hidden = expanded === 'false';
         }
     });
+
+    Object.defineProperty(ARIAButton.prototype, 'controls', {
+        enumerable : true,
+        get : function() {
+            return this.element.getAttribute('aria-controls') || '';
+        },
+        set : function(value) {
+            this.element.setAttribute('aria-controls', String(value));
+        }
+    });
+
+    ARIAButton.prototype.focus = function() {
+        this.element.focus();
+    }
 
     document.addEventListener('click', function(event) {
         var button = ARIAButton.getButton(event.target);
@@ -79,50 +96,84 @@
     }, true);
 </script>
 <script>
-    function ARIADialog(element) {
+    function ARIARoleType(element) {
         element.aria = this;
         this.element = element;
     }
 
+    ARIARoleType.prototype.getInstance = function() {
+
+    }
+
+    function ARIADialog(element) {
+        ARIARoleType.call(this, element);
+
+        element.addEventListener('keydown', this.onKeyDown.bind(this));
+    }
+
+    ARIADialog.prototype.trigger = null;
+
     Object.defineProperty(ARIADialog.prototype, 'hidden', {
         enumerable : true,
         get : function() {
-            return String(this.element.getAttribute('hidden'));
+            return String(this.element.getAttribute('hidden') || '');
         },
         set : function(value) {
-            this.element.hidden = String(value) === 'true';
+            var hidden = String(value);
+
+            this.element.hidden = hidden === 'true';
         }
     });
 
+    ARIADialog.prototype.onKeyDown = function(event) {
+        var keyCode = event.keyCode;
+
+        if(keyCode === 27) this.onEscapeKeyDown(event);
+    }
+
+    ARIADialog.prototype.onEscapeKeyDown = function(event) {
+        var trigger = this.trigger;
+        if(trigger) {
+            trigger.expanded = 'false';
+            trigger.focus();
+        } else {
+            this.hidden = true;
+        }
+    }
+
+    ARIADialog.role = 'dialog';
+
     ARIADialog.getDialog = function(element) {
-        return element.role === 'dialog'?
+        return element.role === this.role?
             element.aria || new this(element) :
-            null
+            null;
     }
 </script>
-<span role=button tabindex=0 aria-haspopup=true aria-expanded=false class=button>
-    Show dialog
-    <div role=dialog class=dialog hidden>
-        <h1>Dialog</h1>
-        <p>
-            <label class=textbox>
-                <span class=label>Text box</span>
-                <input autocomplete=off class=box>
-            </label>
-        </p>
-        <p>
-            <span role=radiogroup class=radiogroup>
-                <span class=label>Radio group</span>
-                <span role=radio tabindex=0 class=radiobox>
-                    <span class=box></span>First
-                </span>
-                <span role=radio tabindex=-1 class=radiobox>
-                    <span class=box></span>Second
-                </span>
+<span role=button tabindex=0 aria-haspopup=true aria-expanded=false class=button>Show dialog</span>
+<div role=dialog class=dialog hidden>
+    <h1>Dialog</h1>
+    <p>
+        <label class=textbox>
+            <span class=label>Text box</span>
+            <input autocomplete=off class=box>
+        </label>
+    </p>
+    <p>
+        <span role=checkbox tabindex=0 class=checkbox>
+            <span class=box></span>Check box
+        </span>
+        <!--<span role=radiogroup class=radiogroup>
+            <span class=label>Radio group</span>
+            <span role=radio tabindex=0 class=radiobox>
+                <span class=box></span>First
             </span>
-        </p>
-        <p>
-            <span role=button tabindex=0 class=button>Submit button</span>
-        </p>
-    </div>
-</span>
+            <span role=radio tabindex=-1 class=radiobox>
+                <span class=box></span>Second
+            </span>
+        </span>-->
+    </p>
+    <p>
+        <span role=button tabindex=0 class=button>Submit button</span>
+    </p>
+</div>
+

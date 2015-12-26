@@ -41,24 +41,21 @@
     <article>
         <heading>Radio group</heading>
         <section>
-            <radiogroup name="radiogroup">
-                <label>Simple</label>
+            <radiogroup name="radiogroup" label="Simple">
                 <radio value="first">First</radio>
                 <radio value="second">Second</radio>
                 <radio value="third">Third</radio>
             </radiogroup>
         </section>
         <section>
-            <radiogroup name="radiogroup-checked">
-                <label>Checked</label>
+            <radiogroup name="radiogroup-checked" label="Checked">
                 <radio value="first">First</radio>
                 <radio checked="true" value="second">Second</radio>
                 <radio value="third">Third</radio>
             </radiogroup>
         </section>
         <section>
-            <radiogroup disabled="true" name="radiogroup-checked-disabled">
-                <label>Disabled</label>
+            <radiogroup disabled="true" name="radiogroup-checked-disabled" label="Disabled">
                 <radio value="first">First</radio>
                 <radio value="second">Second</radio>
                 <radio checked="true" value="third">Third</radio>
@@ -68,16 +65,14 @@
     <article>
         <heading>List box</heading>
         <section>
-            <listbox name="listbox">
-                <label>Simple</label>
+            <listbox name="listbox" label="Simple">
                 <option value="first">First</option>
                 <option value="second">Second</option>
                 <option value="third">Third</option>
             </listbox>
         </section>
         <section>
-            <listbox disabled="true" name="listbox">
-                <label>Disabled</label>
+            <listbox disabled="true" name="listbox" label="Disabled">
                 <option value="first">First</option>
                 <option checked="true" value="second">Second</option>
                 <option value="third">Third</option>
@@ -87,13 +82,13 @@
     <article>
         <heading>Text box</heading>
         <section>
-            <textbox><label>Simple</label></textbox>
+            <textbox label="Simple"/>
         </section>
         <section>
-            <textbox value="Text"><label>Filled</label></textbox>
+            <textbox value="Text" label="Filled"/>
         </section>
         <section>
-            <textbox disabled="true" value="Text"><label>Disabled</label></textbox>
+            <textbox disabled="true" value="Text" label="Disabled"/>
         </section>
     </article>
     <article>
@@ -108,8 +103,7 @@
             <checkbox name="checkbox-button" value="on" view="button">Checkbox as button</checkbox>
         </section>
         <section>
-            <radiogroup name="radio-button-group" view="buttongroup">
-                <label>Disabled</label>
+            <radiogroup name="radio-button-group" view="buttongroup" label="Disabled">
                 <radio value="first">First</radio>
                 <radio value="second">Second</radio>
                 <radio value="third">Third</radio>

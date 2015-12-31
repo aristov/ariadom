@@ -74,6 +74,7 @@ function ARIARadio(element) {
 
     element.addEventListener('click', this.onClick.bind(this));
     element.addEventListener('keydown', this.onKeyDown.bind(this));
+    element.addEventListener('keyup', this.onKeyUp.bind(this));
 }
 
 Object.defineProperty(ARIARadio.prototype, 'checked', {
@@ -85,8 +86,8 @@ Object.defineProperty(ARIARadio.prototype, 'checked', {
         var element = this.element,
             checked = String(value);
 
-        element.setAttribute('tabindex', checked === 'true'? '0' : '-1');
         element.setAttribute('aria-checked', checked);
+        element.setAttribute('tabindex', checked === 'true'? '0' : '-1');
         this.group.value = this.value;
     }
 });
@@ -144,9 +145,18 @@ ARIARadio.prototype.onKeyDown = function(event) {
         this.onArrowKeyDown(event);
     }
 
-    if(keyCode === 32) {
+    if(event.keyCode === 32 && !event.repeat) {
         event.preventDefault(); // prevent page scrolling
-        this.onSpaceKeyDown(event);
+        this.element.classList.add('active');
+    }
+}
+
+ARIARadio.prototype.onKeyUp = function(event) {
+    if(event.keyCode === 32) {
+        var element = this.element;
+
+        element.classList.remove('active');
+        element.dispatchEvent(new Event('click'));
     }
 }
 
@@ -161,10 +171,6 @@ ARIARadio.prototype.onArrowKeyDown = function(event) {
     group.uncheck();
     group[index].checked = true;
     group[index].element.focus();
-}
-
-ARIARadio.prototype.onSpaceKeyDown = function(event) {
-    this.element.dispatchEvent(new Event('click'));
 }
 
 ARIARadio.getRadio = function(element) {

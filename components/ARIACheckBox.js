@@ -77,9 +77,10 @@ ARIACheckBox.prototype.getInput = function() {
 }
 
 ARIACheckBox.prototype.onKeyDown = function(event) {
-    var keyCode = event.keyCode;
-
-    if(keyCode === 32 && !event.repeat) this.element.classList.add('active');
+    if(event.keyCode === 32 && !event.repeat) {
+        event.preventDefault(); // prevent page scrolling
+        this.element.classList.add('active');
+    }
 }
 
 ARIACheckBox.prototype.onKeyUp = function(event) {

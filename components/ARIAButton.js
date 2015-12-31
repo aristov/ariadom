@@ -33,8 +33,10 @@ ARIAButton.prototype.onKeyDown = function(event) {
     if(keyCode === 13)
         this.element.dispatchEvent(new Event('click'));
 
-    if(keyCode === 32 && !event.repeat)
+    if(keyCode === 32 && !event.repeat) {
+        event.preventDefault();
         this.element.classList.add('active');
+    }
 }
 
 ARIAButton.prototype.onKeyUp = function(event) {

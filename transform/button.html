@@ -18,6 +18,10 @@
         {
             margin: 20px;
         }
+        pre
+        {
+            background: rgba(0, 0, 0, 0.1);
+        }
         section
         {
             margin: 20px 0;
@@ -26,34 +30,34 @@
 </head>
 <body>
     <script type=ariaml>
-        <button label="Simple"/>
+        <root>
+            <button label="Simple"/>
+            <button pressed="true" label="Pressed"/>
+            <button disabled="true" label="Disabled"/>
+            <button pressed="true" disabled="true" label="Pressed disabled"/>
+        </root>
     </script>
-    <script type=ariaml>
-        <button pressed="true" label="Pressed"/>
-    </script>
-    <script type=ariaml>
-        <button disabled="true" label="Disabled"/>
-    </script>
-    <script type=ariaml>
-        <button pressed="true" disabled="true" label="Pressed disabled"/>
-    </script>
-
+    <pre></pre>
     <script>
+        var source = document.querySelector('script[type=ariaml]').innerHTML;
+
+        document.querySelector('pre').textContent = source;
+
         function transform() {
-            var parser = new DOMParser();
+            var parser = new DOMParser(),
+                parsed = parser.parseFromString(source.trim(), 'application/xml'),
+                root = parsed.documentElement;
 
-            Array.prototype.forEach.call(
-                document.querySelectorAll('script[type=ariaml]'),
-                function(script) {
-                    var source = script.innerHTML.trim(),
-                        parsed = parser.parseFromString(source, 'application/xml'),
-                        result = ARIAButton.transform(parsed.firstElementChild),
-                        section = document.createElement('section');
+            Array.prototype.forEach.call(root.children, function(button) {
+                var result = ARIAButton.transform(button),
+                    section = document.createElement('section');
 
-                    section.appendChild(result);
-                    document.body.appendChild(section);
-                });
+                section.appendChild(result);
+                document.body.appendChild(section);
+            });
         };
     </script>
+
+    <button onclick="this.parentElement.removeChild(this);transform();">Transform</button>
 </body>
 </html>

@@ -58,10 +58,16 @@ ARIARadioGroup.prototype.uncheck = function() {
     });
 }
 
+ARIARadioGroup.role = 'radiogroup';
+
 ARIARadioGroup.getRadioGroup = function(element) {
-    return element.role === 'radiogroup'?
-        element.aria || new ARIARadioGroup(element) :
+    return element.role === this.role?
+        element.aria || new this(element) :
         null;
+}
+
+ARIARadioGroup.attachToDocument = function() {
+    ARIARadio.attachToDocument();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -173,9 +179,11 @@ ARIARadio.prototype.onArrowKeyDown = function(event) {
     group[index].element.focus();
 }
 
+ARIARadio.role = 'radio';
+
 ARIARadio.getRadio = function(element) {
-    return element.role === 'radio'?
-        element.aria || new ARIARadio(element) :
+    return element.role === this.role?
+        element.aria || new this(element) :
         null;
 }
 
@@ -184,5 +192,3 @@ ARIARadio.attachToDocument = function() {
         this.getRadio(event.target);
     }.bind(this), true);
 }
-
-ARIARadio.attachToDocument();

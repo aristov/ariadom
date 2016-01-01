@@ -46,5 +46,3 @@ ARIAHTMLTextBox.attachToDocument = function() {
         }
     }.bind(this), true);
 }
-
-ARIAHTMLTextBox.attachToDocument();

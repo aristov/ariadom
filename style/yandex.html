@@ -12,6 +12,15 @@
     <script src=/design/ARIARadioGroup.js></script>
     <script src=/design/ARIAListBox.js></script>
     <script src=/design/ARIAHTMLTextBox.js></script>
+    <script>
+        ARIAButton.attachToDocument();
+        ARIACheckBox.attachToDocument();
+        ARIARadioGroup.attachToDocument();
+        ARIAListBox.attachToDocument();
+        ARIAHTMLTextBox.attachToDocument();
+
+        document.addEventListener('click', function() {}); // cure for iOS
+    </script>
 
     <link rel=stylesheet href=yandex.css>
     <style>

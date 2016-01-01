@@ -101,9 +101,11 @@ ARIACheckBox.prototype.onClick = function(event) {
     }
 }
 
+ARIACheckBox.role = 'checkbox';
+
 ARIACheckBox.getCheckBox = function(element) {
-    return element.role === 'checkbox'?
-        element.aria || new ARIACheckBox(element) :
+    return element.role === this.role?
+        element.aria || new this(element) :
         null;
 }
 
@@ -112,5 +114,3 @@ ARIACheckBox.attachToDocument = function() {
         this.getCheckBox(event.target);
     }.bind(this), true);
 }
-
-ARIACheckBox.attachToDocument();

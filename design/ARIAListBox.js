@@ -142,9 +142,11 @@ ARIAListBox.prototype.onFocus = function(event) {
     if(!this.selected.length) this[0].selected = 'true';
 }
 
+ARIAListBox.role = 'listbox';
+
 ARIAListBox.getListBox = function(element) {
-    return element.role === 'listbox'?
-        element.aria || new ARIAListBox(element) :
+    return element.role === this.role?
+        element.aria || new this(element) :
         null;
 }
 
@@ -153,9 +155,9 @@ ARIAListBox.attachToDocument = function() {
         var listBox = this.getListBox(event.target);
         if(listBox) listBox.onFocus(event);
     }.bind(this), true);
-}
 
-ARIAListBox.attachToDocument();
+    ARIAOption.attachToDocument();
+}
 
 ////////////////////////////////////////////////////////////////
 
@@ -221,9 +223,11 @@ ARIAOption.prototype.onMouseEnter = function(event) {
     }
 }
 
+ARIAOption.role = 'option';
+
 ARIAOption.getOption = function(element) {
-    return element.role === 'option'?
-        element.aria || new ARIAOption(element) :
+    return element.role === this.role?
+        element.aria || new this(element) :
         null;
 }
 
@@ -233,5 +237,3 @@ ARIAOption.attachToDocument = function() {
         if(option) option.onMouseEnter(event);
     }.bind(this), true);
 }
-
-ARIAOption.attachToDocument();

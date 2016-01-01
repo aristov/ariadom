@@ -70,3 +70,20 @@ ARIAButton.attachToDocument = function() {
         this.getButton(event.target);
     }.bind(this), true);
 }
+
+ARIAButton.transform = function(button) {
+    var element = document.createElement('span');
+
+    element.setAttribute('role', 'button');
+
+    button.getAttribute('disabled') === 'true'?
+        element.setAttribute('aria-disabled', 'true') :
+        element.setAttribute('tabindex', '0');
+
+    if(button.hasAttribute('pressed'))
+        element.setAttribute('aria-pressed', button.getAttribute('pressed'));
+
+    element.classList.add(button.getAttribute('view') || 'button');
+
+    return element;
+}

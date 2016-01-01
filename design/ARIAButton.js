@@ -72,19 +72,31 @@ ARIAButton.attachToDocument = function() {
 }
 
 ARIAButton.transform = function(button) {
-    var element = document.createElement('span');
+    var element = document.createElement('span'),
+        view;
 
-    element.setAttribute('role', 'button');
+    element.setAttribute('role', this.role);
 
-    button.getAttribute('disabled') === 'true'?
-        element.setAttribute('aria-disabled', 'true') :
+    if(button.getAttribute('disabled') !== 'true')
         element.setAttribute('tabindex', '0');
 
-    if(button.hasAttribute('pressed'))
-        element.setAttribute('aria-pressed', button.getAttribute('pressed'));
+    Array.prototype.forEach.call(button.attributes, function(attribute) {
+        var name = attribute.name,
+            value = attribute.value;
 
-    element.classList.add(button.getAttribute('view') || 'button');
-    element.textContent = button.getAttribute('label');
+        if(name === 'disabled')
+            element.setAttribute('aria-disabled', value);
+        else if(name === 'pressed')
+            element.setAttribute('aria-pressed', value);
+        else if(name === 'view')
+            view = value;
+        else if(name === 'label')
+            element.textContent = value;
+        else
+            element.setAttribute(name, value);
+    });
+
+    element.classList.add(view || this.role);
 
     return element;
 }

@@ -84,6 +84,7 @@ ARIAButton.transform = function(button) {
         element.setAttribute('aria-pressed', button.getAttribute('pressed'));
 
     element.classList.add(button.getAttribute('view') || 'button');
+    element.textContent = button.getAttribute('label');
 
     return element;
 }

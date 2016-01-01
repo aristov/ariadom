@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <meta name=viewport content="width=device-width,maximum-scale=1,initial-scale=1,user-scalable=0">
+
+    <title>ARIAButton transform</title>
+
+    <script src=../design/role.js></script>
+    <script src=../design/ARIAButton.js></script>
+    <script>
+        ARIAButton.attachToDocument();
+    </script>
+
+    <link rel=stylesheet href=../style/yandex.css>
+    <style>
+        body
+        {
+            margin: 20px;
+        }
+        section
+        {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <script type=ariaml>
+        <button label="Simple"/>
+    </script>
+    <script type=ariaml>
+        <button pressed="true" label="Pressed"/>
+    </script>
+    <script type=ariaml>
+        <button disabled="true" label="Disabled"/>
+    </script>
+    <script type=ariaml>
+        <button pressed="true" disabled="true" label="Pressed disabled"/>
+    </script>
+
+    <script>
+        function transform() {
+            var parser = new DOMParser();
+
+            Array.prototype.forEach.call(
+                document.querySelectorAll('script[type=ariaml]'),
+                function(script) {
+                    var source = script.innerHTML.trim(),
+                        parsed = parser.parseFromString(source, 'application/xml'),
+                        result = ARIAButton.transform(parsed.firstElementChild),
+                        section = document.createElement('section');
+
+                    section.appendChild(result);
+                    document.body.appendChild(section);
+                });
+        };
+    </script>
+</body>
+</html>

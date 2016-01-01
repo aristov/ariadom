@@ -214,7 +214,7 @@ body
 
 .checkbox[aria-checked=true] .box::before
 {
-    content: url(checkbox-tick.svg);
+    content: url(yandex/checkmark.svg);
     position: absolute;
     top: -6px;
     left: 1px;
@@ -268,7 +268,7 @@ body
 }
 .listbox .option[aria-checked=true]::before
 {
-    content: url(checkmark.svg);
+    content: url(yandex/checkmark-small.svg);
     position: absolute;
     top: 2px;
     left: 10px;

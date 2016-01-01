@@ -72,7 +72,7 @@
         <section>
             <span role=checkbox tabindex=0 aria-checked=true class=checkbox>
                 <span class=box></span>Checked
-                <input type=hidden name=checkbox-checked value=on>
+                <input type=hidden name=checkbox-checked value=on autocomplete=off>
             </span>
         </section>
         <section>
@@ -83,53 +83,50 @@
         <section>
             <span role=checkbox aria-disabled=true aria-checked=true class=checkbox>
                 <span class=box></span>Checked disabled
-                <input type=hidden name=checkbox-checked-disabled value=on disabled>
+                <input type=hidden name=checkbox-checked-disabled value=on disabled autocomplete=off>
             </span>
         </section>
     </article>
     <article>
         <h1>Radio group</h1>
         <section>
-            <span role=radiogroup class=radiogroup>
+            <span role=radiogroup class=radiogroup aria-label=Simple>
                 <input type=hidden name=radiogroup autocomplete=off>
-                <span class=label>Simple</span>
-                <span role=radio tabindex=0 data-value=first class=radiobox>
+                <span role=radio tabindex=0 data-value=first class=radio>
                     <span class=box></span>First
                 </span>
-                <span role=radio tabindex=-1 data-value=second class=radiobox>
+                <span role=radio tabindex=-1 data-value=second class=radio>
                     <span class=box></span>Second
                 </span>
-                <span role=radio tabindex=-1 data-value=third class=radiobox>
+                <span role=radio tabindex=-1 data-value=third class=radio>
                     <span class=box></span>Third
                 </span>
             </span>
         </section>
         <section>
-            <span role=radiogroup class=radiogroup>
+            <span role=radiogroup class=radiogroup aria-label=Checked>
                 <input type=hidden name=radiogroup-checked value=second autocomplete=off>
-                <span class=label>Checked</span>
-                <span role=radio tabindex=-1 data-value=first class=radiobox>
+                <span role=radio tabindex=-1 data-value=first class=radio>
                     <span class=box></span>First
                 </span>
-                <span role=radio tabindex=0 aria-checked=true data-value=second class=radiobox>
+                <span role=radio tabindex=0 aria-checked=true data-value=second class=radio>
                     <span class=box></span>Second
                 </span>
-                <span role=radio tabindex=-1 data-value=third class=radiobox>
+                <span role=radio tabindex=-1 data-value=third class=radio>
                     <span class=box></span>Third
                 </span>
             </span>
         </section>
         <section>
-            <span role=radiogroup class=radiogroup aria-disabled=true>
+            <span role=radiogroup class=radiogroup aria-disabled=true aria-label=Disabled>
                 <input type=hidden name=radiogroup-checked-disabled value=third autocomplete=off disabled>
-                <span class=label>Disabled</span>
-                <span role=radio data-value=first class=radiobox>
+                <span role=radio data-value=first class=radio>
                     <span class=box></span>First
                 </span>
-                <span role=radio data-value=second class=radiobox>
+                <span role=radio data-value=second class=radio>
                     <span class=box></span>Second
                 </span>
-                <span role=radio aria-checked=true data-value=third class=radiobox>
+                <span role=radio aria-checked=true data-value=third class=radio>
                     <span class=box></span>Third
                 </span>
             </span>
@@ -138,9 +135,8 @@
     <article>
         <h1>List box</h1>
         <section>
-            <span role=listbox tabindex=0 class=listbox>
+            <span role=listbox tabindex=0 class=listbox aria-label=Simple>
                 <input type=hidden name=listbox value=two autocomplete=off>
-                <span class=label>Simple</span>
                 <span class=box>
                     <span role=option aria-checked=false data-value=first class=option>First</span>
                     <span role=option aria-checked=false data-value=second class=option>Second</span>
@@ -149,9 +145,8 @@
             </span>
         </section>
         <section>
-            <span role=listbox aria-disabled=true class=listbox>
+            <span role=listbox aria-disabled=true class=listbox aria-label=Disabled>
                 <input type=hidden name=listbox value=two autocomplete=off disabled>
-                <span class=label>Disabled</span>
                 <span class=box>
                     <span role=option aria-checked=false data-value=first class=option>First</span>
                     <span role=option aria-checked=true data-value=second class=option>Second</span>
@@ -163,20 +158,17 @@
     <article>
         <h1>Text box</h1>
         <section>
-            <label role=textbox class=textbox>
-                <span class=label>Simple</span>
+            <label role=textbox class=textbox aria-label=Simple>
                 <input autocomplete=off class=box>
             </label>
         </section>
         <section>
-            <label role=textbox class=textbox>
-                <span class=label>Filled</span>
+            <label role=textbox class=textbox aria-label=Filled>
                 <input value=Text autocomplete=off class=box>
             </label>
         </section>
         <section>
-            <label role=textbox class="textbox disabled">
-                <span class=label>Disabled</span>
+            <label role=textbox class="textbox disabled" aria-label=Disabled>
                 <input value=Text disabled autocomplete=off class=box>
             </label>
         </section>
@@ -184,20 +176,17 @@
     <article>
         <h1>Text area</h1>
         <section>
-            <label role=textbox class=textbox>
-                <span class=label>Simple</span>
+            <label role=textbox class=textbox aria-label=Simple>
                 <textarea autocomplete=off class=box></textarea>
             </label>
         </section>
         <section>
-            <label role=textbox class=textbox>
-                <span class=label>Filled</span>
+            <label role=textbox class=textbox aria-label=Filled>
                 <textarea autocomplete=off class=box>Text</textarea>
             </label>
         </section>
         <section>
-            <label role=textbox class="textbox disabled">
-                <span class=label>Disabled</span>
+            <label role=textbox class="textbox disabled" aria-label=Disabled>
                 <textarea disabled autocomplete=off class=box>text</textarea>
             </label>
         </section>
@@ -215,18 +204,16 @@
         </section>
         <section>
             <span role=group class=buttongroup aria-label="Check button group">
-                <span class=label>Check button group</span>
                 <span>
-                    <span role=checkbox tabindex=0 data-value=first class=button>First</span
-                    ><span role=checkbox tabindex=0 data-value=second class=button>Second</span
-                    ><span role=checkbox tabindex=0 data-value=third class=button>Third</span>
+                    <span role=checkbox tabindex=0 class=button>First</span
+                    ><span role=checkbox tabindex=0 class=button>Second</span
+                    ><span role=checkbox tabindex=0 class=button>Third</span>
                 </span>
             </span>
         </section>
         <section>
-            <span role=radiogroup class=buttongroup>
+            <span role=radiogroup class=buttongroup aria-label="Radio button group">
                 <input type=hidden name=radio-button-group autocomplete=off>
-                <span class=label>Radio button group</span>
                 <span>
                     <span role=radio tabindex=0 data-value=first class=button>First</span
                     ><span role=radio tabindex=-1 data-value=second class=button>Second</span

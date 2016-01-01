@@ -8,7 +8,7 @@ body
 
 .button,
 .checkbox,
-.radiobox,
+.radio,
 .listbox
 {
     display: inline-block;
@@ -20,14 +20,14 @@ body
 }
 .button,
 .checkbox,
-.radiobox,
+.radio,
 .listbox .option
 {
     cursor: pointer;
 }
 .button,
 .checkbox .box,
-.radiobox .box,
+.radio .box,
 .listbox .box,
 .textbox .box
 {
@@ -39,7 +39,7 @@ body
 
 .button:hover,
 .checkbox:hover .box,
-.radiobox:hover .box,
+.radio:hover .box,
 .listbox:hover .box,
 .textbox:hover .box
 {
@@ -50,7 +50,7 @@ body
 
 .button:focus,
 .checkbox:focus .box,
-.radiobox:focus .box,
+.radio:focus .box,
 .listbox:focus .box,
 .textbox .box:focus
 {
@@ -58,7 +58,7 @@ body
 }
 .button:focus,
 .checkbox:focus .box,
-.radiobox:focus .box,
+.radio:focus .box,
 .textbox .box:focus
 {
     box-shadow: inset 0 0 0 1px #ffdb4d;
@@ -70,8 +70,8 @@ body
 .button.active,
 .checkbox:active .box,
 .checkbox.active .box,
-.radiobox:active .box,
-.radiobox.active .box
+.radio:active .box,
+.radio.active .box
 {
     background: #f3f1ed;
 }
@@ -81,7 +81,7 @@ body
 .button[aria-pressed=true],
 .button[aria-checked=true],
 .checkbox[aria-checked=true] .box,
-.radiobox[aria-checked=true] .box,
+.radio[aria-checked=true] .box,
 .listbox:focus .option[aria-selected=true],
 .listbox:hover .option[aria-selected=true]:hover
 {
@@ -96,8 +96,8 @@ body
 .button[aria-checked=true].active,
 .checkbox[aria-checked=true]:active .box,
 .checkbox[aria-checked=true].active .box,
-.radiobox[aria-checked=true]:active .box,
-.radiobox[aria-checked=true].active .box,
+.radio[aria-checked=true]:active .box,
+.radio[aria-checked=true].active .box,
 .listbox:focus .option[aria-selected=true]:active,
 .listbox:focus .option[aria-selected=true].active
 {
@@ -108,9 +108,9 @@ body
 
 .button[aria-disabled=true],
 .checkbox[aria-disabled=true],
-.radiobox[aria-disabled=true],
+.radio[aria-disabled=true],
 .radiogroup[aria-disabled=true],
-.radiogroup[aria-disabled=true] .radiobox,
+.radiogroup[aria-disabled=true] .radio,
 .listbox[aria-disabled=true],
 .listbox[aria-disabled=true] .option,
 .textbox.disabled,
@@ -121,8 +121,8 @@ body
 }
 .button[aria-disabled=true],
 .checkbox[aria-disabled=true] .box,
-.radiobox[aria-disabled=true] .box,
-.radiogroup[aria-disabled=true] .radiobox .box,
+.radio[aria-disabled=true] .box,
+.radiogroup[aria-disabled=true] .radio .box,
 .listbox[aria-disabled=true] .box,
 .textbox .box:disabled
 {
@@ -134,15 +134,15 @@ body
 
 .button[aria-pressed=true][aria-disabled=true],
 .checkbox[aria-checked=true][aria-disabled=true] .box,
-.radiobox[aria-checked=true][aria-disabled=true] .box,
-.radiogroup[aria-disabled=true] .radiobox[aria-checked=true] .box
+.radio[aria-checked=true][aria-disabled=true] .box,
+.radiogroup[aria-disabled=true] .radio[aria-checked=true] .box
 {
     background: rgba(0, 0, 0, 0.15);
     border-color: transparent;
 }
 .checkbox[aria-checked=true][aria-disabled=true] .box::before,
-.radiobox[aria-checked=true][aria-disabled=true] .box::before,
-.radiogroup[aria-disabled=true] .radiobox[aria-checked=true] .box::before,
+.radio[aria-checked=true][aria-disabled=true] .box::before,
+.radiogroup[aria-disabled=true] .radio[aria-checked=true] .box::before,
 .listbox[aria-disabled=true] .option[aria-checked=true]::before
 {
     opacity: 0.4;
@@ -177,7 +177,7 @@ body
     color: #070;
 }
 
-/* button, checkbox, radiobox */
+/* button, checkbox, radio */
 
 .button,
 .checkbox .box
@@ -186,7 +186,7 @@ body
 }
 
 .checkbox .box,
-.radiobox .box
+.radio .box
 {
     display: inline-block;
     width: 12px;
@@ -220,21 +220,21 @@ body
     left: 1px;
 }
 
-/* radiogroup, radiobox */
+/* radiogroup, radio */
 
 .radiogroup
 {
     display: inline-block;
 }
-.radiogroup .radiobox
+.radiogroup .radio
 {
     margin-right: 10px;
 }
-.radiogroup .radiobox .box
+.radiogroup .radio .box
 {
     border-radius: 7px;
 }
-.radiogroup .radiobox[aria-checked=true] .box::before
+.radiogroup .radio[aria-checked=true] .box::before
 {
     content: '';
     width: 6px;
@@ -284,6 +284,7 @@ body
 {
     font: 13px Arial;
     padding: 5px 8px;
+    outline: none;
 }
 
 /* buttongroup */
@@ -321,11 +322,12 @@ body
 
 /* label */
 
-.radiogroup .label,
-.listbox .label,
-.textbox .label,
-.buttongroup .label
+.radiogroup[aria-label]::before,
+.listbox[aria-label]::before,
+.textbox[aria-label]::before,
+.buttongroup[aria-label]::before
 {
+    content: attr(aria-label);
     display: block;
     margin-bottom: 5px;
     cursor: default;

@@ -57,9 +57,11 @@ ARIAButton.prototype.onClick = function(event) {
     }
 }
 
+ARIAButton.role = 'button'
+
 ARIAButton.getButton = function(element) {
-    return element.role === 'button'?
-        element.aria || new ARIAButton(element) :
+    return element.role === this.role?
+        element.aria || new this(element) :
         null;
 }
 

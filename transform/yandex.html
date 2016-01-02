@@ -1,0 +1,326 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <meta name=viewport content="width=device-width,maximum-scale=1,initial-scale=1,user-scalable=0">
+
+    <title>ARIADOM: Yandex style</title>
+
+    <script src=../design/role.js></script>
+    <script src=../design/ARIAButton.js></script>
+    <script src=../design/ARIACheckBox.js></script>
+    <script src=../design/ARIARadioGroup.js></script>
+    <script src=../design/ARIAListBox.js></script>
+    <script src=../design/ARIAHTMLTextBox.js></script>
+    <script>
+        ARIAButton.attachToDocument();
+        ARIACheckBox.attachToDocument();
+        ARIARadioGroup.attachToDocument();
+        ARIAListBox.attachToDocument();
+        ARIAHTMLTextBox.attachToDocument();
+
+        document.addEventListener('click', function() {}); // cure for iOS
+    </script>
+
+    <link rel=stylesheet href=../style/yandex.css>
+    <style>
+        article
+        {
+            display: inline-block;
+            padding: 0 20px;
+            margin-right: 80px;
+            vertical-align: top;
+        }
+        section
+        {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<script>
+    var xhr = new XMLHttpRequest(),
+        forEach = Array.prototype.forEach;
+
+    xhr.addEventListener('load', onLoad);
+    xhr.open('GET', 'index.xml');
+    xhr.send();
+
+    function onLoad(event) {
+        var ts = Date.now();
+        document.body.appendChild(transformNode(this.responseXML.documentElement));
+        console.log(Date.now() - ts);
+    }
+
+    function transformNode(node) {
+        var nodeType = node.nodeType,
+            result;
+
+        if(nodeType === Node.TEXT_NODE)
+            result = transformTextNode(node);
+        else if(nodeType === Node.ELEMENT_NODE)
+            result = transformElementNode(node);
+
+        return result || null;
+    }
+
+    function transformTextNode(node) {
+        return document.createTextNode(node.nodeValue);
+    }
+
+    function transformElementNode(node) {
+        var nodeName = node.nodeName,
+            transform,
+            result;
+
+        if(transform = elements[nodeName]) {
+            result = transform(node);
+        } else if(roles[nodeName]) {
+            result = transformARIANode(node);
+        } else {
+            result = document.createElement(node.nodeName);
+        }
+
+        forEach.call(node.attributes, function(attribute) {
+            var name = attribute.name,
+                value = attribute.value;
+
+            ariaAttrs[name]?
+                result.setAttribute('aria-' + name, value) :
+                result.setAttribute(name, value);
+        });
+
+        var processChildNodes = childNodes[nodeName];
+        processChildNodes?
+            processChildNodes(node, result) :
+            forEach.call(node.childNodes, function(child) {
+                var childResult = transformNode(child);
+                if(childResult) result.appendChild(childResult);
+            });
+
+        return result;
+    }
+
+    function transformARIANode(node) {
+        var nodeName = node.nodeName,
+            result = document.createElement('span');
+
+        result.setAttribute('role', nodeName);
+        result.classList.add(nodeName);
+
+        return result;
+    }
+
+    var elements = {
+            root : function(element) {
+                return document.createElement('div');
+            },
+            heading : function(element) {
+                var level = element.getAttribute('level') || 1;
+                return document.createElement('h' + level);
+            },
+            link : function(element) {
+                var result = document.createElement('a');
+                result.classList.add('link');
+                return result;
+            },
+            button : function(element) {
+                var result = transformARIANode(element);
+                if(element.getAttribute('disabled') !== 'true') result.tabIndex = 0;
+                return result;
+            },
+            checkbox : function(element) {
+                var result = transformARIANode(element),
+                    box = document.createElement('span');
+                if(element.getAttribute('disabled') !== 'true') result.tabIndex = 0;
+                box.classList.add('box');
+                result.appendChild(box);
+                return result;
+            },
+            radiogroup : function(element) {
+                var result = transformARIANode(element);
+
+                return result;
+            },
+            radio : function(element) {
+                var result = transformARIANode(element),
+                    box = document.createElement('span'),
+                    radiogroup = element.closest('radiogroup'),
+                    first = radiogroup.querySelector('radio'),
+                    checked = radiogroup.querySelector('radio[checked=true]'),
+                    disabled = element.getAttribute('disabled') === 'true' ||
+                        radiogroup.getAttribute('disabled') === 'true';
+                if(!disabled)
+                    result.tabIndex = (!checked && element === first) || element === checked? 0 : -1;
+                box.classList.add('box');
+                result.appendChild(box);
+                return result;
+            },
+            listbox : function(element) {
+                var result = transformARIANode(element),
+                    box = document.createElement('span');
+                if(element.getAttribute('disabled') !== 'true') result.tabIndex = 0;
+                box.classList.add('box');
+                result.appendChild(box);
+                return result;
+            },
+            textbox : function(element) {
+                var result = transformARIANode(element),
+                    box = document.createElement('input'),
+                    value = element.getAttribute('value');
+                box.setAttribute('autocomplete', 'off');
+                box.classList.add('box');
+                if(typeof value === 'string') box.setAttribute('value', value);
+                if(element.getAttribute('disabled') === 'true') {
+                    result.classList.add('disabled');
+                    box.disabled = true;
+                }
+                result.appendChild(box);
+                return result;
+            }
+        },
+        childNodes = {
+            listbox : function(element, result) {
+                forEach.call(element.childNodes, function(child) {
+                    result.querySelector('.box').appendChild(transformNode(child));
+                });
+                return result;
+            }
+        },
+        roles = {
+            alert : true,
+            alertdialog : true,
+            application : true,
+            //article : true,
+            banner : true,
+            button : true,
+            cell : true,
+            checkbox : true,
+            columnheader : true,
+            combobox : true,
+            command : true,
+            complementary : true,
+            composite : true,
+            contentinfo : true,
+            definition : true,
+            dialog : true,
+            directory : true,
+            document : true,
+            feed : true,
+            figure : true,
+            form : true,
+            grid : true,
+            gridcell : true,
+            group : true,
+            heading : true,
+            img : true,
+            input : true,
+            landmark : true,
+            link : true,
+            list : true,
+            listbox : true,
+            listitem : true,
+            log : true,
+            main : true,
+            marquee : true,
+            math : true,
+            menu : true,
+            menubar : true,
+            menuitem : true,
+            menuitemcheckbox : true,
+            menuitemradio : true,
+            navigation : true,
+            none : true,
+            note : true,
+            option : true,
+            presentation : true,
+            progressbar : true,
+            radio : true,
+            radiogroup : true,
+            range : true,
+            region : true,
+            roletype : true,
+            row : true,
+            rowgroup : true,
+            rowheader : true,
+            search : true,
+            searchbox : true,
+            //section : true,
+            sectionhead : true,
+            select : true,
+            separator : true,
+            scrollbar : true,
+            slider : true,
+            spinbutton : true,
+            status : true,
+            structure : true,
+            'switch' : true,
+            tab : true,
+            table : true,
+            tablist : true,
+            tabpanel : true,
+            term : true,
+            text : true,
+            textbox : true,
+            timer : true,
+            toolbar : true,
+            tooltip : true,
+            tree : true,
+            treegrid : true,
+            treeitem : true,
+            widget : true,
+            window : true
+        },
+        ariaAttrs = {
+            activedescendant : true,
+            atomic : true,
+            autocomplete : true,
+            busy : true,
+            checked : true,
+            colcount : true,
+            colindex : true,
+            colspan : true,
+            controls : true,
+            current : true,
+            describedat : true,
+            describedby : true,
+            disabled : true,
+            dropeffect : true,
+            errormessage : true,
+            expanded : true,
+            flowto : true,
+            grabbed : true,
+            haspopup : true,
+            hidden : true,
+            invalid : true,
+            kbdshortcuts : true,
+            label : true,
+            labelledby : true,
+            level : true,
+            live : true,
+            modal : true,
+            multiline : true,
+            multiselectable : true,
+            orientation : true,
+            owns : true,
+            placeholder : true,
+            posinset : true,
+            pressed : true,
+            readonly : true,
+            relevant : true,
+            required : true,
+            roledescription : true,
+            rowcount : true,
+            rowindex : true,
+            rowspan : true,
+            selected : true,
+            setsize : true,
+            sort : true,
+            valuemax : true,
+            valuemin : true,
+            valuenow : true,
+            valuetext : true
+        };
+</script>
+</body>
+</html>

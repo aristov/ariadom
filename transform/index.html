@@ -65,7 +65,9 @@
         return template? template.applyNode(node) : null;
     }
 
-    function DOMTextTransform() {}
+    function DOMTextTransform() {
+        this.constructor = DOMTextTransform;
+    }
 
     DOMTextTransform.prototype = new DOMTransform();
 
@@ -79,7 +81,9 @@
 
     DOMTransform.prototype.nodeTypes[Node.TEXT_NODE] = new DOMTextTransform();
 
-    function DOMElementTransform() {}
+    function DOMElementTransform() {
+        this.constructor = DOMElementTransform;
+    }
 
     DOMElementTransform.prototype = new DOMTransform();
 
@@ -140,7 +144,9 @@
 
     DOMTransform.prototype.nodeTypes[Node.ELEMENT_NODE] = new DOMElementTransform();
 
-    function DOMARIATransform() {}
+    function DOMARIATransform() {
+        this.constructor = DOMARIATransform;
+    }
 
     DOMARIATransform.prototype = new DOMElementTransform();
 
@@ -245,45 +251,59 @@
             return 'a';
         }
         link.transform = function(node) {
-            var result = DOMElementTransform.prototype.transform.call(this, node);
+            var result = this.constructor.prototype.transform.call(this, node);
             result.classList.add('link');
             return result;
         }
-        DOMARIATransform.prototype.elements.link = link;
+        DOMElementTransform.prototype.elements.link = link;
     }();
+
+    new DOMElementTransform('link', {
+        tag : 'a',
+        classList : ['link']
+    });
 
     void function() {
         var button = new DOMARIATransform();
         button.transform = function(node) {
-            var result = DOMARIATransform.prototype.transform.call(this, node);
+            var result = this.constructor.prototype.transform.call(this, node);
             this.setTabIndex(node, result);
             return result;
         }
         DOMARIATransform.prototype.elements.button = button;
     }();
 
+    new DOMARIATransform('button', { tabindex : 0 });
+
     void function() {
         var checkbox = new DOMARIATransform();
         checkbox.transform = function(node) {
-            var result = DOMARIATransform.prototype.transform.call(this, node);
+            var result = this.constructor.prototype.transform.call(this, node);
             this.setTabIndex(node, result);
             return result;
         }
         checkbox.applyChildNodes = function(node, result) {
             result.appendChild(this.createBoxElement());
-            DOMARIATransform.prototype.applyChildNodes.call(this, node, result);
+            this.constructor.prototype.applyChildNodes.call(this, node, result);
         }
         DOMARIATransform.prototype.elements.checkbox = checkbox;
     }();
+
+    new DOMARIATransform('checkbox', {
+        tabindex : 0,
+        before : DOMARIATransform.prototype.createBoxElement
+    });
 
     void function() {
         DOMARIATransform.prototype.elements.radiogroup = new DOMARIATransform();
     }();
 
+    new DOMElementTransform('radiogroup', { aria : true });
+
     void function() {
         var radio = new DOMARIATransform();
         radio.transform = function(node) {
-            var result = DOMARIATransform.prototype.transform.call(this, node),
+            var result = this.constructor.prototype.transform.call(this, node),
                 radiogroup = node.closest('radiogroup'),
                 first = radiogroup.querySelector('radio'),
                 checked = radiogroup.querySelector('radio[checked=true]'),
@@ -295,21 +315,26 @@
         }
         radio.applyChildNodes = function(node, result) {
             result.appendChild(this.createBoxElement());
-            DOMARIATransform.prototype.applyChildNodes.call(this, node, result);
+            this.constructor.prototype.applyChildNodes.call(this, node, result);
         }
         DOMARIATransform.prototype.elements.radio = radio;
     }();
 
+    new DOMARIATransform('radio', {
+        before : 'box',
+        tabindex : -1
+    });
+
     void function() {
         var listbox = new DOMARIATransform();
         listbox.transform = function(node) {
-            var result = DOMARIATransform.prototype.transform.call(this, node);
+            var result = this.constructor.prototype.transform.call(this, node);
             this.setTabIndex(node, result);
             return result;
         }
         listbox.applyChildNodes = function(node, result) {
             result.appendChild(this.box = this.createBoxElement());
-            DOMARIATransform.prototype.applyChildNodes.call(this, node, result);
+            this.constructor.prototype.applyChildNodes.call(this, node, result);
         }
         listbox.appendChild = function(child, result) {
             this.box.appendChild(child);
@@ -321,10 +346,12 @@
         DOMARIATransform.prototype.elements.option = new DOMARIATransform();
     }();
 
+    new DOMElementTransform('option', { aria : { role : true, attributes : true }, view : true });
+
     void function() {
         var textbox = new DOMARIATransform();
         textbox.transform = function(node) {
-            var result = DOMARIATransform.prototype.transform.call(this, node),
+            var result = this.constructor.prototype.transform.call(this, node),
                 box = document.createElement('input'),
                 value = node.getAttribute('value');
             box.setAttribute('autocomplete', 'off');

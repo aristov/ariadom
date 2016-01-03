@@ -47,277 +47,298 @@
     xhr.send();
 
     function onLoad(event) {
-        var ts = Date.now();
-        document.body.appendChild(transformNode(this.responseXML.documentElement));
+        var ts = Date.now(),
+            domTransform = new DOMTransform();
+
+        document.body.appendChild(domTransform.apply(this.responseXML.documentElement));
         console.log(Date.now() - ts);
     }
 
-    function transformNode(node) {
-        var nodeType = node.nodeType,
-            result;
+    //================================================================================================
 
-        if(nodeType === Node.TEXT_NODE)
-            result = transformTextNode(node);
-        else if(nodeType === Node.ELEMENT_NODE)
-            result = transformElementNode(node);
+    function DOMTransform() {}
 
-        return result || null;
+    DOMTransform.prototype.nodeTypes = {};
+
+    DOMTransform.prototype.apply = function(node) {
+        var template = this.nodeTypes[node.nodeType];
+        return template? template.applyNode(node) : null;
     }
 
-    function transformTextNode(node) {
+    function DOMTextTransform() {}
+
+    DOMTextTransform.prototype = new DOMTransform();
+
+    DOMTextTransform.prototype.applyNode = function(node) {
+        return this.transform(node);
+    }
+
+    DOMTextTransform.prototype.transform = function(node) {
         return document.createTextNode(node.nodeValue);
     }
 
-    function transformElementNode(node) {
-        var nodeName = node.nodeName,
-            transform = elements[nodeName],
-            result;
+    DOMTransform.prototype.nodeTypes[Node.TEXT_NODE] = new DOMTextTransform();
 
-        result = transform?
-            transform(node) :
-            document.createElement(node.nodeName);
+    function DOMElementTransform() {}
 
+    DOMElementTransform.prototype = new DOMTransform();
+
+    DOMElementTransform.prototype.elements = {};
+    DOMElementTransform.prototype.attributes = {};
+
+    DOMElementTransform.prototype.applyNode = function(node) {
+        var template = this.elements[node.nodeName];
+        return template? template.transform(node) : this.transform(node);
+    }
+
+    DOMElementTransform.prototype.transform = function(node) {
+        var result = this.createElement(node);
+        if(node.hasAttributes()) this.applyAttributes(node, result);
+        if(node.childNodes.length) this.applyChildNodes(node, result);
+        return result;
+    }
+
+    DOMElementTransform.prototype.createElement = function(node) {
+        return document.createElement(this.nodeName(node));
+    }
+
+    DOMElementTransform.prototype.nodeName = function(node) {
+        return node.nodeName;
+    }
+
+    DOMElementTransform.prototype.applyAttributes = function(node, result) {
         forEach.call(node.attributes, function(attribute) {
-            var name = attribute.name,
-                value = attribute.value;
+            this.applyAttribute(attribute, node, result);
+        }, this);
+    }
 
-            ariaAttrs[name]?
-                result.setAttribute('aria-' + name, value) :
-                result.setAttribute(name, value);
-        });
+    DOMElementTransform.prototype.applyAttribute = function(attribute, node, result) {
+        var process = this.attributes[attribute.name];
+        process? 
+            process.call(this, attribute, node, result) : 
+            this.processAttribute(attribute, node, result);
+    }
 
-        var processChildNodes = childNodes[nodeName];
-        processChildNodes?
-            processChildNodes(node, result) :
-            forEach.call(node.childNodes, function(child) {
-                var childResult = transformNode(child);
-                if(childResult) result.appendChild(childResult);
-            });
+    DOMElementTransform.prototype.processAttribute = function(attribute, node, result) {
+        result.setAttribute(attribute.name, attribute.value);
+    }
 
+    DOMElementTransform.prototype.applyChildNodes = function(node, result) {
+        forEach.call(node.childNodes, function(childNode) {
+            this.processChildNode(childNode, node, result);
+        }, this);
+    }
+
+    DOMElementTransform.prototype.processChildNode = function(childNode, node, result) {
+        var child = this.apply(childNode);
+        if(child) this.appendChild(child, node, result);
+    }
+
+    DOMElementTransform.prototype.appendChild = function(child, node, result) {
+        result.appendChild(child);
+    }
+
+    DOMTransform.prototype.nodeTypes[Node.ELEMENT_NODE] = new DOMElementTransform();
+
+    function DOMARIATransform() {}
+
+    DOMARIATransform.prototype = new DOMElementTransform();
+
+    DOMARIATransform.prototype.transform = function(node) {
+        var result = DOMElementTransform.prototype.transform.call(this, node);
+        result.setAttribute('role', node.nodeName);
+        result.classList.add(node.nodeName);
         return result;
     }
 
-    function transformARIANode(node) {
-        var nodeName = node.nodeName,
-            result = document.createElement('span');
-
-        result.setAttribute('role', nodeName);
-        result.classList.add(nodeName);
-
-        return result;
+    DOMARIATransform.prototype.nodeName = function(node) {
+        return 'span';
     }
 
-    var elements = {
-            root : function(element) {
-                return document.createElement('div');
-            },
-            heading : function(element) {
-                var level = element.getAttribute('level') || 1;
-                return document.createElement('h' + level);
-            },
-            link : function(element) {
-                var result = document.createElement('a');
-                result.classList.add('link');
-                return result;
-            },
-            button : function(element) {
-                var result = transformARIANode(element);
-                if(element.getAttribute('disabled') !== 'true') result.tabIndex = 0;
-                return result;
-            },
-            checkbox : function(element) {
-                var result = transformARIANode(element),
-                    box = document.createElement('span');
-                if(element.getAttribute('disabled') !== 'true') result.tabIndex = 0;
-                box.classList.add('box');
-                result.appendChild(box);
-                return result;
-            },
-            radiogroup : function(element) {
-                return transformARIANode(element);
-            },
-            radio : function(element) {
-                var result = transformARIANode(element),
-                    box = document.createElement('span'),
-                    radiogroup = element.closest('radiogroup'),
-                    first = radiogroup.querySelector('radio'),
-                    checked = radiogroup.querySelector('radio[checked=true]'),
-                    disabled = element.getAttribute('disabled') === 'true' ||
-                        radiogroup.getAttribute('disabled') === 'true';
-                if(!disabled)
-                    result.tabIndex = (!checked && element === first) || element === checked? 0 : -1;
-                box.classList.add('box');
-                result.appendChild(box);
-                return result;
-            },
-            listbox : function(element) {
-                var result = transformARIANode(element),
-                    box = document.createElement('span');
-                if(element.getAttribute('disabled') !== 'true') result.tabIndex = 0;
-                box.classList.add('box');
-                result.appendChild(box);
-                return result;
-            },
-            option : function(element) {
-                return transformARIANode(element);
-            },
-            textbox : function(element) {
-                var result = transformARIANode(element),
-                    box = document.createElement('input'),
-                    value = element.getAttribute('value');
-                box.setAttribute('autocomplete', 'off');
-                box.classList.add('box');
-                if(typeof value === 'string') box.setAttribute('value', value);
-                if(element.getAttribute('disabled') === 'true') {
-                    result.classList.add('disabled');
-                    box.disabled = true;
-                }
-                result.appendChild(box);
-                return result;
+    DOMARIATransform.prototype.processAttribute = function(attribute, node, result) {
+        var name = attribute.name;
+        this.aria[name]?
+            result.setAttribute('aria-' + name, attribute.value) :
+            DOMElementTransform.prototype.processAttribute(attribute, node, result);
+    }
+
+    DOMARIATransform.prototype.setTabIndex = function(node, result) {
+        if(node.getAttribute('disabled') !== 'true') result.tabIndex = 0;
+    }
+
+    DOMARIATransform.prototype.createBoxElement = function() {
+        var box = document.createElement('span');
+        box.classList.add('box');
+        return box;
+    }
+
+    DOMARIATransform.prototype.aria = {
+        activedescendant : true,
+        atomic : true,
+        autocomplete : true,
+        busy : true,
+        checked : true,
+        colcount : true,
+        colindex : true,
+        colspan : true,
+        controls : true,
+        current : true,
+        describedat : true,
+        describedby : true,
+        disabled : true,
+        dropeffect : true,
+        errormessage : true,
+        expanded : true,
+        flowto : true,
+        grabbed : true,
+        haspopup : true,
+        hidden : true,
+        invalid : true,
+        kbdshortcuts : true,
+        label : true,
+        labelledby : true,
+        level : true,
+        live : true,
+        modal : true,
+        multiline : true,
+        multiselectable : true,
+        orientation : true,
+        owns : true,
+        placeholder : true,
+        posinset : true,
+        pressed : true,
+        readonly : true,
+        relevant : true,
+        required : true,
+        roledescription : true,
+        rowcount : true,
+        rowindex : true,
+        rowspan : true,
+        selected : true,
+        setsize : true,
+        sort : true,
+        valuemax : true,
+        valuemin : true,
+        valuenow : true,
+        valuetext : true
+    };
+
+    void function() {
+        var root = new DOMElementTransform();
+        root.nodeName = function(node) {
+            return 'div';
+        }
+        DOMElementTransform.prototype.elements.root = root;
+    }();
+
+    void function() {
+        var heading = new DOMElementTransform();
+        heading.nodeName = function(node) {
+            return 'h' + (node.getAttribute('level') || 1);
+        }
+        DOMElementTransform.prototype.elements.heading = heading;
+    }();
+
+    void function() {
+        var link = new DOMElementTransform();
+        link.nodeName = function(node) {
+            return 'a';
+        }
+        link.transform = function(node) {
+            var result = DOMElementTransform.prototype.transform.call(this, node);
+            result.classList.add('link');
+            return result;
+        }
+        DOMARIATransform.prototype.elements.link = link;
+    }();
+
+    void function() {
+        var button = new DOMARIATransform();
+        button.transform = function(node) {
+            var result = DOMARIATransform.prototype.transform.call(this, node);
+            this.setTabIndex(node, result);
+            return result;
+        }
+        DOMARIATransform.prototype.elements.button = button;
+    }();
+
+    void function() {
+        var checkbox = new DOMARIATransform();
+        checkbox.transform = function(node) {
+            var result = DOMARIATransform.prototype.transform.call(this, node);
+            this.setTabIndex(node, result);
+            return result;
+        }
+        checkbox.applyChildNodes = function(node, result) {
+            result.appendChild(this.createBoxElement());
+            DOMARIATransform.prototype.applyChildNodes.call(this, node, result);
+        }
+        DOMARIATransform.prototype.elements.checkbox = checkbox;
+    }();
+
+    void function() {
+        DOMARIATransform.prototype.elements.radiogroup = new DOMARIATransform();
+    }();
+
+    void function() {
+        var radio = new DOMARIATransform();
+        radio.transform = function(node) {
+            var result = DOMARIATransform.prototype.transform.call(this, node),
+                radiogroup = node.closest('radiogroup'),
+                first = radiogroup.querySelector('radio'),
+                checked = radiogroup.querySelector('radio[checked=true]'),
+                disabled = node.getAttribute('disabled') === 'true' ||
+                    radiogroup.getAttribute('disabled') === 'true';
+            if(!disabled)
+                result.tabIndex = (!checked && node === first) || node === checked? 0 : -1;
+            return result;
+        }
+        radio.applyChildNodes = function(node, result) {
+            result.appendChild(this.createBoxElement());
+            DOMARIATransform.prototype.applyChildNodes.call(this, node, result);
+        }
+        DOMARIATransform.prototype.elements.radio = radio;
+    }();
+
+    void function() {
+        var listbox = new DOMARIATransform();
+        listbox.transform = function(node) {
+            var result = DOMARIATransform.prototype.transform.call(this, node);
+            this.setTabIndex(node, result);
+            return result;
+        }
+        listbox.applyChildNodes = function(node, result) {
+            result.appendChild(this.box = this.createBoxElement());
+            DOMARIATransform.prototype.applyChildNodes.call(this, node, result);
+        }
+        listbox.appendChild = function(child, result) {
+            this.box.appendChild(child);
+        }
+        DOMARIATransform.prototype.elements.listbox = listbox;
+    }();
+
+    void function() {
+        DOMARIATransform.prototype.elements.option = new DOMARIATransform();
+    }();
+
+    void function() {
+        var textbox = new DOMARIATransform();
+        textbox.transform = function(node) {
+            var result = DOMARIATransform.prototype.transform.call(this, node),
+                box = document.createElement('input'),
+                value = node.getAttribute('value');
+            box.setAttribute('autocomplete', 'off');
+            box.classList.add('box');
+            if(typeof value === 'string') box.setAttribute('value', value);
+            if(node.getAttribute('disabled') === 'true') {
+                result.classList.add('disabled');
+                box.disabled = true;
             }
-        },
-        childNodes = {
-            listbox : function(element, result) {
-                forEach.call(element.childNodes, function(child) {
-                    result.querySelector('.box').appendChild(transformNode(child));
-                });
-                return result;
-            }
-        },
-        roles = {
-            alert : true,
-            alertdialog : true,
-            application : true,
-            //article : true,
-            banner : true,
-            button : true,
-            cell : true,
-            checkbox : true,
-            columnheader : true,
-            combobox : true,
-            command : true,
-            complementary : true,
-            composite : true,
-            contentinfo : true,
-            definition : true,
-            dialog : true,
-            directory : true,
-            document : true,
-            feed : true,
-            figure : true,
-            form : true,
-            grid : true,
-            gridcell : true,
-            group : true,
-            heading : true,
-            img : true,
-            input : true,
-            landmark : true,
-            link : true,
-            list : true,
-            listbox : true,
-            listitem : true,
-            log : true,
-            main : true,
-            marquee : true,
-            math : true,
-            menu : true,
-            menubar : true,
-            menuitem : true,
-            menuitemcheckbox : true,
-            menuitemradio : true,
-            navigation : true,
-            none : true,
-            note : true,
-            option : true,
-            presentation : true,
-            progressbar : true,
-            radio : true,
-            radiogroup : true,
-            range : true,
-            region : true,
-            roletype : true,
-            row : true,
-            rowgroup : true,
-            rowheader : true,
-            search : true,
-            searchbox : true,
-            //section : true,
-            sectionhead : true,
-            select : true,
-            separator : true,
-            scrollbar : true,
-            slider : true,
-            spinbutton : true,
-            status : true,
-            structure : true,
-            'switch' : true,
-            tab : true,
-            table : true,
-            tablist : true,
-            tabpanel : true,
-            term : true,
-            text : true,
-            textbox : true,
-            timer : true,
-            toolbar : true,
-            tooltip : true,
-            tree : true,
-            treegrid : true,
-            treeitem : true,
-            widget : true,
-            window : true
-        },
-        ariaAttrs = {
-            activedescendant : true,
-            atomic : true,
-            autocomplete : true,
-            busy : true,
-            checked : true,
-            colcount : true,
-            colindex : true,
-            colspan : true,
-            controls : true,
-            current : true,
-            describedat : true,
-            describedby : true,
-            disabled : true,
-            dropeffect : true,
-            errormessage : true,
-            expanded : true,
-            flowto : true,
-            grabbed : true,
-            haspopup : true,
-            hidden : true,
-            invalid : true,
-            kbdshortcuts : true,
-            label : true,
-            labelledby : true,
-            level : true,
-            live : true,
-            modal : true,
-            multiline : true,
-            multiselectable : true,
-            orientation : true,
-            owns : true,
-            placeholder : true,
-            posinset : true,
-            pressed : true,
-            readonly : true,
-            relevant : true,
-            required : true,
-            roledescription : true,
-            rowcount : true,
-            rowindex : true,
-            rowspan : true,
-            selected : true,
-            setsize : true,
-            sort : true,
-            valuemax : true,
-            valuemin : true,
-            valuenow : true,
-            valuetext : true
-        };
+            result.appendChild(box);
+            return result;
+        }
+        DOMARIATransform.prototype.elements.textbox = textbox;
+    }();
 </script>
 </body>
 </html>

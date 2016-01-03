@@ -70,16 +70,12 @@
 
     function transformElementNode(node) {
         var nodeName = node.nodeName,
-            transform,
+            transform = elements[nodeName],
             result;
 
-        if(transform = elements[nodeName]) {
-            result = transform(node);
-        } else if(roles[nodeName]) {
-            result = transformARIANode(node);
-        } else {
-            result = document.createElement(node.nodeName);
-        }
+        result = transform?
+            transform(node) :
+            document.createElement(node.nodeName);
 
         forEach.call(node.attributes, function(attribute) {
             var name = attribute.name,
@@ -138,9 +134,7 @@
                 return result;
             },
             radiogroup : function(element) {
-                var result = transformARIANode(element);
-
-                return result;
+                return transformARIANode(element);
             },
             radio : function(element) {
                 var result = transformARIANode(element),
@@ -163,6 +157,9 @@
                 box.classList.add('box');
                 result.appendChild(box);
                 return result;
+            },
+            option : function(element) {
+                return transformARIANode(element);
             },
             textbox : function(element) {
                 var result = transformARIANode(element),

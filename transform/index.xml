@@ -103,10 +103,10 @@
             <checkbox name="checkbox-button" value="on" view="button">Checkbox as button</checkbox>
         </section>
         <section>
-            <radiogroup name="radio-button-group" view="buttongroup" label="Disabled">
-                <radio value="first">First</radio>
-                <radio value="second">Second</radio>
-                <radio value="third">Third</radio>
+            <radiogroup name="radio-button-group" view="buttongroup" label="Radio button group">
+                <radio value="first">First</radio
+                ><radio value="second">Second</radio
+                ><radio value="third">Third</radio>
             </radiogroup>
         </section>
     </article>

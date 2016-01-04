@@ -21,6 +21,7 @@
 
         document.addEventListener('click', function() {}); // cure for iOS
     </script>
+    <script src=domTransform.js></script>
 
     <link rel=stylesheet href=../style/yandex.css>
     <style>
@@ -40,15 +41,14 @@
 <body>
 <script>
     var xhr = new XMLHttpRequest(),
-        forEach = Array.prototype.forEach;
+        domTransform = new DOMTransform();
 
     xhr.addEventListener('load', onLoad);
     xhr.open('GET', 'index.xml');
     xhr.send();
 
     function onLoad(event) {
-        var ts = Date.now(),
-            domTransform = new DOMTransform();
+        var ts = Date.now();
 
         document.body.appendChild(domTransform.apply(this.responseXML.documentElement));
         console.log(Date.now() - ts);
@@ -56,281 +56,191 @@
 
     //================================================================================================
 
-    function DOMTransform() {}
+    domTransform.element('root', { tagName : 'div' });
 
-    DOMTransform.prototype.nodeTypes = {};
+    domTransform.element('heading', { tagName : 'h1' });
 
-    DOMTransform.prototype.apply = function(node) {
-        var template = this.nodeTypes[node.nodeType];
-        return template? template.process(node) : null;
-    }
-
-    function DOMTextTransform() {
-        this.constructor = DOMTextTransform;
-    }
-
-    DOMTextTransform.prototype = new DOMTransform();
-
-    DOMTextTransform.prototype.process = function(node) {
-        this.node = node;
-        return this.transform();
-    }
-
-    DOMTextTransform.prototype.transform = function() {
-        return document.createTextNode(this.node.nodeValue);
-    }
-
-    DOMTransform.prototype.nodeTypes[Node.TEXT_NODE] = new DOMTextTransform();
-
-    function DOMElementTransform() {
-        this.constructor = DOMElementTransform;
-    }
-
-    DOMElementTransform.prototype = new DOMTransform();
-
-    DOMElementTransform.prototype.element = null;
-    DOMElementTransform.prototype.result = null;
-    DOMElementTransform.prototype.className = '';
-
-    DOMElementTransform.prototype.elements = {};
-    DOMElementTransform.prototype.attributes = {};
-
-    DOMElementTransform.prototype.process = function(element) {
-        var template = this.elements[element.tagName] || this;
-        template.element = element;
-        return template.transform();
-    }
-
-    DOMElementTransform.prototype.transform = function() {
-        var result = this.result = document.createElement(this.tagName);
-        this.applyAttributes();
-        this.applyClassName();
-        this.applyChildNodes();
-        return result;
-    }
-
-    Object.defineProperty(DOMElementTransform.prototype, 'tagName', {
-        configurable : true,
-        enumerable : true,
-        get : function() {
-            return this.element.tagName;
-        }
-    });
-
-    DOMElementTransform.prototype.createElement = function(name, attrs) {
-        var element = document.createElement(name);
-        if(attrs) for(var attr in attrs) element.setAttribute(attr, attrs[attr]);
-        return element;
-    }
-
-    DOMElementTransform.prototype.applyAttributes = function() {
-        var _this = this,
-            attrs = Array.prototype.reduce.call(
-                this.element.attributes,
-                function(res, attribute) {
-                    res[attribute.name] = attribute.value;
-                    return res;
-                }, {}),
-            name;
-
-        for(name in this.attributes) attrs[name] = this.attributes[name];
-        for(name in attrs) this.applyAttribute(name, attrs[name]);
-    }
-
-    DOMElementTransform.prototype.applyAttribute = function(name, value) {
-        if(typeof value === 'function')
-            value = value.call(this, name, this.element.getAttribute(name));
-        if(typeof value !== 'undefined')
-            this.result.setAttribute(name, value);
-    }
-
-    DOMElementTransform.prototype.applyClassName = function() {
-        if(this.className) this.result.className = this.className;
-    }
-
-    DOMElementTransform.prototype.applyChildNodes = function() {
-        var result = this.result;
-        forEach.call(this.element.childNodes, function(childNode) {
-            this.processChildNode(childNode);
-            this.result = result;
-        }, this);
-    }
-
-    DOMElementTransform.prototype.processChildNode = function(childNode) {
-        var result = this.result,
-            child = this.apply(childNode);
-        if(child) result.appendChild(child);
-    }
-
-    DOMTransform.prototype.nodeTypes[Node.ELEMENT_NODE] = new DOMElementTransform();
-
-    DOMTransform.element = function(name, template) {
-        var element = new DOMElementTransform();
-        if(template.tagName) {
-            Object.defineProperty(element, 'tagName', {
-                enumerable : true,
-                configurable : true,
-                writable : true,
-                value : template.tagName
-            });
-        }
-        if(template.attributes) element.attributes = template.attributes;
-        if(template.className) element.className = template.className;
-        DOMElementTransform.prototype.elements[name] = element;
-    }
-
-    DOMTransform.element('root', { tagName : 'div' });
-
-    DOMTransform.element('heading', { tagName : 'h1' });
-
-    DOMTransform.element('link', {
+    domTransform.element('link', {
         tagName : 'a',
         attributes : {
             view : function(name, value) {
-                this.result.classList.add(value || 'link');
+                this.target.classList.add(value || 'link');
             },
             mix : function(name, value) {
-                if(value) this.result.classList.add(value);
+                if(value) this.target.classList.add(value);
             }
         }
     });
 
-    DOMTransform.element('button', {
+    domTransform.element('button', {
         tagName : 'span',
         attributes : {
             role : 'button',
             disabled : function(name, value) {
                 value === 'true'?
-                    this.result.setAttribute('aria-disabled', 'true') :
-                    this.result.tabIndex = 0;
+                    this.target.setAttribute('aria-disabled', 'true') :
+                    this.target.tabIndex = 0;
             },
             pressed : function(name, value) {
-                if(value) this.result.setAttribute('aria-pressed', value);
+                if(value) this.target.setAttribute('aria-pressed', value);
             },
             view : function(name, value) {
-                this.result.classList.add(value || 'button');
+                this.target.classList.add(value || 'button');
             }
         }
     });
 
-    DOMTransform.element('checkbox', {
+    domTransform.element('checkbox', {
         tagName : 'span',
         attributes : {
             role : 'checkbox',
             disabled : function(name, value) {
-                this.result.setAttribute('aria-disabled', value || 'false');
+                this.target.setAttribute('aria-disabled', value || 'false');
             },
             tabindex : function(name, value) {
-                if(this.element.getAttribute('disabled') !== 'true') return '0';
+                if(this.source.getAttribute('disabled') !== 'true') return '0';
             },
             checked : function(name, value) {
-                if(value) this.result.setAttribute('aria-checked', value);
+                if(value) this.target.setAttribute('aria-checked', value);
             },
             view : function(name, value) {
                 var view = value || 'checkbox';
-                this.result.classList.add(view);
+                this.target.classList.add(view);
                 if(view === 'checkbox') {
                     var box = this.createElement('span', { 'class' : 'box' });
-                    this.result.appendChild(box);
+                    this.target.appendChild(box);
                 }
             }
-        },
-        never : function() {
-            this.create({ tagName : 'span', className : 'box' });
-            this.create('span', { 'class' : 'box' });
-            this.sourceElement;
-            this.targetElement;
-
-            //this.getClass();
-            this.hasClass('button');
-
-            //this.setClass('button shadow');
-            this.addClass('link');
-            //this.removeClass('link');
-            //this.toggleClass('focus');
-
-            this.getAttr('disabled');
-            this.hasAttr('checked');
-            this.setAttr('aria-checked', 'true');
-            //this.removeAttr('aria-disabled');
         }
     });
 
-    /*void function() {
-        DOMARIATransform.prototype.elements.radiogroup = new DOMARIATransform();
-    }();
-
-    new DOMElementTransform('radiogroup', { aria : true });
-
-    void function() {
-        var radio = new DOMARIATransform();
-        radio.transform = function(node) {
-            var result = Object.getPrototypeOf(this).transform.call(this, node),
-                radiogroup = node.closest('radiogroup'),
-                first = radiogroup.querySelector('radio'),
-                checked = radiogroup.querySelector('radio[checked=true]'),
-                disabled = node.getAttribute('disabled') === 'true' ||
-                    radiogroup.getAttribute('disabled') === 'true';
-            if(!disabled)
-                result.tabIndex = (!checked && node === first) || node === checked? 0 : -1;
-            return result;
-        }
-        radio.applyChildNodes = function(node, result) {
-            result.appendChild(this.createBoxElement());
-            Object.getPrototypeOf(this).applyChildNodes.call(this, node, result);
-        }
-        DOMARIATransform.prototype.elements.radio = radio;
-    }();
-
-    new DOMARIATransform('radio', {
-        before : 'box',
-        tabindex : -1
-    });
-
-    void function() {
-        var listbox = new DOMARIATransform();
-        listbox.transform = function(node) {
-            var result = Object.getPrototypeOf(this).transform.call(this, node);
-            this.setTabIndex(node, result);
-            return result;
-        }
-        listbox.applyChildNodes = function(node, result) {
-            result.appendChild(this.box = this.createBoxElement());
-            Object.getPrototypeOf(this).applyChildNodes.call(this, node, result);
-        }
-        listbox.appendChild = function(child, result) {
-            this.box.appendChild(child);
-        }
-        DOMARIATransform.prototype.elements.listbox = listbox;
-    }();
-
-    void function() {
-        DOMARIATransform.prototype.elements.option = new DOMARIATransform();
-    }();
-
-    new DOMElementTransform('option', { aria : { role : true, attributes : true }, view : true });
-
-    void function() {
-        var textbox = new DOMARIATransform();
-        textbox.transform = function(node) {
-            var result = Object.getPrototypeOf(this).transform.call(this, node),
-                box = document.createElement('input'),
-                value = node.getAttribute('value');
-            box.setAttribute('autocomplete', 'off');
-            box.classList.add('box');
-            if(typeof value === 'string') box.setAttribute('value', value);
-            if(node.getAttribute('disabled') === 'true') {
-                result.classList.add('disabled');
-                box.disabled = true;
+    domTransform.element('radiogroup', {
+        tagName : 'span',
+        attributes : {
+            role : 'radiogroup',
+            label : function(name, value) {
+                if(value) this.target.setAttribute('aria-label', value);
+            },
+            disabled : function(name, value) {
+                if(value === 'true') {
+                    this.target.setAttribute('aria-disabled', 'true');
+                } else {
+                    var source = this.source,
+                        checked = source.querySelector('radio[checked=true]');
+                    (checked || source.querySelector('radio'))
+                        .setAttribute('tabindex', '0');
+                }
+            },
+            view : function(name, value) {
+                var view = value || 'radiogroup';
+                this.target.classList.add(view);
+                if(value === 'buttongroup') {
+                    Array.prototype.forEach.call(
+                        this.source.querySelectorAll('radio'),
+                        function(radio) {
+                            radio.setAttribute('view', 'button');
+                        });
+                }
             }
-            result.appendChild(box);
-            return result;
         }
-        textbox.nodeName = function(node) {
-            return 'label';
+    });
+
+    domTransform.element('radio', {
+        tagName : 'span',
+        attributes : {
+            role : 'radio',
+            checked : function(name, value) {
+                if(value === 'true')
+                    this.target.setAttribute('aria-checked', 'true');
+            },
+            view : function(name, value) {
+                var view = value || 'radio',
+                    target = this.target;
+                target.classList.add(view);
+                if(view === 'radio') {
+                    var box = this.createElement('span', { 'class' : 'box' });
+                    target.appendChild(box);
+                }
+            },
+            tabindex : function(name, value) {
+                return value || '-1';
+            }
         }
-        DOMARIATransform.prototype.elements.textbox = textbox;
-    }();*/
+    });
+
+    domTransform.element('listbox', {
+        tagName : 'span',
+        attributes : {
+            role : 'listbox',
+            disabled : function(name, value) {
+                value === 'true'?
+                    this.target.setAttribute('aria-disabled', 'true') :
+                    this.target.tabIndex = 0;
+            },
+            label : function(name, value) {
+                if(value) this.target.setAttribute('aria-label', value);
+            },
+            view : function(name, value) {
+                var target = this.target;
+                target.appendChild(this.createElement('span', { 'class' : 'box' }));
+                target.classList.add(value || 'listbox');
+            }
+        },
+        postProcess : function() {
+            var box = this.target.querySelector('.box');
+            Array.prototype.forEach.call(
+                this.target.querySelectorAll('[role=option]'),
+                function(option) {
+                    box.appendChild(option);
+                });
+        }
+    });
+
+    domTransform.element('option', {
+        tagName : 'span',
+        attributes : {
+            role : 'option',
+            selected : function(name, value) {
+                if(value === 'true')
+                    this.target.setAttribute('aria-selected', 'true');
+            },
+            checked : function(name, value) {
+                if(value === 'true')
+                    this.target.setAttribute('aria-checked', 'true');
+            },
+            view : function(name, value) {
+                this.target.classList.add(value || 'option');
+            }
+        }
+    });
+
+    domTransform.element('textbox', {
+        tagName : 'span',
+        attributes : {
+            role : 'textbox',
+            label : function(name, value) {
+                if(value) this.target.setAttribute('aria-label', value);
+            },
+            disabled : function(name, value) {
+                if(value === 'true') {
+                    this.target.classList.add('disabled');
+                }
+            },
+            view : function(name, value) {
+                var source = this.source,
+                    target = this.target,
+                    box = document.createElement('input');
+                box.classList.add('box');
+                box.autocomplete = 'off';
+                box.value = source.getAttribute('value') || '';
+                if(source.getAttribute('disabled') === 'true') {
+                    box.disabled = true;
+                }
+                target.appendChild(box);
+                target.classList.add(value || 'textbox');
+            }
+        }
+    });
 </script>
 </body>
 </html>

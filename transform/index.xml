@@ -2,7 +2,7 @@
     <article>
         <heading>Link</heading>
         <section>
-            <link href="yandex.ru">Simple</link>
+            <link href="//yandex.ru">Simple</link>
         </section>
         <section>
             <link href="//google.ru" rel="external">External</link>

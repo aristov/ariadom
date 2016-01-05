@@ -163,8 +163,12 @@
                 }
             },
             tabindex : function(name, value) {
-                return value || '-1';
+                if(!this.isDisabled()) return value || '-1';
             }
+        },
+        isDisabled : function() {
+            var radiogroup = this.source.closest('radiogroup');
+            return radiogroup.getAttribute('disabled') === 'true';
         }
     });
 

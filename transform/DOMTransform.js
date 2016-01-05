@@ -44,13 +44,18 @@ DOMElementTransform.prototype.process = function(source) {
 }
 
 DOMElementTransform.prototype.transform = function() {
-    var target = this.target = document.createElement(this.tagName || this.source.tagName);
-    if(this.preProcess) this.preProcess();
-    this.applyAttributes();
+    this.target = this.createTarget();
+
+    this.processAttributes();
     this.applyChildNodes();
-    this.target = target;
+
     if(this.postProcess) this.postProcess();
-    return target;
+
+    return this.target;
+}
+
+DOMElementTransform.prototype.createTarget = function() {
+    return this.createElement(this.tagName || this.source.tagName);
 }
 
 DOMElementTransform.prototype.createElement = function(tag, attrs) {
@@ -69,28 +74,37 @@ DOMElementTransform.prototype.createElement = function(tag, attrs) {
     return element;
 }
 
-DOMElementTransform.prototype.applyAttributes = function() {
-    var attrs = Array.prototype.reduce.call(
-            this.source.attributes,
-            function(res, attribute) {
-                res[attribute.name] = attribute.value;
-                return res;
-            }, {}),
+DOMElementTransform.prototype.processAttributes = function() {
+    var attrs = this.reduceAttributes(this.source.attributes),
         name;
-
     for(name in this.attributes) attrs[name] = this.attributes[name];
-    for(name in attrs) this.applyAttribute(name, attrs[name]);
+    this.applyAttributes(attrs);
+}
+
+DOMElementTransform.prototype.reduceAttributes = function(attributes) {
+    var result = {}, i = 0, attr;
+    while(attr = attributes[i++]) result[attr.name] = attr.value;
+    return result;
+}
+
+DOMElementTransform.prototype.applyAttributes = function(attributes) {
+    for(name in attributes) {
+        this.applyAttribute(name, attributes[name]);
+    }
 }
 
 DOMElementTransform.prototype.applyAttribute = function(name, value) {
-    if(typeof value === 'function')
+    if(typeof value === 'function') {
         value = value.call(this, name, this.source.getAttribute(name));
-    if(typeof value !== 'undefined')
+    }
+    if(typeof value !== 'undefined') {
         this.target.setAttribute(name, value);
+    }
 }
 
 DOMElementTransform.prototype.applyChildNodes = function() {
     var target = this.target;
+
     Array.prototype.forEach.call(this.source.childNodes, function(childNode) {
         this.processChildNode(childNode);
         this.target = target;
@@ -100,6 +114,8 @@ DOMElementTransform.prototype.applyChildNodes = function() {
 DOMElementTransform.prototype.processChildNode = function(childNode) {
     var target = this.target,
         child = this.apply(childNode);
+
+    this.target = target;
     if(child) target.appendChild(child);
 }
 
@@ -108,7 +124,9 @@ DOMTransform.nodeTypes[Node.ELEMENT_NODE] = new DOMElementTransform();
 DOMTransform.prototype.element = function(name, template) {
     var element = new DOMElementTransform(),
         prop;
-    for(prop in template)
+
+    for(prop in template) {
         element[prop] = template[prop];
+    }
     DOMElementTransform.prototype.elements[name] = element;
 }

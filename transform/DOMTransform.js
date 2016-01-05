@@ -53,9 +53,19 @@ DOMElementTransform.prototype.transform = function() {
     return target;
 }
 
-DOMElementTransform.prototype.createElement = function(name, attrs) {
-    var element = document.createElement(name);
-    if(attrs) for(var attr in attrs) element.setAttribute(attr, attrs[attr]);
+DOMElementTransform.prototype.createElement = function(tag, attrs) {
+    var element = document.createElement(tag);
+    if(attrs) {
+        var name, value;
+        for(name in attrs) {
+            value = attrs[name];
+            if(typeof value !== 'string') {
+                if(value) element.setAttribute(name, '');
+            } else {
+                element.setAttribute(name, value);
+            }
+        }
+    }
     return element;
 }
 

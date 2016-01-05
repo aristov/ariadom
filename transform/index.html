@@ -186,6 +186,13 @@
                 target.classList.add(value || 'listbox');
             }
         },
+        content : function(content) {
+            return {
+                tag : 'span',
+                attrs : { 'class' : 'box' },
+                content : content
+            };
+        },
         postProcess : function() {
             var box = this.target.querySelector('.box');
             Array.prototype.forEach.call(
@@ -201,12 +208,10 @@
         attributes : {
             role : 'option',
             selected : function(name, value) {
-                if(value === 'true')
-                    this.target.setAttribute('aria-selected', 'true');
+                if(value) this.target.setAttribute('aria-selected', value);
             },
             checked : function(name, value) {
-                if(value === 'true')
-                    this.target.setAttribute('aria-checked', 'true');
+                if(value) this.target.setAttribute('aria-checked', value);
             },
             view : function(name, value) {
                 this.target.classList.add(value || 'option');
@@ -227,18 +232,19 @@
                 }
             },
             view : function(name, value) {
-                var source = this.source,
-                    target = this.target,
-                    box = document.createElement('input');
-                box.classList.add('box');
-                box.autocomplete = 'off';
-                box.value = source.getAttribute('value') || '';
-                if(source.getAttribute('disabled') === 'true') {
-                    box.disabled = true;
-                }
-                target.appendChild(box);
+                var target = this.target;
+                target.appendChild(this.createInput());
                 target.classList.add(value || 'textbox');
             }
+        },
+        createInput : function() {
+            var source = this.source;
+            return this.createElement('input', {
+                'class' : 'box',
+                autocomplete : 'off',
+                value : source.getAttribute('value'),
+                disabled : source.getAttribute('disabled') === 'true'
+            });
         }
     });
 </script>

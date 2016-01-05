@@ -56,6 +56,14 @@
 
     //================================================================================================
 
+    domTransform.element('_', {
+        attributes : {
+            label : function(name, value) {
+                if(value) this.target.setAttribute('aria-label', value);
+            }
+        }
+    });
+
     domTransform.element('root', { tagName : 'div' });
 
     domTransform.element('heading', { tagName : 'h1' });
@@ -118,9 +126,6 @@
         tagName : 'span',
         attributes : {
             role : 'radiogroup',
-            label : function(name, value) {
-                if(value) this.target.setAttribute('aria-label', value);
-            },
             disabled : function(name, value) {
                 if(value === 'true') {
                     this.target.setAttribute('aria-disabled', 'true');
@@ -181,12 +186,8 @@
                     this.target.setAttribute('aria-disabled', 'true') :
                     this.target.tabIndex = 0;
             },
-            label : function(name, value) {
-                if(value) this.target.setAttribute('aria-label', value);
-            },
             view : function(name, value) {
-                var target = this.target;
-                target.classList.add(value || 'listbox');
+                this.target.classList.add(value || 'listbox');
             }
         },
         content : function(content) {
@@ -216,17 +217,13 @@
         tagName : 'span',
         attributes : {
             role : 'textbox',
-            label : function(name, value) {
-                if(value) this.target.setAttribute('aria-label', value);
-            },
             disabled : function(name, value) {
                 if(value === 'true') {
                     this.target.classList.add('disabled');
                 }
             },
             view : function(name, value) {
-                var target = this.target;
-                target.classList.add(value || 'textbox');
+                this.target.classList.add(value || 'textbox');
             }
         },
         content : function() {
@@ -246,11 +243,8 @@
     domTransform.element('buttongroup', {
         tagName : 'span',
         attributes : {
-            view : function() {
-                this.target.classList.add('buttongroup');
-            },
-            label : function(name, value) {
-                if(value) this.target.setAttribute('aria-label', value);
+            view : function(name, value) {
+                this.target.classList.add(value || 'buttongroup');
             }
         }
     });

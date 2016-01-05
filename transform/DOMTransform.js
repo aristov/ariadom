@@ -1,10 +1,9 @@
 function DOMTransform() {
     this.elements = { _ : this };
+    this.attributes = {};
 }
 
 DOMTransform.prototype.nodeTypeTransform = {};
-
-DOMTransform.prototype.attributes = {};
 
 DOMTransform.prototype.source = null;
 DOMTransform.prototype.target = null;
@@ -138,15 +137,31 @@ DOMTransform.prototype.appendNodeList = function(nodeList, target) {
     while(node = nodeList[i++]) target.appendChild(node);
 }
 
-DOMTransform.Element = function(template) {
-    Object.assign(this, template);
+DOMTransform.Element = function(template, base) {
+    if(!this.attributes) {
+        this.attributes = base? Object.assign({}, base.attributes) : {};
+    }
+    for(var prop in template) {
+        if(prop === 'attributes') {
+            Object.assign(this.attributes, template.attributes);
+        } else {
+            this[prop] = template[prop];
+        }
+    }
 }
 
 DOMTransform.Element.prototype = DOMTransform.prototype;
 
 DOMTransform.prototype.element = function(name, template) {
-    var element = new DOMTransform.Element(template),
-        elements = this.elements;
-    element.elements = elements;
-    elements[name] = element;
+    var elements = this.elements,
+        element = elements[name],
+        constructor = DOMTransform.Element;
+    if(element) {
+        constructor.call(element, template);
+    } else {
+        element = new constructor(template, elements._);
+        element.elements = elements;
+        elements[name] = element;
+    }
+    return element;
 }

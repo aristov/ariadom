@@ -186,24 +186,13 @@
             },
             view : function(name, value) {
                 var target = this.target;
-                target.appendChild(this.createElement('span', { 'class' : 'box' }));
                 target.classList.add(value || 'listbox');
             }
         },
         content : function(content) {
-            return {
-                tag : 'span',
-                attrs : { 'class' : 'box' },
-                content : content
-            };
-        },
-        postProcess : function() {
-            var box = this.target.querySelector('.box');
-            Array.prototype.forEach.call(
-                this.target.querySelectorAll('[role=option]'),
-                function(option) {
-                    box.appendChild(option);
-                });
+            var box = this.createElement('span', { 'class' : 'box' });
+            this.appendNodeList(content, box);
+            return box;
         }
     });
 

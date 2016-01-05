@@ -2,13 +2,42 @@ function DOMTransform() {}
 
 DOMTransform.nodeTypes = {};
 
-DOMTransform.prototype.apply = function(node) {
-    var template = DOMTransform.nodeTypes[node.nodeType];
-    return template? template.process(node) : null;
+DOMTransform.prototype.apply = function(context) {
+    var template;
+
+    if(context instanceof Node) {
+        template = DOMTransform.nodeTypes[context.nodeType];
+    } else if(context instanceof NodeList) {
+        template = DOMTransform.nodeList;
+    }
+
+    return template? template.process(context) : null;
 }
+
+function DOMNodeListTransform() {
+    this.constructor = DOMNodeListTransform;
+}
+
+DOMNodeListTransform.prototype = new DOMTransform();
+
+DOMNodeListTransform.prototype.process = function(nodeList) {
+    var result = [];
+    if(nodeList.length) {
+        var node = nodeList[0];
+        do result.push(this.apply(node));
+        while(node = node.nextSibling);
+    }
+    return result;
+}
+
+DOMTransform.nodeList = new DOMNodeListTransform();
 
 function DOMTextTransform() {
     this.constructor = DOMTextTransform;
+}
+
+DOMTextTransform.prototype.process = function(node) {
+    return this.transform(node);
 }
 
 DOMTextTransform.prototype = new DOMTransform();
@@ -39,18 +68,13 @@ DOMElementTransform.prototype.params = {};
 
 DOMElementTransform.prototype.process = function(source) {
     var template = this.elements[source.tagName] || this;
-    template.source = source;
-    return template.transform();
+    return template.transform(template.source = source);
 }
 
-DOMElementTransform.prototype.transform = function() {
+DOMElementTransform.prototype.transform = function(source) {
     this.target = this.createTarget();
-
-    this.processAttributes();
-    this.applyChildNodes();
-
-    if(this.postProcess) this.postProcess();
-
+    this.processAttributes(source.attributes);
+    this.processChildNodes(source.childNodes);
     return this.target;
 }
 
@@ -74,8 +98,8 @@ DOMElementTransform.prototype.createElement = function(tag, attrs) {
     return element;
 }
 
-DOMElementTransform.prototype.processAttributes = function() {
-    var attrs = this.reduceAttributes(this.source.attributes),
+DOMElementTransform.prototype.processAttributes = function(attributes) {
+    var attrs = this.reduceAttributes(attributes),
         name;
     for(name in this.attributes) attrs[name] = this.attributes[name];
     this.applyAttributes(attrs);
@@ -102,21 +126,30 @@ DOMElementTransform.prototype.applyAttribute = function(name, value) {
     }
 }
 
-DOMElementTransform.prototype.applyChildNodes = function() {
-    var target = this.target;
-
-    Array.prototype.forEach.call(this.source.childNodes, function(childNode) {
-        this.processChildNode(childNode);
-        this.target = target;
-    }, this);
-}
-
-DOMElementTransform.prototype.processChildNode = function(childNode) {
+DOMElementTransform.prototype.processChildNodes = function(nodeList) {
     var target = this.target,
-        child = this.apply(childNode);
+        result = this.apply(nodeList);
 
     this.target = target;
-    if(child) target.appendChild(child);
+    if(result) this.applyContent(this.content(result));
+}
+
+DOMElementTransform.prototype.content = function(content) {
+    return content;
+}
+
+DOMElementTransform.prototype.applyContent = function(content) {
+    if(content instanceof Node) {
+        this.target.appendChild(content);
+    } else if(content instanceof Array && content.length) {
+        this.appendNodeList(content);
+    }
+}
+
+DOMElementTransform.prototype.appendNodeList = function(nodes, target) {
+    var i = 0, node;
+    if(!target) target = this.target;
+    while(node = nodes[i++]) target.appendChild(node);
 }
 
 DOMTransform.nodeTypes[Node.ELEMENT_NODE] = new DOMElementTransform();

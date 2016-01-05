@@ -92,6 +92,18 @@
         </section>
     </article>
     <article>
+        <heading>Text area</heading>
+        <section>
+            <textbox multiline="true" label="Simple"/>
+        </section>
+        <section>
+            <textbox multiline="true" value="Text" label="Filled"/>
+        </section>
+        <section>
+            <textbox multiline="true" disabled="true" value="Text" label="Disabled"/>
+        </section>
+    </article>
+    <article>
         <heading>Mixes</heading>
         <section>
             <button view="link">Button as link</button>

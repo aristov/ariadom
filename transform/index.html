@@ -231,13 +231,16 @@
             }
         },
         createInput : function() {
-            var source = this.source;
-            return this.createElement('input', {
-                'class' : 'box',
-                autocomplete : 'off',
-                value : source.getAttribute('value'),
-                disabled : source.getAttribute('disabled') === 'true'
-            });
+            var source = this.source,
+                isMultiline = source.getAttribute('multiline') === 'true',
+                tag = isMultiline? 'textarea' : 'input',
+                input = this.createElement(tag, {
+                    'class' : 'box',
+                    autocomplete : 'off',
+                    disabled : source.getAttribute('disabled') === 'true'
+                });
+            input.value = source.getAttribute('value');
+            return input;
         }
     });
 </script>

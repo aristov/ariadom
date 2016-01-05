@@ -115,6 +115,13 @@
             <checkbox name="checkbox-button" value="on" view="button">Checkbox as button</checkbox>
         </section>
         <section>
+            <buttongroup label="Check button group">
+                <checkbox view="button">First</checkbox
+                ><checkbox view="button">Second</checkbox
+                ><checkbox view="button">Third</checkbox>
+            </buttongroup>
+        </section>
+        <section>
             <radiogroup name="radio-button-group" view="buttongroup" label="Radio button group">
                 <radio value="first">First</radio
                 ><radio value="second">Second</radio

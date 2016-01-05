@@ -226,11 +226,10 @@
             },
             view : function(name, value) {
                 var target = this.target;
-                target.appendChild(this.createInput());
                 target.classList.add(value || 'textbox');
             }
         },
-        createInput : function() {
+        content : function() {
             var source = this.source,
                 isMultiline = source.getAttribute('multiline') === 'true',
                 tag = isMultiline? 'textarea' : 'input',
@@ -241,6 +240,18 @@
                 });
             input.value = source.getAttribute('value');
             return input;
+        }
+    });
+
+    domTransform.element('buttongroup', {
+        tagName : 'span',
+        attributes : {
+            view : function() {
+                this.target.classList.add('buttongroup');
+            },
+            label : function(name, value) {
+                if(value) this.target.setAttribute('aria-label', value);
+            }
         }
     });
 </script>

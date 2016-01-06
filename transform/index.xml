@@ -117,8 +117,7 @@
         <section>
             <buttongroup label="Check button group">
                 <checkbox view="button">First</checkbox
-                ><checkbox view="button">Second</checkbox
-                ><checkbox view="button">Third</checkbox>
+                ><checkbox view="button">Second</checkbox>
             </buttongroup>
         </section>
         <section>

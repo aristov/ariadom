@@ -66,7 +66,12 @@
 
     domTransform.element('root', { tagName : 'div' });
 
-    domTransform.element('heading', { tagName : 'h1' });
+    domTransform.element('heading', {
+        tagName : function(tagName) {
+            return 'h' + (this.source.getAttribute('level') || '1');
+        },
+        attributes : { level : undefined }
+    });
 
     domTransform.element('link', {
         tagName : 'a',

@@ -8,8 +8,6 @@ DOMTransform.prototype.nodeTypeTransform = {};
 DOMTransform.prototype.source = null;
 DOMTransform.prototype.target = null;
 
-DOMTransform.prototype.tagName = null;
-
 DOMTransform.prototype.apply = function(source) {
     var result;
     if(source instanceof Node) {
@@ -43,7 +41,8 @@ DOMTransform.prototype.transformNodeList = function(nodeList) {
 DOMTransform.prototype.nodeTypeTransform[Node.TEXT_NODE] = 'transformTextNode';
 
 DOMTransform.prototype.transformTextNode = function(textNode) {
-    return document.createTextNode(textNode.nodeValue);
+    var text = textNode.nodeValue;
+    return /*/^\s+$/.test(text)? null : */document.createTextNode(text);
 }
 
 DOMTransform.prototype.nodeTypeTransform[Node.ELEMENT_NODE] = 'transformElement';
@@ -63,8 +62,15 @@ DOMTransform.prototype.processElement = function(element) {
 }
 
 DOMTransform.prototype.createTarget = function() {
-    return this.createElement(this.tagName || this.source.tagName);
+    var tagName = typeof this.tagName === 'function'?
+            this.tagName(this.source.tagName) :
+            this.tagName;
+    return this.createElement(tagName);
 }
+
+DOMTransform.prototype.tagName = function(tagName) {
+    return tagName;
+};
 
 DOMTransform.prototype.createElement = function(tag, attrs) {
     var element = document.createElement(tag);

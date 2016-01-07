@@ -61,6 +61,9 @@
             label : function(name, value) {
                 if(value) this.target.setAttribute('aria-label', value);
             }
+        },
+        _attributes : function(attrs) {
+            return { 'aria-label' : attrs.label };
         }
     });
 
@@ -70,7 +73,10 @@
         tagName : function(tagName) {
             return 'h' + (this.source.getAttribute('level') || '1');
         },
-        attributes : { level : undefined }
+        _element : function(name) {
+            return 'h' + (this.attributes.level || '1');
+        },
+        _attributes : { level : undefined }
     });
 
     domTransform.element('link', {
@@ -82,6 +88,9 @@
             mix : function(name, value) {
                 if(value) this.target.classList.add(value);
             }
+        },
+        _classes : function(attrs) {
+            return [attrs.view || 'link', attrs.mix];
         }
     });
 
@@ -100,6 +109,15 @@
             view : function(name, value) {
                 this.target.classList.add(value || 'button');
             }
+        },
+        _attributes : function(attrs) {
+            return {
+                role : 'button',
+                tabindex : attrs.disabled === 'true'? undefined : '0',
+                'aria-disabled' : attrs.disabled,
+                'aria-pressed' : attrs.pressed,
+                'class' : attrs.view || 'button'
+            };
         }
     });
 
@@ -124,6 +142,18 @@
                     this.target.appendChild(box);
                 }
             }
+        },
+        _attributes : function(attrs) {
+            return {
+                role : 'checkbox',
+                tabindex : attrs.disabled === 'true'? undefined : '0',
+                'aria-disabled' : attrs.disabled,
+                'aria-checked' : attrs.checked,
+                'class' : attrs.view || 'checkbox'
+            };
+        },
+        _content : function(content) {
+            return [{ element : 'box' }, content];
         }
     });
 
@@ -152,7 +182,15 @@
                         });
                 }
             }
-        }
+        },
+        _attributes : function(attrs) {
+            return {
+                role : 'radiogroup',
+                'aria-disabled' : attrs.disabled,
+                'class' : attrs.view || 'radiogroup'
+            };
+        },
+        children : {}
     });
 
     domTransform.element('radio', {
@@ -176,6 +214,18 @@
                 if(!this.isDisabled()) return value || '-1';
             }
         },
+        _element : 'span',
+        _attributes : function(attrs) {
+            return {
+                role : 'radio',
+                tabindex : attrs.disabled === 'true'? undefined : '-1',
+                'aria-checked' : attrs.checked,
+                'class' : attrs.view || 'radio'
+            };
+        },
+        _content : function(content) {
+            return [{ element : 'box' }, content];
+        },
         isDisabled : function() {
             var radiogroup = this.source.closest('radiogroup');
             return radiogroup.getAttribute('disabled') === 'true';
@@ -195,10 +245,21 @@
                 this.target.classList.add(value || 'listbox');
             }
         },
+        _attributes : function(attrs) {
+            return {
+                role : 'listbox',
+                tabindex : attrs.disabled === 'true'? undefined : '-1',
+                'aria-disabled' : attrs.disabled,
+                'class' : attrs.view || 'listbox'
+            };
+        },
         content : function(content) {
             var box = this.createElement('span', { 'class' : 'box' });
             this.appendNodeList(content, box);
             return box;
+        },
+        _children : function(children) {
+            return { element : 'box', children : children };
         }
     });
 
@@ -215,7 +276,15 @@
             view : function(name, value) {
                 this.target.classList.add(value || 'option');
             }
-        }
+        },
+        _attributes : function(attrs) {
+            return {
+                role : 'option',
+                'aria-selected' : attrs.selected,
+                'aria-checked' : attrs.checked,
+                'class' : attrs.view || 'option'
+            };
+        },
     });
 
     domTransform.element('textbox', {
@@ -223,12 +292,17 @@
         attributes : {
             role : 'textbox',
             disabled : function(name, value) {
-                if(value === 'true') {
-                    this.target.classList.add('disabled');
-                }
+                if(value === 'true') this.target.classList.add('disabled');
             },
             view : function(name, value) {
                 this.target.classList.add(value || 'textbox');
+            }
+        },
+        _attributes : function(attrs) {
+            return {
+                role : 'textbox',
+                'aria-disabled' : attrs.disabled,
+                'class' : attrs.view || 'textbox'
             }
         },
         content : function() {
@@ -242,6 +316,18 @@
                 });
             input.value = source.getAttribute('value');
             return input;
+        },
+        children : function(children) {
+            var attrs = this.attrs;
+            return {
+                element : attrs.multiline? 'textarea' : 'input',
+                attributes : {
+                    autocomplete : 'off',
+                    disabled : attrs.disabled,
+                    value : attrs.value,
+                    'class' : 'box'
+                }
+            };
         }
     });
 
@@ -251,6 +337,9 @@
             view : function(name, value) {
                 this.target.classList.add(value || 'buttongroup');
             }
+        },
+        _classes : function(attrs) {
+            return [attrs.view || 'buttongroup'];
         }
     });
 </script>

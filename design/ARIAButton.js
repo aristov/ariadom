@@ -27,17 +27,20 @@ Object.defineProperty(ARIAButton.prototype, 'disabled', {
     }
 });
 
-ARIAButton.prototype.onKeyDown = function(event) {
-    var keyCode = event.keyCode;
+Object.defineProperty(ARIAButton.prototype, 'onKeyDown', {
+    enumerable : false,
+    value : function(event) {
+        var keyCode = event.keyCode;
 
-    if(keyCode === 13)
-        this.element.dispatchEvent(new Event('click'));
+        if(keyCode === 13)
+            this.element.dispatchEvent(new Event('click'));
 
-    if(keyCode === 32 && !event.repeat) {
-        event.preventDefault();
-        this.element.classList.add('active');
+        if(keyCode === 32 && !event.repeat) {
+            event.preventDefault();
+            this.element.classList.add('active');
+        }
     }
-}
+});
 
 ARIAButton.prototype.onKeyUp = function(event) {
     if(event.keyCode === 32) {

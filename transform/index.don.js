@@ -38,26 +38,28 @@
     ]
 })
 
+/* DON - Document object notation */
+
 ({
-    tag : 'root',
-    content : {
-        tag : 'article',
-        content : [
-            { tag : 'heading', content : 'Link' },
+    element : 'root',
+    child : {
+        element : 'article',
+        children : [
+            { element : 'heading', text : 'Link' },
             {
-                tag : 'section',
-                content : {
-                    tag : 'link',
-                    attrs : { href : '//yandex.ru' },
-                    content : 'Simple'
+                element : 'section',
+                child : {
+                    element : 'link',
+                    attributes : { href : '//yandex.ru' },
+                    text : 'Simple'
                 }
             },
             {
-                tag : 'section',
-                content : {
-                    tag : 'link',
-                    attrs : { href : '//google.ru', rel : 'external' },
-                    content : 'External'
+                element : 'section',
+                child : {
+                    element : 'link',
+                    attributes : { href : '//google.ru', rel : 'external' },
+                    text : 'External'
                 }
             }
         ]

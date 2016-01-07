@@ -51,7 +51,7 @@
         var ts = Date.now(),
             root = this.responseXML.documentElement,
             don = domTransform.apply(root),
-            result = domTransform.transform(don);
+            result = domTransform.create(don);
 
         document.body.appendChild(result);
         console.log(Date.now() - ts);
@@ -205,25 +205,20 @@
 
     domTransform.element('textbox', function(textbox) {
         var attrs = this.apply(textbox.attributes),
-            input = attrs.multiline === 'true'?
-                {
-                    element : 'textarea',
-                    attributes : {
-                        autocomplete : 'off',
-                        disabled : attrs.disabled,
-                        'class' : 'box'
-                    },
-                    children : attrs.value || ''
-                } :
-                {
-                    element : 'input',
-                    attributes : {
-                        autocomplete : 'off',
-                        disabled : attrs.disabled,
-                        value : attrs.value,
-                        'class' : 'box'
-                    }
-                };
+            input = {
+                element : 'input',
+                attributes : {
+                    autocomplete : 'off',
+                    disabled : attrs.disabled,
+                    value : attrs.value,
+                    'class' : 'box'
+                }
+            };
+        if(attrs.multiline === 'true') {
+            input.element = 'textarea';
+            delete input.attributes.value;
+            input.children = attrs.value || '';
+        }
         return {
             element : 'span',
             attributes : {

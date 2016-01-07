@@ -21,49 +21,45 @@ DOMTransform.prototype.apply = function(context) {
 }
 
 DOMTransform.prototype.applyText = function(node) {
-    return /^\s+$/.test(node.textContent)?
-        null :
-        document.createTextNode(node.textContent);
+    return /^\s+$/.test(node.textContent)? null : node.textContent;
 }
 
 DOMTransform.prototype.applyElement = function(element) {
     var result = { element : element.tagName };
     if(element.hasAttributes()) {
-        result.attributes = this.apply(element.attributes);
+        result.attributes = this.applyAttributes(element.attributes);
     }
     if(element.childNodes.length) {
-        var children = this.apply(element.childNodes);
+        var children = this.applyChildren(element.childNodes);
         if(children.length) result.children = children;
     }
     return result;
 }
 
 DOMTransform.prototype.applyAttributes = function(attributes) {
-    return Array
-        .from(attributes)
-        .reduce(function(res, attr) {
-            res[attr.name] = attr.value;
-            return res;
-        }, {});
+    var result = {}, i = 0, attr;
+    while(attr = attributes[i++]) {
+        result[attr.name] = attr.value;
+    }
+    return result;
 }
 
 DOMTransform.prototype.applyChildren = function(children) {
-    return Array.from(children).map(function(node) {
-        return this.apply(node);
-    }, this)
-    .filter(function(node) {
-        return Boolean(node);
-    });
+    var result = [], i = 0, node, child;
+    while(node = children[i++]) {
+        child = this.apply(node);
+        if(child) result.push(child);
+    }
+    return result;
 }
 
-DOMTransform.prototype.transform = function(context) {
+DOMTransform.prototype.create = function(context) {
     if(typeof context === 'string') {
         return document.createTextNode(context);
     } else {
         var result = document.createElement(context.element),
             attributes = context.attributes,
             children = context.children;
-
         if(attributes) {
             for(var name in attributes) {
                 var value = attributes[name];
@@ -74,16 +70,19 @@ DOMTransform.prototype.transform = function(context) {
         }
         if(children) {
             if(Array.isArray(children)) {
-                for(var i in children) {
-                    var child = children[i];
-                    if(child) result.appendChild(this.transform(child));
-                }
+                children.forEach(function(child) {
+                    result.appendChild(this.create(child));
+                }, this)
             } else {
-                result.appendChild(this.transform(children));
+                result.appendChild(this.create(children));
             }
         }
         return result;
     }
+}
+
+DOMTransform.prototype.transform = function(context) {
+    return this.create(this.apply(context));
 }
 
 DOMTransform.Element = function(template) {

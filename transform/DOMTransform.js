@@ -57,28 +57,33 @@ DOMTransform.prototype.applyAttributes = function(attributes) {
 }
 
 DOMTransform.prototype.transform = function(context) {
-    var result = document.createElement(context.element),
-        attributes = context.attributes,
-        children = context.children;
-    if(attributes) {
-        for(var name in attributes) {
-            var value = attributes[name];
-            if(typeof value !== 'undefined') {
-                result.setAttribute(name, value);
+    if(typeof context === 'string') {
+        return document.createTextNode(context);
+    } else {
+        var result = document.createElement(context.element),
+            attributes = context.attributes,
+            children = context.children;
+
+        if(attributes) {
+            for(var name in attributes) {
+                var value = attributes[name];
+                if(typeof value !== 'undefined') {
+                    result.setAttribute(name, value);
+                }
             }
         }
-    }
-    if(children) {
-        for(var i in children) {
-            var child = children[i];
-            if(typeof child === 'string') {
-                result.appendChild(document.createTextNode(child));
+        if(children) {
+            if(Array.isArray(children)) {
+                for(var i in children) {
+                    var child = children[i];
+                    if(child) result.appendChild(this.transform(child));
+                }
             } else {
-                result.appendChild(this.transform(child));
+                result.appendChild(this.transform(children));
             }
         }
+        return result;
     }
-    return result;
 }
 
 DOMTransform.Element = function(template) {

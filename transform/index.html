@@ -71,7 +71,7 @@
         var attrs = this.apply(heading.attributes);
         return {
             element : 'h' + (attrs.level || '1'),
-            children : [heading.textContent]
+            children : heading.textContent
         };
     });
 
@@ -84,7 +84,7 @@
                 rel : attrs.rel,
                 'class' : [attrs.view || 'link', attrs.mix].join(' ')
             },
-            children : [link.textContent]
+            children : link.textContent
         };
     });
 
@@ -99,7 +99,7 @@
                 'aria-pressed' : attrs.pressed,
                 'class' : attrs.view || 'button'
             },
-            children : [button.textContent]
+            children : button.textContent
         };
     });
 
@@ -187,7 +187,7 @@
                 'aria-checked' : attrs.checked,
                 'class' : attrs.view || 'option'
             },
-            children : [option.textContent]
+            children : option.textContent
         };
     });
 
@@ -201,7 +201,7 @@
                         disabled : attrs.disabled,
                         'class' : 'box'
                     },
-                    children : [attrs.value || '']
+                    children : attrs.value || ''
                 } :
                 {
                     element : 'input',
@@ -220,7 +220,7 @@
                 'aria-disabled' : attrs.disabled,
                 'class' : attrs.view || 'textbox'
             },
-            children : [input]
+            children : input
         };
     });
 

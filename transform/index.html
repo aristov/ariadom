@@ -104,7 +104,15 @@
     });
 
     domTransform.element('checkbox', function(checkbox) {
-        var attrs = this.apply(checkbox.attributes);
+        var attrs = this.apply(checkbox.attributes),
+            view = attrs.view || 'checkbox',
+            children = view === 'checkbox'? [
+                {
+                    element : 'span',
+                    attributes : { 'class' : 'box' }
+                },
+                checkbox.textContent
+            ] : checkbox.textContent;
         return {
             element : 'span',
             attributes : {
@@ -112,20 +120,18 @@
                 tabindex : attrs.disabled === 'true'? undefined : '0',
                 'aria-disabled' : attrs.disabled,
                 'aria-checked' : attrs.checked,
-                'class' : attrs.view || 'checkbox'
+                'class' : view
             },
-            children : [
-                {
-                    element : 'span',
-                    attributes : { 'class' : 'box' }
-                },
-                checkbox.textContent
-            ]
+            children : children
         };
     });
 
     domTransform.element('radiogroup', function(radiogroup) {
         var attrs = this.apply(radiogroup.attributes);
+        this.disabled = attrs.disabled === 'true';
+        this.focusable = this.disabled? null :
+            radiogroup.querySelector('radio[checked=true]') ||
+                radiogroup.querySelector('radio');
         return {
             element : 'span',
             attributes : {
@@ -139,22 +145,28 @@
     });
 
     domTransform.element('radio',  function(radio) {
-        var attrs = this.apply(radio.attributes);
-        return {
-            element : 'span',
-            attributes : {
-                role : 'radio',
-                tabindex : attrs.disabled === 'true'? undefined : '-1',
-                'aria-checked' : attrs.checked,
-                'class' : attrs.view || 'radio'
-            },
-            children : [
+        var attrs = this.apply(radio.attributes),
+            radiogroup = this.elements.radiogroup,
+            view = attrs.view || 'radio',
+            children = view === 'radio'? [
                 {
                     element : 'span',
                     attributes : { 'class' : 'box' }
                 },
                 radio.textContent
-            ]
+            ] : radio.textContent;
+        return {
+            element : 'span',
+            attributes : {
+                role : 'radio',
+                tabindex : radiogroup.disabled || attrs.disabled === 'true'?
+                    undefined :
+                    radio === radiogroup.focusable? '0' : '-1',
+                'aria-checked' : attrs.checked,
+                'aria-disabled' : attrs.disabled,
+                'class' : view
+            },
+            children : children
         };
     });
 
@@ -224,15 +236,16 @@
         };
     });
 
-    domTransform.element('buttongroup', function(buttongroup) {
-        var attrs = this.apply(buttongroup.attributes);
+    domTransform.element('group', function(group) {
+        var attrs = this.apply(group.attributes);
         return {
             element : 'span',
             attributes : {
+                role : 'group',
                 'aria-label' : attrs.label,
-                'class' : attrs.view || 'buttongroup'
+                'class' : attrs.view || 'group'
             },
-            children : this.apply(buttongroup.children)
+            children : this.apply(group.children)
         };
     });
 </script>

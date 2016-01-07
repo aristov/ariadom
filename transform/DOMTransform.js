@@ -20,15 +20,6 @@ DOMTransform.prototype.apply = function(context) {
     }
 }
 
-DOMTransform.prototype.applyChildren = function(children) {
-    return Array.from(children).map(function(node) {
-        return this.apply(node);
-    }, this)
-    .filter(function(node) {
-        return Boolean(node);
-    });
-}
-
 DOMTransform.prototype.applyText = function(node) {
     return /^\s+$/.test(node.textContent)?
         null :
@@ -54,6 +45,15 @@ DOMTransform.prototype.applyAttributes = function(attributes) {
             res[attr.name] = attr.value;
             return res;
         }, {});
+}
+
+DOMTransform.prototype.applyChildren = function(children) {
+    return Array.from(children).map(function(node) {
+        return this.apply(node);
+    }, this)
+    .filter(function(node) {
+        return Boolean(node);
+    });
 }
 
 DOMTransform.prototype.transform = function(context) {

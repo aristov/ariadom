@@ -224,8 +224,10 @@
             attributes : {
                 role : 'textbox',
                 'aria-label' : attrs.label,
-                'aria-disabled' : attrs.disabled,
-                'class' : attrs.view || 'textbox'
+                'class' : [
+                    attrs.view || 'textbox',
+                    attrs.disabled && 'disabled'
+                ].join(' ').trim()
             },
             children : input
         };

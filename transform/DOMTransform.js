@@ -2,29 +2,19 @@ function DOMTransform() {
     this.elements = { '*' : this };
 }
 
-DOMTransform.prototype.apply = function(context) {
-    var transform;
-    if(context instanceof Element) {
-        var elements = this.elements,
-            name = context.tagName,
-            element = elements[name] || elements['*'];
-        return element.applyElement(context);
-    } else if(context instanceof Text) {
-        return this.applyText(context);
-    } else if(context instanceof NamedNodeMap) {
-        return this.applyAttributes(context);
-    } else if(context instanceof NodeList || context instanceof HTMLCollection) {
-        return this.applyChildren(context);
-    } else {
-        throw Error('unexpected context');
-    }
+void function(prototype) {
+
+prototype.apply = function(context) {
+    var method = methods[context.constructor.name];
+    if(method) return method.call(this, context);
+    else throw Error('unexpected context');
 }
 
-DOMTransform.prototype.applyText = function(node) {
+prototype.applyText = function(node) {
     return /^\s+$/.test(node.textContent)? null : node.textContent;
 }
 
-DOMTransform.prototype.applyElement = function(element) {
+prototype.applyElement = function(element) {
     var result = { element : element.tagName };
     if(element.hasAttributes()) {
         result.attributes = this.applyAttributes(element.attributes);
@@ -36,7 +26,7 @@ DOMTransform.prototype.applyElement = function(element) {
     return result;
 }
 
-DOMTransform.prototype.applyAttributes = function(attributes) {
+prototype.applyAttributes = function(attributes) {
     var result = {}, i = 0, attr;
     while(attr = attributes[i++]) {
         result[attr.name] = attr.value;
@@ -44,7 +34,7 @@ DOMTransform.prototype.applyAttributes = function(attributes) {
     return result;
 }
 
-DOMTransform.prototype.applyChildren = function(children) {
+prototype.applyChildren = function(children) {
     var result = [], i = 0, node, child;
     while(node = children[i++]) {
         child = this.apply(node);
@@ -53,7 +43,20 @@ DOMTransform.prototype.applyChildren = function(children) {
     return result;
 }
 
-DOMTransform.prototype.create = function(context) {
+
+var methods = {
+    Element : function(context) {
+        var elements = this.elements,
+            element = elements[context.tagName] || elements['*'];
+        return element.applyElement(context);
+    },
+    Text : prototype.applyText,
+    NamedNodeMap : prototype.applyAttributes,
+    NodeList : prototype.applyChildren,
+    HTMLCollection : prototype.applyChildren
+};
+
+prototype.create = function(context) {
     if(typeof context === 'string') {
         return document.createTextNode(context);
     } else {
@@ -81,20 +84,16 @@ DOMTransform.prototype.create = function(context) {
     }
 }
 
-DOMTransform.prototype.transform = function(context) {
+prototype.transform = function(context) {
     return this.create(this.apply(context));
 }
 
-DOMTransform.Element = function(template) {
-    this.applyElement = template;
-}
-
-DOMTransform.Element.prototype = DOMTransform.prototype;
-
-DOMTransform.prototype.element = function(name, transform) {
+prototype.element = function(name, apply) {
     var elements = this.elements,
-        element = new DOMTransform.Element(transform);
+        element = Object.create(prototype);
+    element.applyElement = apply;
     element.elements = elements;
-    elements[name] = element;
-    return element;
+    return elements[name] = element;
 }
+
+}(DOMTransform.prototype);

@@ -51,31 +51,42 @@
         var ts = Date.now(),
             root = this.responseXML.documentElement,
             don = domTransform.apply(root),
-            result = domTransform.create(don);
+            result = domTransform.build(don);
 
-        document.body.appendChild(result);
         console.log(Date.now() - ts);
+        document.body.appendChild(result);
         console.dir(don);
     }
 
     //================================================================================================
 
-    domTransform.element('root', function(root) {
+    /*domTransform.element('root', function(root) {
         return {
             element : 'div',
             children : this.apply(root.children)
         };
-    });
+    });*/
 
-    domTransform.element('heading', function(heading) {
+    domTransform.element('root', { element : 'div' });
+
+    /*domTransform.element('heading', function(heading) {
         var attrs = this.apply(heading.attributes);
         return {
             element : 'h' + (attrs.level || '1'),
             children : heading.textContent
         };
+    });*/
+
+    domTransform.element('heading', {
+        element : function(name, heading) {
+            return 'h' + (heading.getAttribute('level') || '1');
+        },
+        attributes : undefined
     });
 
-    domTransform.element('link', function(link) {
+    /*domTransform.element('heading', { element : 'h1' });*/
+
+    /*domTransform.element('link', function(link) {
         var attrs = this.apply(link.attributes);
         return {
             element : 'a',
@@ -86,9 +97,25 @@
             },
             children : link.textContent
         };
-    });
+    });*/
 
-    domTransform.element('button', function(button) {
+    domTransform.element('link', {
+        element : 'a',
+        attributes : function(attrs) {
+            return {
+                href : attrs.href,
+                rel : attrs.rel,
+                'class' : [attrs.view || 'link', attrs.mix].join(' ')
+            };
+        }
+    });
+</script>
+    <template name=link data-copyattrs=true data-transform="attrs view mix children">
+        <a href=attrs.href rel=attrs.rel class=link></a>
+    </template>
+<script>
+
+    /*domTransform.element('button', function(button) {
         var attrs = this.apply(button.attributes);
         return {
             element : 'span',
@@ -101,9 +128,22 @@
             },
             children : button.textContent
         };
+    });*/
+
+    domTransform.element('button', {
+        element : 'span',
+        attributes : function(attrs) {
+            return {
+                role : 'button',
+                tabindex : attrs.disabled === 'true'? undefined : '0',
+                'aria-disabled' : attrs.disabled,
+                'aria-pressed' : attrs.pressed,
+                'class' : attrs.view || 'button'
+            }
+        }
     });
 
-    domTransform.element('checkbox', function(checkbox) {
+    /*domTransform.element('checkbox', function(checkbox) {
         var attrs = this.apply(checkbox.attributes),
             view = attrs.view || 'checkbox',
             children = view === 'checkbox'? [
@@ -124,9 +164,32 @@
             },
             children : children
         };
+    });*/
+
+    domTransform.element('checkbox', {
+        element : 'span',
+        attributes : function(attrs) {
+            var view = this.view = attrs.view || 'checkbox';
+            return {
+                role : 'checkbox',
+                tabindex : attrs.disabled === 'true'? undefined : '0',
+                'aria-disabled' : attrs.disabled,
+                'aria-checked' : attrs.checked,
+                'class' : view
+            }
+        },
+        children : function(children, checkbox) {
+            return this.view === 'checkbox'? [
+                {
+                    element : 'span',
+                    attributes : { 'class' : 'box' }
+                },
+                checkbox.textContent
+            ] : this.apply(children)
+        }
     });
 
-    domTransform.element('radiogroup', function(radiogroup) {
+    /*domTransform.element('radiogroup', function(radiogroup) {
         var attrs = this.apply(radiogroup.attributes);
         this.disabled = attrs.disabled === 'true';
         this.focusable = this.disabled? null :
@@ -142,9 +205,25 @@
             },
             children : this.apply(radiogroup.children)
         };
+    });*/
+
+    domTransform.element('radiogroup', {
+        element : 'span',
+        attributes : function(attrs, radiogroup) {
+            this.disabled = attrs.disabled === 'true';
+            this.focusable = this.disabled? null :
+                radiogroup.querySelector('radio[checked=true]') ||
+                    radiogroup.querySelector('radio');
+            return {
+                role : 'radiogroup',
+                'aria-label' : attrs.label,
+                'aria-disabled' : attrs.disabled,
+                'class' : attrs.view || 'radiogroup'
+            };
+        }
     });
 
-    domTransform.element('radio',  function(radio) {
+    /*domTransform.element('radio',  function(radio) {
         var attrs = this.apply(radio.attributes),
             radiogroup = this.elements.radiogroup,
             view = attrs.view || 'radio',
@@ -168,9 +247,35 @@
             },
             children : children
         };
+    });*/
+
+    domTransform.element('radio', {
+        element : 'span',
+        attributes : function(attrs, radio) {
+            var radiogroup = this.elements.radiogroup;
+            this.view = attrs.view || 'radio';
+            return {
+                role : 'radio',
+                tabindex : radiogroup.disabled || attrs.disabled === 'true'?
+                    undefined :
+                    radio === radiogroup.focusable? '0' : '-1',
+                'aria-checked' : attrs.checked,
+                'aria-disabled' : attrs.disabled,
+                'class' : this.view
+            };
+        },
+        children : function(children, radio) {
+            return this.view === 'radio'? [
+                {
+                    element : 'span',
+                    attributes : { 'class' : 'box' }
+                },
+                radio.textContent
+            ] : this.apply(children);
+        }
     });
 
-    domTransform.element('listbox', function(listbox) {
+    /*domTransform.element('listbox', function(listbox) {
         var attrs = this.apply(listbox.attributes);
         return {
             element : 'span',
@@ -187,9 +292,39 @@
                 children : this.apply(listbox.children)
             }]
         };
+    });*/
+</script>
+    <template name=listbox>
+        <span role=listbox
+              tabindex="attrs.disabled === 'true'? undefined : 0"
+              aria-label=attrs.label>
+            <span class=box>
+                <template name=children></template>
+            </span>
+        </span>
+    </template>
+<script>
+    domTransform.element('listbox', {
+        element : 'span',
+        attributes : function(attrs) {
+            return {
+                role : 'listbox',
+                tabindex : attrs.disabled === 'true'? undefined : '0',
+                'aria-label' : attrs.label,
+                'aria-disabled' : attrs.disabled,
+                'class' : attrs.view || 'listbox'
+            };
+        },
+        children : function(children) {
+            return {
+                element : 'span',
+                attributes : { 'class' : 'box' },
+                children : this.apply(children)
+            }
+        }
     });
 
-    domTransform.element('option', function(option) {
+    /*domTransform.element('option', function(option) {
         var attrs = this.apply(option.attributes);
         return {
             element : 'span',
@@ -201,9 +336,21 @@
             },
             children : option.textContent
         };
+    });*/
+
+    domTransform.element('option', {
+        element : 'span',
+        attributes : function(attrs) {
+            return {
+                role : 'option',
+                'aria-selected' : attrs.selected,
+                'aria-checked' : attrs.checked,
+                'class' : attrs.view || 'option'
+            };
+        }
     });
 
-    domTransform.element('textbox', function(textbox) {
+    /*domTransform.element('textbox', function(textbox) {
         var attrs = this.apply(textbox.attributes),
             input = {
                 element : 'input',
@@ -231,9 +378,81 @@
             },
             children : input
         };
+    });*/
+
+    domTransform.element('textbox', {
+        element : 'span',
+        attributes : function(attrs) {
+            return {
+                role : 'textbox',
+                'aria-label' : attrs.label,
+                'class' : [
+                    attrs.view || 'textbox',
+                    attrs.disabled && 'disabled'
+                ].join(' ').trim()
+            }
+        },
+        children : function(children, textbox) {
+            var disabled = textbox.getAttribute('disabled') === 'true'? '' : undefined,
+                value = textbox.getAttribute('value') || undefined;
+            return textbox.getAttribute('multiline') === 'true'?
+                {
+                    element : 'textarea',
+                    attributes : {
+                        autocomplete : 'off',
+                        disabled : disabled,
+                        'class' : 'box'
+                    },
+                    children : value
+                } :
+                {
+                    element : 'input',
+                    attributes : {
+                        autocomplete : 'off',
+                        disabled : disabled,
+                        value : value,
+                        'class' : 'box'
+                    }
+                };
+        }
     });
 
-    domTransform.element('group', function(group) {
+    /*domTransform
+        .element('textbox')
+        .attribute('multiline', 'true')
+        .transform({
+            children : function(children, textbox) {
+                return {
+                    element : 'textarea',
+                    attributes : {
+                        autocomplete : 'off',
+                        disabled : this.attrs.disabled,
+                        'class' : 'box'
+                    },
+                    children : this.attrs.value || ''
+                };
+            }
+        });
+
+    domTransform.element({
+        name : 'textbox',
+        attrName : 'multiline',
+        attrValue : 'true'
+    }, {
+        children : function(children, textbox) {
+            return {
+                element : 'textarea',
+                attributes : {
+                    autocomplete : 'off',
+                    disabled : this.attrs.disabled,
+                    'class' : 'box'
+                },
+                children : this.attrs.value || ''
+            };
+        }
+    });*/
+
+    /*domTransform.element('group', function(group) {
         var attrs = this.apply(group.attributes);
         return {
             element : 'span',
@@ -244,6 +463,17 @@
             },
             children : this.apply(group.children)
         };
+    });*/
+
+    domTransform.element('group', {
+        element : 'span',
+        attributes : function(attrs) {
+            return {
+                role : 'group',
+                'aria-label' : attrs.label,
+                'class' : attrs.view || 'group'
+            };
+        }
     });
 </script>
 </body>

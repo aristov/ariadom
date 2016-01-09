@@ -1,8 +1,11 @@
+var DOMTransform = function() {
+
 function DOMTransform() {
-    this.elements = { '*' : this };
+    elementProto.apply = this.apply.bind(this);
+    this.elements = { '*' : elementProto };
 }
 
-void function(prototype) {
+var prototype = DOMTransform.prototype;
 
 prototype.apply = function(context) {
     var method = methods[context.constructor.name];
@@ -14,16 +17,10 @@ prototype.applyText = function(node) {
     return /^\s+$/.test(node.textContent)? null : node.textContent;
 }
 
-prototype.applyElement = function(element) {
-    var result = { element : element.tagName };
-    if(element.hasAttributes()) {
-        result.attributes = this.applyAttributes(element.attributes);
-    }
-    if(element.childNodes.length) {
-        var children = this.applyChildren(element.childNodes);
-        if(children.length) result.children = children;
-    }
-    return result;
+prototype.applyElement = function(context) {
+    var elements = this.elements,
+        element = elements[context.tagName] || elements['*'];
+    return element.transform(context);
 }
 
 prototype.applyAttributes = function(attributes) {
@@ -43,20 +40,15 @@ prototype.applyChildren = function(children) {
     return result;
 }
 
-
 var methods = {
-    Element : function(context) {
-        var elements = this.elements,
-            element = elements[context.tagName] || elements['*'];
-        return element.applyElement(context);
-    },
+    Element : prototype.applyElement,
     Text : prototype.applyText,
     NamedNodeMap : prototype.applyAttributes,
     NodeList : prototype.applyChildren,
     HTMLCollection : prototype.applyChildren
 };
 
-prototype.create = function(context) {
+prototype.build = function(context) {
     if(typeof context === 'string') {
         return document.createTextNode(context);
     } else {
@@ -74,10 +66,10 @@ prototype.create = function(context) {
         if(children) {
             if(Array.isArray(children)) {
                 children.forEach(function(child) {
-                    result.appendChild(this.create(child));
+                    result.appendChild(this.build(child));
                 }, this)
             } else {
-                result.appendChild(this.create(children));
+                result.appendChild(this.build(children));
             }
         }
         return result;
@@ -85,15 +77,50 @@ prototype.create = function(context) {
 }
 
 prototype.transform = function(context) {
-    return this.create(this.apply(context));
+    return this.build(this.apply(context));
 }
 
-prototype.element = function(name, apply) {
+var elementProto = {
+    transform : function(element) {
+        var result = { element : this.element(element.tagName, element) },
+            attrs = this.attrs = this.apply(element.attributes),
+            attributes = this.attributes(attrs, element),
+            children = this.children(element.childNodes, element);
+        if(attributes) result.attributes = attributes;
+        if(children) result.children = children;
+        return result;
+    },
+    element : function(name, element) {
+        return name;
+    },
+    attributes : function(attrs, element) {
+        return attrs;
+    },
+    children : function(children, element) {
+        return this.apply(children);
+    }
+};
+
+prototype.element = function(name, transform) {
     var elements = this.elements,
-        element = Object.create(prototype);
-    element.applyElement = apply;
+        element = Object.create(elementProto);
+
     element.elements = elements;
+    element.apply = this.apply.bind(this);
+    Object.keys(transform).forEach(function(prop) {
+        var value = transform[prop];
+        if(prop === 'element' && typeof value !== 'function') {
+            element[prop] = function() { return value };
+        } else if(prop === 'attributes' && typeof value !== 'function' ) {
+            element[prop] = function() { return value };
+        } else {
+            element[prop] = transform[prop];
+        }
+    });
+
     return elements[name] = element;
 }
 
-}(DOMTransform.prototype);
+return DOMTransform;
+
+}();

@@ -96,13 +96,12 @@
     domTransform.element('checkbox', {
         element : 'span',
         attributes : function(attrs) {
-            var view = this.view = attrs.view || 'checkbox';
             return {
                 role : 'checkbox',
                 tabindex : attrs.disabled === 'true'? undefined : '0',
                 'aria-disabled' : attrs.disabled,
                 'aria-checked' : attrs.checked,
-                'class' : view
+                'class' : (this.view = attrs.view || 'checkbox')
             }
         },
         children : function(children, checkbox) {
@@ -119,7 +118,15 @@
     domTransform.element('radiogroup', {
         element : 'span',
         attributes : function(attrs, radiogroup) {
-            if(attrs.disabled === 'true') {
+            return {
+                role : 'radiogroup',
+                'aria-label' : attrs.label,
+                'aria-disabled' : attrs.disabled,
+                'class' : attrs.view || 'radiogroup'
+            };
+        },
+        transform : function(radiogroup) {
+            if(radiogroup.getAttribute('disabled') === 'true') {
                 Array
                     .from(radiogroup.querySelectorAll('radio'))
                     .forEach(function(radio) {
@@ -130,19 +137,13 @@
                     radiogroup.querySelector('radio'))
                         .setAttribute('tabindex', '0');
             }
-            return {
-                role : 'radiogroup',
-                'aria-label' : attrs.label,
-                'aria-disabled' : attrs.disabled,
-                'class' : attrs.view || 'radiogroup'
-            };
+            return this.base.transform.call(this, radiogroup);
         }
     });
 
     domTransform.element('radio', {
         element : 'span',
         attributes : function(attrs, radio) {
-            this.view = attrs.view || 'radio';
             return {
                 role : 'radio',
                 tabindex : attrs.disabled === 'true'?
@@ -150,7 +151,7 @@
                     attrs.tabindex || '-1',
                 'aria-checked' : attrs.checked,
                 'aria-disabled' : attrs.disabled,
-                'class' : this.view
+                'class' : (this.view = attrs.view || 'radio')
             };
         },
         children : function(children, radio) {
@@ -223,24 +224,30 @@
             var disabled = textbox.getAttribute('disabled') === 'true'? '' : undefined,
                 value = textbox.getAttribute('value') || undefined;
             return textbox.getAttribute('multiline') === 'true'?
-                {
-                    element : 'textarea',
-                    attributes : {
-                        autocomplete : 'off',
-                        disabled : disabled,
-                        'class' : 'box'
-                    },
-                    children : value
-                } :
-                {
-                    element : 'input',
-                    attributes : {
-                        autocomplete : 'off',
-                        disabled : disabled,
-                        value : value,
-                        'class' : 'box'
-                    }
-                };
+                this.textarea(disabled, value) :
+                this.input(disabled, value);
+        },
+        input : function(disabled, value) {
+            return {
+                element : 'input',
+                attributes : {
+                    autocomplete : 'off',
+                    disabled : disabled,
+                    value : value,
+                    'class' : 'box'
+                }
+            }
+        },
+        textarea : function(disabled, value) {
+            return {
+                element : 'textarea',
+                attributes : {
+                    autocomplete : 'off',
+                    disabled : disabled,
+                    'class' : 'box'
+                },
+                children : value
+            }
         }
     });
 

@@ -1,6 +1,6 @@
 <root>
     <article>
-        <heading level="3">Link</heading>
+        <heading>Link</heading>
         <section>
             <link href="//yandex.ru">Simple</link>
         </section>

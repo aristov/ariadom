@@ -105,6 +105,7 @@ prototype.element = function(name, transform) {
     var elements = this.elements,
         element = Object.create(elementProto);
 
+    element.base = elementProto;
     element.elements = elements;
     element.apply = this.apply.bind(this);
     Object.keys(transform).forEach(function(prop) {

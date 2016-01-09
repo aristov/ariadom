@@ -53,29 +53,14 @@
             don = domTransform.apply(root),
             result = domTransform.build(don);
 
-        console.log(Date.now() - ts);
         document.body.appendChild(result);
+        console.log(Date.now() - ts);
         console.dir(don);
     }
 
     //================================================================================================
 
-    /*domTransform.element('root', function(root) {
-        return {
-            element : 'div',
-            children : this.apply(root.children)
-        };
-    });*/
-
     domTransform.element('root', { element : 'div' });
-
-    /*domTransform.element('heading', function(heading) {
-        var attrs = this.apply(heading.attributes);
-        return {
-            element : 'h' + (attrs.level || '1'),
-            children : heading.textContent
-        };
-    });*/
 
     domTransform.element('heading', {
         element : function(name, heading) {
@@ -83,21 +68,6 @@
         },
         attributes : undefined
     });
-
-    /*domTransform.element('heading', { element : 'h1' });*/
-
-    /*domTransform.element('link', function(link) {
-        var attrs = this.apply(link.attributes);
-        return {
-            element : 'a',
-            attributes : {
-                href : attrs.href,
-                rel : attrs.rel,
-                'class' : [attrs.view || 'link', attrs.mix].join(' ')
-            },
-            children : link.textContent
-        };
-    });*/
 
     domTransform.element('link', {
         element : 'a',
@@ -109,26 +79,6 @@
             };
         }
     });
-</script>
-    <template name=link data-copyattrs=true data-transform="attrs view mix children">
-        <a href=attrs.href rel=attrs.rel class=link></a>
-    </template>
-<script>
-
-    /*domTransform.element('button', function(button) {
-        var attrs = this.apply(button.attributes);
-        return {
-            element : 'span',
-            attributes : {
-                role : 'button',
-                tabindex : attrs.disabled === 'true'? undefined : '0',
-                'aria-disabled' : attrs.disabled,
-                'aria-pressed' : attrs.pressed,
-                'class' : attrs.view || 'button'
-            },
-            children : button.textContent
-        };
-    });*/
 
     domTransform.element('button', {
         element : 'span',
@@ -142,29 +92,6 @@
             }
         }
     });
-
-    /*domTransform.element('checkbox', function(checkbox) {
-        var attrs = this.apply(checkbox.attributes),
-            view = attrs.view || 'checkbox',
-            children = view === 'checkbox'? [
-                {
-                    element : 'span',
-                    attributes : { 'class' : 'box' }
-                },
-                checkbox.textContent
-            ] : checkbox.textContent;
-        return {
-            element : 'span',
-            attributes : {
-                role : 'checkbox',
-                tabindex : attrs.disabled === 'true'? undefined : '0',
-                'aria-disabled' : attrs.disabled,
-                'aria-checked' : attrs.checked,
-                'class' : view
-            },
-            children : children
-        };
-    });*/
 
     domTransform.element('checkbox', {
         element : 'span',
@@ -189,31 +116,20 @@
         }
     });
 
-    /*domTransform.element('radiogroup', function(radiogroup) {
-        var attrs = this.apply(radiogroup.attributes);
-        this.disabled = attrs.disabled === 'true';
-        this.focusable = this.disabled? null :
-            radiogroup.querySelector('radio[checked=true]') ||
-                radiogroup.querySelector('radio');
-        return {
-            element : 'span',
-            attributes : {
-                role : 'radiogroup',
-                'aria-label' : attrs.label,
-                'aria-disabled' : attrs.disabled,
-                'class' : attrs.view || 'radiogroup'
-            },
-            children : this.apply(radiogroup.children)
-        };
-    });*/
-
     domTransform.element('radiogroup', {
         element : 'span',
         attributes : function(attrs, radiogroup) {
-            this.disabled = attrs.disabled === 'true';
-            this.focusable = this.disabled? null :
-                radiogroup.querySelector('radio[checked=true]') ||
-                    radiogroup.querySelector('radio');
+            if(attrs.disabled === 'true') {
+                Array
+                    .from(radiogroup.querySelectorAll('radio'))
+                    .forEach(function(radio) {
+                        radio.setAttribute('disabled', 'true');
+                    });
+            } else {
+                (radiogroup.querySelector('radio[checked=true]') ||
+                    radiogroup.querySelector('radio'))
+                        .setAttribute('tabindex', '0');
+            }
             return {
                 role : 'radiogroup',
                 'aria-label' : attrs.label,
@@ -223,42 +139,15 @@
         }
     });
 
-    /*domTransform.element('radio',  function(radio) {
-        var attrs = this.apply(radio.attributes),
-            radiogroup = this.elements.radiogroup,
-            view = attrs.view || 'radio',
-            children = view === 'radio'? [
-                {
-                    element : 'span',
-                    attributes : { 'class' : 'box' }
-                },
-                radio.textContent
-            ] : radio.textContent;
-        return {
-            element : 'span',
-            attributes : {
-                role : 'radio',
-                tabindex : radiogroup.disabled || attrs.disabled === 'true'?
-                    undefined :
-                    radio === radiogroup.focusable? '0' : '-1',
-                'aria-checked' : attrs.checked,
-                'aria-disabled' : attrs.disabled,
-                'class' : view
-            },
-            children : children
-        };
-    });*/
-
     domTransform.element('radio', {
         element : 'span',
         attributes : function(attrs, radio) {
-            var radiogroup = this.elements.radiogroup;
             this.view = attrs.view || 'radio';
             return {
                 role : 'radio',
-                tabindex : radiogroup.disabled || attrs.disabled === 'true'?
+                tabindex : attrs.disabled === 'true'?
                     undefined :
-                    radio === radiogroup.focusable? '0' : '-1',
+                    attrs.tabindex || '-1',
                 'aria-checked' : attrs.checked,
                 'aria-disabled' : attrs.disabled,
                 'class' : this.view
@@ -275,35 +164,6 @@
         }
     });
 
-    /*domTransform.element('listbox', function(listbox) {
-        var attrs = this.apply(listbox.attributes);
-        return {
-            element : 'span',
-            attributes : {
-                role : 'listbox',
-                tabindex : attrs.disabled === 'true'? undefined : '0',
-                'aria-label' : attrs.label,
-                'aria-disabled' : attrs.disabled,
-                'class' : attrs.view || 'listbox'
-            },
-            children : [{
-                element : 'span',
-                attributes : { 'class' : 'box' },
-                children : this.apply(listbox.children)
-            }]
-        };
-    });*/
-</script>
-    <template name=listbox>
-        <span role=listbox
-              tabindex="attrs.disabled === 'true'? undefined : 0"
-              aria-label=attrs.label>
-            <span class=box>
-                <template name=children></template>
-            </span>
-        </span>
-    </template>
-<script>
     domTransform.element('listbox', {
         element : 'span',
         attributes : function(attrs) {
@@ -324,20 +184,6 @@
         }
     });
 
-    /*domTransform.element('option', function(option) {
-        var attrs = this.apply(option.attributes);
-        return {
-            element : 'span',
-            attributes : {
-                role : 'option',
-                'aria-selected' : attrs.selected,
-                'aria-checked' : attrs.checked,
-                'class' : attrs.view || 'option'
-            },
-            children : option.textContent
-        };
-    });*/
-
     domTransform.element('option', {
         element : 'span',
         attributes : function(attrs) {
@@ -350,35 +196,16 @@
         }
     });
 
-    /*domTransform.element('textbox', function(textbox) {
-        var attrs = this.apply(textbox.attributes),
-            input = {
-                element : 'input',
-                attributes : {
-                    autocomplete : 'off',
-                    disabled : attrs.disabled,
-                    value : attrs.value,
-                    'class' : 'box'
-                }
-            };
-        if(attrs.multiline === 'true') {
-            input.element = 'textarea';
-            delete input.attributes.value;
-            input.children = attrs.value || '';
-        }
-        return {
-            element : 'span',
-            attributes : {
-                role : 'textbox',
+    domTransform.element('group', {
+        element : 'span',
+        attributes : function(attrs) {
+            return {
+                role : 'group',
                 'aria-label' : attrs.label,
-                'class' : [
-                    attrs.view || 'textbox',
-                    attrs.disabled && 'disabled'
-                ].join(' ').trim()
-            },
-            children : input
-        };
-    });*/
+                'class' : attrs.view || 'group'
+            };
+        }
+    });
 
     domTransform.element('textbox', {
         element : 'span',
@@ -451,30 +278,6 @@
             };
         }
     });*/
-
-    /*domTransform.element('group', function(group) {
-        var attrs = this.apply(group.attributes);
-        return {
-            element : 'span',
-            attributes : {
-                role : 'group',
-                'aria-label' : attrs.label,
-                'class' : attrs.view || 'group'
-            },
-            children : this.apply(group.children)
-        };
-    });*/
-
-    domTransform.element('group', {
-        element : 'span',
-        attributes : function(attrs) {
-            return {
-                role : 'group',
-                'aria-label' : attrs.label,
-                'class' : attrs.view || 'group'
-            };
-        }
-    });
 </script>
 </body>
 </html>

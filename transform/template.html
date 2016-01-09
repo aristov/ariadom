@@ -1,0 +1,13 @@
+<template name=link data-copyattrs=true data-transform="attrs view mix children">
+    <a href=attrs.href rel=attrs.rel class=link></a>
+</template>
+
+<template name=listbox>
+    <span role=listbox
+          tabindex="attrs.disabled === 'true'? undefined : 0"
+          aria-label=attrs.label>
+        <span class=box>
+            <template name=children></template>
+        </span>
+    </span>
+</template>

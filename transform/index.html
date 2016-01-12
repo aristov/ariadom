@@ -75,7 +75,7 @@
             return {
                 href : attrs.href,
                 rel : attrs.rel,
-                'class' : [attrs.view || 'link', attrs.mix].join(' ')
+                'class' : [attrs.view || 'link', attrs.mix].join(' ').trim()
             };
         }
     });
@@ -137,6 +137,9 @@
                     radiogroup.querySelector('radio'))
                         .setAttribute('tabindex', '0');
             }
+            /*this.disabled?
+                this.find('radio').setAttribute('disabled', 'true');
+                this.find('radio[checked=true],radio').setAttribute('tabindex', '0');*/
             return this.base.transform.call(this, radiogroup);
         }
     });

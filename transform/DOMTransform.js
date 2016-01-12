@@ -110,13 +110,9 @@ prototype.element = function(name, transform) {
     element.apply = this.apply.bind(this);
     Object.keys(transform).forEach(function(prop) {
         var value = transform[prop];
-        if(prop === 'element' && typeof value !== 'function') {
-            element[prop] = function() { return value };
-        } else if(prop === 'attributes' && typeof value !== 'function' ) {
-            element[prop] = function() { return value };
-        } else {
-            element[prop] = transform[prop];
-        }
+        element[prop] = typeof value === 'function'?
+            transform[prop] :
+            function() { return value };
     });
 
     return elements[name] = element;
@@ -125,3 +121,4 @@ prototype.element = function(name, transform) {
 return DOMTransform;
 
 }();
+

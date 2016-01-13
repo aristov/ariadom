@@ -60,16 +60,16 @@
 
     //================================================================================================
 
-    domTransform.element('root', { element : 'div' });
+    domTransform.template('root', { element : 'div' });
 
-    domTransform.element('heading', {
+    domTransform.template('heading', {
         element : function(name, heading) {
             return 'h' + (heading.getAttribute('level') || '1');
         },
         attributes : undefined
     });
 
-    domTransform.element('link', {
+    domTransform.template('link', {
         element : 'a',
         attributes : function(attrs) {
             return {
@@ -77,10 +77,13 @@
                 rel : attrs.rel,
                 'class' : [attrs.view || 'link', attrs.mix].join(' ').trim()
             };
+        },
+        classes : function(attrs) {
+            return [attrs.view || 'link', attrs.mix];
         }
     });
 
-    domTransform.element('button', {
+    domTransform.template('button', {
         element : 'span',
         attributes : function(attrs) {
             return {
@@ -93,7 +96,7 @@
         }
     });
 
-    domTransform.element('checkbox', {
+    domTransform.template('checkbox', {
         element : 'span',
         attributes : function(attrs) {
             return {
@@ -111,11 +114,11 @@
                     attributes : { 'class' : 'box' }
                 },
                 checkbox.textContent
-            ] : this.apply(children)
+            ] : this.collection(children)
         }
     });
 
-    domTransform.element('radiogroup', {
+    domTransform.template('radiogroup', {
         element : 'span',
         attributes : function(attrs, radiogroup) {
             return {
@@ -144,7 +147,7 @@
         }
     });
 
-    domTransform.element('radio', {
+    domTransform.template('radio', {
         element : 'span',
         attributes : function(attrs, radio) {
             return {
@@ -164,11 +167,11 @@
                     attributes : { 'class' : 'box' }
                 },
                 radio.textContent
-            ] : this.apply(children);
+            ] : this.collection(children);
         }
     });
 
-    domTransform.element('listbox', {
+    domTransform.template('listbox', {
         element : 'span',
         attributes : function(attrs) {
             return {
@@ -183,12 +186,12 @@
             return {
                 element : 'span',
                 attributes : { 'class' : 'box' },
-                children : this.apply(children)
+                children : this.collection(children)
             }
         }
     });
 
-    domTransform.element('option', {
+    domTransform.template('option', {
         element : 'span',
         attributes : function(attrs) {
             return {
@@ -200,7 +203,7 @@
         }
     });
 
-    domTransform.element('group', {
+    domTransform.template('group', {
         element : 'span',
         attributes : function(attrs) {
             return {
@@ -211,7 +214,7 @@
         }
     });
 
-    domTransform.element('textbox', {
+    domTransform.template('textbox', {
         element : 'span',
         attributes : function(attrs) {
             return {
@@ -224,32 +227,30 @@
             }
         },
         children : function(children, textbox) {
-            var disabled = textbox.getAttribute('disabled') === 'true'? '' : undefined,
-                value = textbox.getAttribute('value') || undefined;
             return textbox.getAttribute('multiline') === 'true'?
-                this.textarea(disabled, value) :
-                this.input(disabled, value);
+                this.textarea(this.attrs) :
+                this.input(this.attrs);
         },
-        input : function(disabled, value) {
+        input : function(attrs) {
             return {
                 element : 'input',
                 attributes : {
                     autocomplete : 'off',
-                    disabled : disabled,
-                    value : value,
+                    disabled : attrs.disabled === 'true'? '' : undefined,
+                    value : attrs.value,
                     'class' : 'box'
                 }
             }
         },
-        textarea : function(disabled, value) {
+        textarea : function(attrs) {
             return {
                 element : 'textarea',
                 attributes : {
                     autocomplete : 'off',
-                    disabled : disabled,
+                    disabled : attrs.disabled === 'true'? '' : undefined,
                     'class' : 'box'
                 },
-                children : value
+                children : attrs.value
             }
         }
     });
@@ -271,7 +272,7 @@
             }
         });
 
-    domTransform.element({
+    domTransform.template({
         name : 'textbox',
         attrName : 'multiline',
         attrValue : 'true'

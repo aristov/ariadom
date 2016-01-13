@@ -1,52 +1,33 @@
 var DOMTransform = function() {
 
 function DOMTransform() {
-    elementProto.apply = this.apply.bind(this);
-    this.elements = { '*' : elementProto };
+    this.templates = {
+        '*' : this.baseElement,
+        '#text' : this.baseText
+    };
+    this.baseElement.templates = this.templates;
 }
 
 var prototype = DOMTransform.prototype;
 
+prototype.template = function(name, template) {
+    var templates = this.templates,
+        base = templates[name] || templates['*'],
+        element = Object.create(base);
+    element.base = base;
+    element.templates = templates;
+    Object.keys(template).forEach(function(prop) {
+        var value = template[prop];
+        element[prop] = typeof value === 'function'?
+            template[prop] :
+            function() { return value };
+    });
+    return templates[name] = element;
+}
+
 prototype.apply = function(context) {
-    var method = methods[context.constructor.name];
-    if(method) return method.call(this, context);
-    else throw Error('unexpected context');
+    return this.templates['*'].apply(context);
 }
-
-prototype.applyText = function(node) {
-    return /^\s+$/.test(node.textContent)? null : node.textContent;
-}
-
-prototype.applyElement = function(context) {
-    var elements = this.elements,
-        element = elements[context.tagName] || elements['*'];
-    return element.transform(context);
-}
-
-prototype.applyAttributes = function(attributes) {
-    var result = {}, i = 0, attr;
-    while(attr = attributes[i++]) {
-        result[attr.name] = attr.value;
-    }
-    return result;
-}
-
-prototype.applyChildren = function(children) {
-    var result = [], i = 0, node, child;
-    while(node = children[i++]) {
-        child = this.apply(node);
-        if(child) result.push(child);
-    }
-    return result;
-}
-
-var methods = {
-    Element : prototype.applyElement,
-    Text : prototype.applyText,
-    NamedNodeMap : prototype.applyAttributes,
-    NodeList : prototype.applyChildren,
-    HTMLCollection : prototype.applyChildren
-};
 
 prototype.build = function(context) {
     if(typeof context === 'string') {
@@ -67,7 +48,7 @@ prototype.build = function(context) {
             if(Array.isArray(children)) {
                 children.forEach(function(child) {
                     result.appendChild(this.build(child));
-                }, this)
+                }, this);
             } else {
                 result.appendChild(this.build(children));
             }
@@ -76,14 +57,21 @@ prototype.build = function(context) {
     }
 }
 
-prototype.transform = function(context) {
-    return this.build(this.apply(context));
+prototype.transform = function(node) {
+    return this.build(this.apply(node));
 }
 
-var elementProto = {
+////////////////////////////////////////////////////////////////
+
+prototype.baseElement = {
+    apply : function(element) {
+        var templates = this.templates,
+            template = templates[element.nodeName] || templates['*'];
+        return template.transform(element);
+    },
     transform : function(element) {
         var result = { element : this.element(element.tagName, element) },
-            attrs = this.attrs = this.apply(element.attributes),
+            attrs = this.attrs = this.getAttrs(element.attributes, element),
             attributes = this.attributes(attrs, element),
             children = this.children(element.childNodes, element);
         if(attributes) result.attributes = attributes;
@@ -93,32 +81,35 @@ var elementProto = {
     element : function(name, element) {
         return name;
     },
-    attributes : function(attrs, element) {
+    getAttrs : function(attributes, element) {
+        var attrs = {}, i = 0, attr;
+        while(attr = attributes[i++]) {
+            attrs[attr.name] = attr.value;
+        }
         return attrs;
     },
+    attributes : function(attributes, element) {
+        return attributes;
+    },
+    collection : function(collection, element) {
+        var result = [], i = 0, node, child;
+        while(node = collection[i++]) {
+            child = this.apply(node);
+            if(child) result.push(child);
+        }
+        return result;
+    },
     children : function(children, element) {
-        return this.apply(children);
+        return this.collection(children, element);
     }
 };
 
-prototype.element = function(name, transform) {
-    var elements = this.elements,
-        element = Object.create(elementProto);
-
-    element.base = elementProto;
-    element.elements = elements;
-    element.apply = this.apply.bind(this);
-    Object.keys(transform).forEach(function(prop) {
-        var value = transform[prop];
-        element[prop] = typeof value === 'function'?
-            transform[prop] :
-            function() { return value };
-    });
-
-    return elements[name] = element;
+prototype.baseText = {
+    transform : function(node) {
+        return /^\s+$/.test(node.textContent)? null : node.textContent;
+    }
 }
 
 return DOMTransform;
 
 }();
-

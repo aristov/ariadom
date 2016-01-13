@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <meta name=viewport content="width=device-width,maximum-scale=1,initial-scale=1,user-scalable=0">
+
+    <title>ARIADOM: Yandex style</title>
+
+    <script src=role.js></script>
+    <script src=ARIAGrid.js></script>
+    <script>
+        ARIAGrid.attachToDocument();
+    </script>
+    <style>
+        body
+        {
+            font: 13px Arial;
+            margin: 20px;
+        }
+    </style>
+    <style>
+        .grid
+        {
+            border-collapse: collapse;
+        }
+        .grid .gridcell
+        {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            padding: 0;
+            outline: none;
+        }
+        .grid .gridcell .box
+        {
+            display: inline-block;
+            border: 1px solid transparent;
+            min-width: 100px;
+            min-height: 30px;
+        }
+        .grid .gridcell:hover .box
+        {
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+        }
+        .grid .gridcell:focus .box
+        {
+            border-color: #ffdb4d;
+            box-shadow: 0 0 0 1px #ffdb4d;
+        }
+        .grid .gridcell input
+        {
+            border: 0;
+            padding: 0;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <table role=grid class=grid>
+        <tr role=row class=row>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+        </tr>
+        <tr role=row class=row>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+        </tr>
+        <tr role=row class=row>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+        </tr>
+    </table>
+</body>
+</html>

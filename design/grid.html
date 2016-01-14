@@ -28,47 +28,52 @@
             border: 1px solid rgba(0, 0, 0, 0.2);
             padding: 0;
             outline: none;
+            /*text-align: center;*/
         }
         .grid .gridcell .box
         {
-            display: inline-block;
             border: 1px solid transparent;
+            display: block;
             min-width: 100px;
             min-height: 30px;
+            line-height: 30px;
+            overflow: hidden;
+            position: relative;
         }
-        .grid .gridcell:hover .box
+        .grid .gridcell .value
+        {
+            position: absolute;
+            white-space: nowrap;
+        }
+        .grid .gridcell:hover:not(:focus) .box:not(:focus)
         {
             box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
         }
-        .grid .gridcell:focus .box
+        .grid .gridcell:focus .box,
+        .grid .gridcell input:focus
         {
             border-color: #ffdb4d;
             box-shadow: 0 0 0 1px #ffdb4d;
         }
         .grid .gridcell input
         {
+            font: 13px Arial;
             border: 0;
             padding: 0;
             width: 100px;
+            /*text-align: center;*/
         }
     </style>
 </head>
 <body>
     <table role=grid class=grid>
         <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=value></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=value></span></div></td>
         </tr>
         <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=value></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=value></span></div></td>
         </tr>
     </table>
 </body>

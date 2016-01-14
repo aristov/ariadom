@@ -17,6 +17,46 @@ ARIAGrid.attachToDocument = function() {
 
 ////////////////////////////////////////////////////////////////
 
+function ARIARow(element) {
+    element.aria = this;
+    this.element = element;
+
+    this.forEach.call(
+        element.querySelectorAll('[role=gridcell]'),
+        function(element) {
+            this.push(ARIAGridCell.getGridCell(element));
+        }, this);
+
+    this.grid = ARIAGrid.getGrid(element.closest('[role=grid]'));
+}
+
+ARIARow.prototype = new Array();
+ARIARow.prototype.constructor = ARIARow;
+
+ARIARow.role = 'row';
+
+Object.defineProperty(ARIARow.prototype, 'next', {
+    enumerable : true,
+    get : function() {
+        return this.constructor.getRow(this.element.nextElementSibling);
+    }
+});
+
+Object.defineProperty(ARIARow.prototype, 'prev', {
+    enumerable : true,
+    get : function() {
+        return this.constructor.getRow(this.element.previousElementSibling);
+    }
+});
+
+ARIARow.getRow = function(element) {
+    return element && element.role === this.role?
+        element.aria || new this(element) :
+        null;
+}
+
+////////////////////////////////////////////////////////////////
+
 function ARIAGridCell(element) {
     element.aria = this;
     this.element = element;
@@ -24,14 +64,14 @@ function ARIAGridCell(element) {
     element.dataset.mode = 'navigation';
 
     this.grid = ARIAGrid.getGrid(element.closest('[role=grid]'));
+    this.row = ARIARow.getRow(element.closest('[role=row]'));
     this.box = element.querySelector('.box');
-    this.value = element.querySelector('.value');
-    this.input = document.createElement('input');
-    this.input.classList.add('box');
-    this.input.setAttribute('role', 'presentation');
-    this.input.addEventListener('blur', this.onInputBlur.bind(this));
+    this.text = element.querySelector('.text');
+    this.input = this.createInput();
 
     element.addEventListener('keydown', this.onKeyDown.bind(this));
+    element.addEventListener('dblclick', this.onDoubleClick.bind(this));
+    this.input.addEventListener('blur', this.onInputBlur.bind(this));
 }
 
 Object.defineProperty(ARIAGridCell.prototype, 'mode', {
@@ -48,14 +88,39 @@ Object.defineProperty(ARIAGridCell.prototype, 'mode', {
     }
 });
 
+Object.defineProperty(ARIAGridCell.prototype, 'next', {
+    enumerable : true,
+    get : function() {
+        return this.constructor.getGridCell(this.element.nextElementSibling);
+    }
+});
+
+Object.defineProperty(ARIAGridCell.prototype, 'prev', {
+    enumerable : true,
+    get : function() {
+        return this.constructor.getGridCell(this.element.previousElementSibling);
+    }
+});
+
+ARIAGridCell.prototype.createInput = function() {
+    var input = document.createElement('input');
+    input.classList.add('box');
+    input.setAttribute('role', 'presentation');
+    return input;
+}
+
 ARIAGridCell.prototype.setActionableMode = function(event) {
     this.element.replaceChild(this.input, this.box);
     this.input.focus();
 }
 
 ARIAGridCell.prototype.setNavigationMode = function(event) {
-    this.value.textContent = this.input.value;
+    this.text.textContent = this.input.value;
     this.element.replaceChild(this.box, this.input);
+}
+
+ARIAGridCell.prototype.focus = function() {
+    this.element.focus();
 }
 
 ARIAGridCell.prototype.onKeyDown = function(event) {
@@ -85,33 +150,31 @@ ARIAGridCell.prototype.onEscapeKeyDown = function(event) {
     this.element.focus();
 }
 
+ARIAGridCell.prototype.onDoubleClick = function(event) {
+    this.mode = 'actionable';
+}
+
 ARIAGridCell.prototype.onInputBlur = function(event) {
     this.mode = 'navigation';
 }
 
 ARIAGridCell.prototype.onArrowKeyDown = function(event) {
-    var cell = this.element,
-        row = cell.parentElement,
-        currentIndex = Array.from(row.children).indexOf(cell),
-        newCell,
-        newRow;
-    if(event.keyCode === 37) newCell = cell.previousElementSibling;
-    if(event.keyCode === 39) newCell = cell.nextElementSibling;
-    if(event.keyCode === 38) {
-        newRow = row.previousElementSibling;
-        if(newRow) newCell = newRow.children[currentIndex];
+    var keyCode = event.keyCode;
+    if(keyCode % 2) {
+        if(keyCode === 37) this.prev && this.prev.focus();
+        if(keyCode === 39) this.next && this.next.focus();
+    } else {
+        var row = this.row,
+            index = this.row.indexOf(this);
+        if(keyCode === 38) row.prev && row.prev[index].focus();
+        if(keyCode === 40) row.next && row.next[index].focus();
     }
-    if(event.keyCode === 40) {
-        newRow = row.nextElementSibling;
-        if(newRow) newCell = newRow.children[currentIndex];
-    }
-    if(newCell) newCell.focus();
 }
 
 ARIAGridCell.role = 'gridcell';
 
 ARIAGridCell.getGridCell = function(element) {
-    return element.role === this.role?
+    return element && element.role === this.role?
         element.aria || new this(element) :
         null;
 }

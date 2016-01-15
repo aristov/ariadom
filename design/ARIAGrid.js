@@ -1,7 +1,16 @@
 function ARIAGrid(element) {
     element.aria = this;
     this.element = element;
+
+    this.forEach.call(
+        element.querySelectorAll('[role=row]'),
+        function(element) {
+            this.push(ARIARow.getRow(element));
+        }, this);
 }
+
+ARIAGrid.prototype = new Array();
+ARIAGrid.prototype.constructor = ARIAGrid;
 
 ARIAGrid.role = 'grid';
 
@@ -82,10 +91,25 @@ Object.defineProperty(ARIAGridCell.prototype, 'mode', {
     },
     set : function(value) {
         if(value !== this.mode) {
-            this.element.dataset.mode = value;
-            if(value === 'navigation') this.setNavigationMode();
-            else if(value === 'actionable') this.setActionableMode();
+            if(value === 'navigation') {
+                this.element.dataset.mode = value;
+                this.setNavigationMode();
+            }
+            else if(value === 'actionable' && this.readonly === 'false') {
+                this.element.dataset.mode = value;
+                this.setActionableMode();
+            }
         }
+    }
+});
+
+Object.defineProperty(ARIAGridCell.prototype, 'readonly', {
+    enumerable : true,
+    get : function() {
+        return this.element.getAttribute('aria-readonly') || 'false';
+    },
+    set : function(value) {
+        this.element.setAttribute('aria-readonly', String(value));
     }
 });
 
@@ -118,6 +142,7 @@ ARIAGridCell.prototype.createInput = function() {
 }
 
 ARIAGridCell.prototype.setActionableMode = function(event) {
+    this.input.value = this.text.textContent;
     this.element.replaceChild(this.input, this.box);
     this.input.focus();
 }

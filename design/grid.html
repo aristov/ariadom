@@ -33,16 +33,21 @@
         {
             border: 1px solid transparent;
             display: block;
-            min-width: 100px;
-            min-height: 30px;
+            width: 100px;
+            height: 30px;
             line-height: 30px;
             overflow: hidden;
             position: relative;
+            padding: 0 3px;
         }
         .grid .gridcell .text
         {
             position: absolute;
             white-space: nowrap;
+        }
+        .grid .gridcell input
+        {
+            font: 13px Arial;
         }
         .grid .gridcell:hover:not(:focus) .box:not(:focus)
         {
@@ -53,13 +58,6 @@
         {
             border-color: #ffdb4d;
             box-shadow: 0 0 0 1px #ffdb4d;
-        }
-        .grid .gridcell input
-        {
-            font: 13px Arial;
-            border: 0;
-            padding: 0;
-            width: 100px;
         }
     </style>
 </head>

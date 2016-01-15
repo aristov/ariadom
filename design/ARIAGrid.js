@@ -6,7 +6,7 @@ function ARIAGrid(element) {
 ARIAGrid.role = 'grid';
 
 ARIAGrid.getGrid = function(element) {
-    return element.role === this.role?
+    return element && element.role === this.role?
         element.aria || new this(element) :
         null;
 }
@@ -65,6 +65,7 @@ function ARIAGridCell(element) {
 
     this.grid = ARIAGrid.getGrid(element.closest('[role=grid]'));
     this.row = ARIARow.getRow(element.closest('[role=row]'));
+
     this.box = element.querySelector('.box');
     this.text = element.querySelector('.text');
     this.input = this.createInput();
@@ -99,6 +100,13 @@ Object.defineProperty(ARIAGridCell.prototype, 'prev', {
     enumerable : true,
     get : function() {
         return this.constructor.getGridCell(this.element.previousElementSibling);
+    }
+});
+
+Object.defineProperty(ARIAGridCell.prototype, 'index', {
+    enumerable : true,
+    get : function() {
+        return this.row.indexOf(this);
     }
 });
 
@@ -159,16 +167,16 @@ ARIAGridCell.prototype.onInputBlur = function(event) {
 }
 
 ARIAGridCell.prototype.onArrowKeyDown = function(event) {
-    var keyCode = event.keyCode;
+    var keyCode = event.keyCode,
+        direction = keyCode < 39? 'prev' : 'next',
+        cell;
     if(keyCode % 2) {
-        if(keyCode === 37) this.prev && this.prev.focus();
-        if(keyCode === 39) this.next && this.next.focus();
+        cell = this[direction];
     } else {
-        var row = this.row,
-            index = this.row.indexOf(this);
-        if(keyCode === 38) row.prev && row.prev[index].focus();
-        if(keyCode === 40) row.next && row.next[index].focus();
+        var row = this.row[direction];
+        cell = row && row[this.index];
     }
+    if(cell) cell.focus();
 }
 
 ARIAGridCell.role = 'gridcell';

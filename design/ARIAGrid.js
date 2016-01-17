@@ -12,6 +12,34 @@ function ARIAGrid(element) {
 ARIAGrid.prototype = new Array();
 ARIAGrid.prototype.constructor = ARIAGrid;
 
+Object.defineProperty(ARIAGrid.prototype, 'multiselectable', {
+    enumerable : true,
+    get : function() {
+        return this.element.getAttribute('aria-multiselectable') || 'false';
+    },
+    set : function(value) {
+        this.element.setAttribute('aria-multiselectable', String(value));
+    }
+});
+
+Object.defineProperty(ARIAGrid.prototype, 'selected', {
+    enumerable : true,
+    get : function() {
+        return this.reduce(function(res, row) {
+            row.forEach(function(cell) {
+                if(cell.selected === 'true') res.push(cell);
+            });
+            return res;
+        }, []);
+    }
+});
+
+ARIAGrid.prototype.unselect = function() {
+    this.forEach(function(row) {
+        row.unselect();
+    });
+}
+
 ARIAGrid.role = 'grid';
 
 ARIAGrid.getGrid = function(element) {
@@ -58,6 +86,19 @@ Object.defineProperty(ARIARow.prototype, 'prev', {
     }
 });
 
+Object.defineProperty(ARIARow.prototype, 'index', {
+    enumerable : true,
+    get : function() {
+        return this.grid.indexOf(this);
+    }
+});
+
+ARIARow.prototype.unselect = function() {
+    this.forEach(function(cell) {
+        cell.selected = false;
+    });
+}
+
 ARIARow.getRow = function(element) {
     return element && element.role === this.role?
         element.aria || new this(element) :
@@ -81,7 +122,6 @@ function ARIAGridCell(element) {
 
     element.addEventListener('keydown', this.onKeyDown.bind(this));
     element.addEventListener('dblclick', this.onDoubleClick.bind(this));
-    this.input.addEventListener('blur', this.onInputBlur.bind(this));
 }
 
 Object.defineProperty(ARIAGridCell.prototype, 'mode', {
@@ -113,6 +153,16 @@ Object.defineProperty(ARIAGridCell.prototype, 'readonly', {
     }
 });
 
+Object.defineProperty(ARIAGridCell.prototype, 'selected', {
+    enumerable : true,
+    get : function() {
+        return this.element.getAttribute('aria-selected') || '';
+    },
+    set : function(value) {
+        this.element.setAttribute('aria-selected', String(value));
+    }
+});
+
 Object.defineProperty(ARIAGridCell.prototype, 'next', {
     enumerable : true,
     get : function() {
@@ -136,20 +186,26 @@ Object.defineProperty(ARIAGridCell.prototype, 'index', {
 
 ARIAGridCell.prototype.createInput = function() {
     var input = document.createElement('input');
-    input.classList.add('box');
     input.setAttribute('role', 'presentation');
+    input.addEventListener('blur', this.onInputBlur.bind(this));
     return input;
+}
+
+ARIAGridCell.prototype.onInputBlur = function(event) {
+    this.mode = 'navigation';
 }
 
 ARIAGridCell.prototype.setActionableMode = function(event) {
     this.input.value = this.text.textContent;
-    this.element.replaceChild(this.input, this.box);
+    this.box.replaceChild(this.input, this.text);
     this.input.focus();
+    this.element.classList.add('focus');
 }
 
 ARIAGridCell.prototype.setNavigationMode = function(event) {
     this.text.textContent = this.input.value;
-    this.element.replaceChild(this.box, this.input);
+    this.box.replaceChild(this.text, this.input);
+    this.element.classList.remove('focus');
 }
 
 ARIAGridCell.prototype.focus = function() {
@@ -171,7 +227,20 @@ ARIAGridCell.prototype.onKeyDown = function(event) {
 
 ARIAGridCell.prototype.onEnterKeyDown = function(event) {
     if(this.mode === 'navigation') {
-        this.mode = 'actionable';
+        var selected = this.grid.selected,
+            length = selected.length;
+        if(length) {
+            var first = selected[0],
+                last = selected[length - 1];
+            selected.forEach(function(cell) {
+                cell.selected = 'false';
+                cell === first || cell.element.parentElement.removeChild(cell.element);
+            });
+            first.element.rowSpan = length;
+            first.mode = 'actionable';
+        } else {
+            this.mode = 'actionable';
+        }
     } else {
         this.mode = 'navigation';
         this.element.focus();
@@ -187,10 +256,6 @@ ARIAGridCell.prototype.onDoubleClick = function(event) {
     this.mode = 'actionable';
 }
 
-ARIAGridCell.prototype.onInputBlur = function(event) {
-    this.mode = 'navigation';
-}
-
 ARIAGridCell.prototype.onArrowKeyDown = function(event) {
     var keyCode = event.keyCode,
         direction = keyCode < 39? 'prev' : 'next',
@@ -201,7 +266,13 @@ ARIAGridCell.prototype.onArrowKeyDown = function(event) {
         var row = this.row[direction];
         cell = row && row[this.index];
     }
-    if(cell) cell.focus();
+    if(cell) {
+        if(this.grid.multiselectable === 'true') {
+            if(event.shiftKey) this.selected = cell.selected = true;
+            else this.grid.unselect();
+        }
+        cell.focus();
+    }
 }
 
 ARIAGridCell.role = 'gridcell';

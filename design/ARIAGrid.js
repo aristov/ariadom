@@ -3,10 +3,7 @@ function ARIAGrid(element) {
     this.element = element;
 }
 
-/*ARIAGrid.prototype = new Array();
-ARIAGrid.prototype.constructor = ARIAGrid;*/
-
-Object.defineProperty(ARIAGrid.prototype, 'collection', {
+Object.defineProperty(ARIAGrid.prototype, 'rows', {
     enumerable : true,
     get : function() {
         return Array.prototype.map.call(
@@ -41,28 +38,42 @@ Object.defineProperty(ARIAGrid.prototype, 'multiselectable', {
 Object.defineProperty(ARIAGrid.prototype, 'selected', {
     enumerable : true,
     get : function() {
-        return this.collection.reduce(function(res, row) {
-            row.collection.forEach(function(cell) {
-                if(cell.selected === 'true') res.push(cell);
-            });
-            return res;
-        }, []);
+        return this.cells.filter(function(cell) {
+            return cell.selected === 'true';
+        });
     }
 });
 
-ARIAGrid.prototype.slice = function(first, last) {
-    return this
-        .collection
-        .slice(first.row.index, last.row.index)
-        .reduce(function(res, row) {
-            return res.concat(row.collection.slice(first.index, last.index));
-        }, []);
+ARIAGrid.prototype.unselect = function() {
+    this.selected.forEach(function(cell) {
+        cell.selected = 'false';
+    });
 }
 
-ARIAGrid.prototype.unselect = function() {
-    this.collection.forEach(function(row) {
-        row.unselect();
+ARIAGrid.prototype.merge = function(cells) {
+    var first = cells[0],
+        last = cells[cells.length - 1];
+    first.spanned = [];
+    cells.forEach(function(cell, i) {
+        cell.selected = 'false';
+        if(cell !== first) {
+            first.spanned.push(cell);
+            cell.span = first;
+            cell.hidden = 'true';
+        }
     });
+    first.element.colSpan = last.index - first.index + 1;
+    first.element.rowSpan = last.row.index - first.row.index + 1;
+    first.mode = 'actionable';
+}
+
+ARIAGrid.prototype.slice = function(first, last) {
+    return this
+        .rows
+        .slice(first.row.index, last.row.index + 1)
+        .reduce(function(res, row) {
+            return res.concat(row.cells.slice(first.index, last.index + 1));
+        }, []);
 }
 
 ARIAGrid.role = 'grid';
@@ -83,21 +94,12 @@ function ARIARow(element) {
     element.aria = this;
     this.element = element;
 
-    /*this.forEach.call(
-        element.querySelectorAll('[role=gridcell]'),
-        function(element) {
-            this.push(ARIAGridCell.getGridCell(element));
-        }, this);*/
-
     this.grid = ARIAGrid.getGrid(element.closest('[role=grid]'));
 }
 
-/*ARIARow.prototype = new Array();
-ARIARow.prototype.constructor = ARIARow;*/
-
 ARIARow.role = 'row';
 
-Object.defineProperty(ARIARow.prototype, 'collection', {
+Object.defineProperty(ARIARow.prototype, 'cells', {
     enumerable : true,
     get : function() {
         return Array.prototype.map.call(
@@ -111,29 +113,23 @@ Object.defineProperty(ARIARow.prototype, 'collection', {
 Object.defineProperty(ARIARow.prototype, 'next', {
     enumerable : true,
     get : function() {
-        return this.grid.collection[this.index + 1];
+        return this.grid.rows[this.index + 1];
     }
 });
 
 Object.defineProperty(ARIARow.prototype, 'prev', {
     enumerable : true,
     get : function() {
-        return this.grid.collection[this.index - 1];
+        return this.grid.rows[this.index - 1];
     }
 });
 
 Object.defineProperty(ARIARow.prototype, 'index', {
     enumerable : true,
     get : function() {
-        return this.grid.collection.indexOf(this);
+        return this.grid.rows.indexOf(this);
     }
 });
-
-ARIARow.prototype.unselect = function() {
-    this.collection.forEach(function(cell) {
-        cell.selected = false;
-    });
-}
 
 ARIARow.getRow = function(element) {
     return element && element.role === this.role?
@@ -156,6 +152,8 @@ function ARIAGridCell(element) {
     this.text = element.querySelector('.text');
     this.input = this.createInput();
 
+    this.spanned = this.getSpanned();
+
     element.addEventListener('keydown', this.onKeyDown.bind(this));
     element.addEventListener('dblclick', this.onDoubleClick.bind(this));
 }
@@ -176,6 +174,16 @@ Object.defineProperty(ARIAGridCell.prototype, 'mode', {
                 this.setActionableMode();
             }
         }
+    }
+});
+
+Object.defineProperty(ARIAGridCell.prototype, 'hidden', {
+    enumerable : true,
+    get : function() {
+        return String(this.element.hidden) || 'false';
+    },
+    set : function(value) {
+        this.element.hidden = String(value) === 'true';
     }
 });
 
@@ -202,7 +210,7 @@ Object.defineProperty(ARIAGridCell.prototype, 'selected', {
 Object.defineProperty(ARIAGridCell.prototype, 'leftSibling', {
     enumerable : true,
     get : function() {
-        var cell = this.row.collection[this.index - 1];
+        var cell = this.row.cells[this.index - 1];
         return cell? cell.span || cell : null;
     }
 });
@@ -210,7 +218,7 @@ Object.defineProperty(ARIAGridCell.prototype, 'leftSibling', {
 Object.defineProperty(ARIAGridCell.prototype, 'rightSibling', {
     enumerable : true,
     get : function() {
-        return this.row.collection[this.index + this.element.colSpan] || null;
+        return this.row.cells[this.index + this.element.colSpan] || null;
     }
 });
 
@@ -232,18 +240,7 @@ Object.defineProperty(ARIAGridCell.prototype, 'bottomSibling', {
 Object.defineProperty(ARIAGridCell.prototype, 'index', {
     enumerable : true,
     get : function() {
-        /*var cells = this.row.collection,
-            i = 0,
-            index = -1,
-            cell;
-        do index += cell.element.colSpan;
-        while(cell = cells[i++] && cell !== this);
-        return index;*/
-        /*return this.row.collection.reduce(function(res, cell) {
-            res += cell.element.colSpan;
-            return res;
-        }, -1);*/
-        return this.row.collection.indexOf(this);
+        return this.row.cells.indexOf(this);
     }
 });
 
@@ -255,6 +252,30 @@ Object.defineProperty(ARIAGridCell.prototype, 'column', {
         }, this);
     }
 });
+
+ARIAGridCell.prototype.span = null;
+
+ARIAGridCell.prototype.getSpanned = function() {
+    var rowSpan = this.element.rowSpan,
+        colSpan = this.element.colSpan,
+        spanned;
+    if(rowSpan > 1 || colSpan > 1) {
+        var grid = this.grid,
+            cells = grid.cells,
+            index = this.index,
+            rowIndex = this.row.index;
+        spanned = cells.filter(function(cell) {
+            if(cell.index >= index &&
+                cell.index < index + colSpan &&
+                cell.row.index >= rowIndex &&
+                cell.row.index < rowIndex + rowSpan) {
+                    if(cell !== this) cell.span = this;
+                    return true;
+                } else return false;
+        }, this);
+    }
+    return spanned || [];
+}
 
 ARIAGridCell.prototype.createInput = function() {
     var input = document.createElement('input');
@@ -281,9 +302,7 @@ ARIAGridCell.prototype.setNavigationMode = function(event) {
 }
 
 ARIAGridCell.prototype.focus = function() {
-    this.element.hidden && this.span?
-        this.span.element.focus() :
-        this.element.focus();
+    this.span? this.span.focus() : this.element.focus();
 }
 
 ARIAGridCell.prototype.onKeyDown = function(event) {
@@ -301,30 +320,31 @@ ARIAGridCell.prototype.onKeyDown = function(event) {
 
 ARIAGridCell.prototype.onEnterKeyDown = function(event) {
     if(this.mode === 'navigation') {
-        var selected = this.grid.selected,
-            length = selected.length;
-        if(length) {
-            var first = selected[0],
-                last = selected[selected.length - 1];
-            /*this.grid.slice(first, last).forEach(function(cell) {
-                cell.selected = 'false';
-                cell.span = first;
-                if(cell !== first) cell.element.hidden = true;
-            });*/
-            selected.forEach(function(cell, i) {
-                cell.selected = 'false';
-                cell.span = first;
-                if(cell !== first) cell.element.hidden = true;
-            });
-            first.element.colSpan = last.index - first.index + 1;
-            first.element.rowSpan = last.row.index - first.row.index + 1;
-            first.mode = 'actionable';
+        var grid = this.grid,
+            selected = grid.selected;
+        if(event.ctrlKey) {
+            selected.length? grid.merge(selected) : this.unmerge();
         } else {
+            if(selected.length) grid.unselect();
             this.mode = 'actionable';
         }
     } else {
         this.mode = 'navigation';
         this.element.focus();
+    }
+}
+
+ARIAGridCell.prototype.unmerge = function() {
+    var spanned = this.spanned;
+    if(spanned.length) {
+        var element = this.element,
+            cell;
+        while(cell = spanned.pop()) {
+            cell.span = null;
+            cell.hidden = 'false';
+        }
+        this.element.rowSpan = 1;
+        this.element.colSpan = 1;
     }
 }
 
@@ -354,25 +374,6 @@ ARIAGridCell.prototype.onArrowKeyDown = function(event) {
         cell.focus();
     }
 }
-
-/*ARIAGridCell.prototype.onArrowKeyDown = function(event) {
-    var keyCode = event.keyCode,
-        direction = keyCode < 39? 'prev' : 'next',
-        cell;
-    if(keyCode % 2) {
-        cell = this[direction];
-    } else {
-        var row = this.row[direction];
-        cell = row && row.collection[this.index];
-    }
-    if(cell) {
-        if(this.grid.multiselectable === 'true') {
-            if(event.shiftKey) this.selected = cell.selected = true;
-            else this.grid.unselect();
-        }
-        cell.focus();
-    }
-}*/
 
 ARIAGridCell.role = 'gridcell';
 

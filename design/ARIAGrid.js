@@ -1,16 +1,32 @@
 function ARIAGrid(element) {
     element.aria = this;
     this.element = element;
-
-    this.forEach.call(
-        element.querySelectorAll('[role=row]'),
-        function(element) {
-            this.push(ARIARow.getRow(element));
-        }, this);
 }
 
-ARIAGrid.prototype = new Array();
-ARIAGrid.prototype.constructor = ARIAGrid;
+/*ARIAGrid.prototype = new Array();
+ARIAGrid.prototype.constructor = ARIAGrid;*/
+
+Object.defineProperty(ARIAGrid.prototype, 'collection', {
+    enumerable : true,
+    get : function() {
+        return Array.prototype.map.call(
+            this.element.querySelectorAll('[role=row]'),
+            function(element) {
+                return ARIARow.getRow(element);
+            });
+    }
+});
+
+Object.defineProperty(ARIAGrid.prototype, 'cells', {
+    enumerable : true,
+    get : function() {
+        return Array.prototype.map.call(
+            this.element.querySelectorAll('[role=gridcell]'),
+            function(element) {
+                return ARIAGridCell.getGridCell(element);
+            });
+    }
+});
 
 Object.defineProperty(ARIAGrid.prototype, 'multiselectable', {
     enumerable : true,
@@ -25,8 +41,8 @@ Object.defineProperty(ARIAGrid.prototype, 'multiselectable', {
 Object.defineProperty(ARIAGrid.prototype, 'selected', {
     enumerable : true,
     get : function() {
-        return this.reduce(function(res, row) {
-            row.forEach(function(cell) {
+        return this.collection.reduce(function(res, row) {
+            row.collection.forEach(function(cell) {
                 if(cell.selected === 'true') res.push(cell);
             });
             return res;
@@ -34,8 +50,17 @@ Object.defineProperty(ARIAGrid.prototype, 'selected', {
     }
 });
 
+ARIAGrid.prototype.slice = function(first, last) {
+    return this
+        .collection
+        .slice(first.row.index, last.row.index)
+        .reduce(function(res, row) {
+            return res.concat(row.collection.slice(first.index, last.index));
+        }, []);
+}
+
 ARIAGrid.prototype.unselect = function() {
-    this.forEach(function(row) {
+    this.collection.forEach(function(row) {
         row.unselect();
     });
 }
@@ -58,43 +83,54 @@ function ARIARow(element) {
     element.aria = this;
     this.element = element;
 
-    this.forEach.call(
+    /*this.forEach.call(
         element.querySelectorAll('[role=gridcell]'),
         function(element) {
             this.push(ARIAGridCell.getGridCell(element));
-        }, this);
+        }, this);*/
 
     this.grid = ARIAGrid.getGrid(element.closest('[role=grid]'));
 }
 
-ARIARow.prototype = new Array();
-ARIARow.prototype.constructor = ARIARow;
+/*ARIARow.prototype = new Array();
+ARIARow.prototype.constructor = ARIARow;*/
 
 ARIARow.role = 'row';
+
+Object.defineProperty(ARIARow.prototype, 'collection', {
+    enumerable : true,
+    get : function() {
+        return Array.prototype.map.call(
+            this.element.querySelectorAll('[role=gridcell]'),
+            function(element) {
+                return ARIAGridCell.getGridCell(element);
+            });
+    }
+});
 
 Object.defineProperty(ARIARow.prototype, 'next', {
     enumerable : true,
     get : function() {
-        return this.constructor.getRow(this.element.nextElementSibling);
+        return this.grid.collection[this.index + 1];
     }
 });
 
 Object.defineProperty(ARIARow.prototype, 'prev', {
     enumerable : true,
     get : function() {
-        return this.constructor.getRow(this.element.previousElementSibling);
+        return this.grid.collection[this.index - 1];
     }
 });
 
 Object.defineProperty(ARIARow.prototype, 'index', {
     enumerable : true,
     get : function() {
-        return this.grid.indexOf(this);
+        return this.grid.collection.indexOf(this);
     }
 });
 
 ARIARow.prototype.unselect = function() {
-    this.forEach(function(cell) {
+    this.collection.forEach(function(cell) {
         cell.selected = false;
     });
 }
@@ -163,24 +199,60 @@ Object.defineProperty(ARIAGridCell.prototype, 'selected', {
     }
 });
 
-Object.defineProperty(ARIAGridCell.prototype, 'next', {
+Object.defineProperty(ARIAGridCell.prototype, 'leftSibling', {
     enumerable : true,
     get : function() {
-        return this.constructor.getGridCell(this.element.nextElementSibling);
+        var cell = this.row.collection[this.index - 1];
+        return cell? cell.span || cell : null;
     }
 });
 
-Object.defineProperty(ARIAGridCell.prototype, 'prev', {
+Object.defineProperty(ARIAGridCell.prototype, 'rightSibling', {
     enumerable : true,
     get : function() {
-        return this.constructor.getGridCell(this.element.previousElementSibling);
+        return this.row.collection[this.index + this.element.colSpan] || null;
+    }
+});
+
+Object.defineProperty(ARIAGridCell.prototype, 'topSibling', {
+    enumerable : true,
+    get : function() {
+        var cell = this.column[this.row.index - 1];
+        return cell? cell.span || cell : null;
+    }
+});
+
+Object.defineProperty(ARIAGridCell.prototype, 'bottomSibling', {
+    enumerable : true,
+    get : function() {
+        return this.column[this.row.index + this.element.rowSpan] || null;
     }
 });
 
 Object.defineProperty(ARIAGridCell.prototype, 'index', {
     enumerable : true,
     get : function() {
-        return this.row.indexOf(this);
+        /*var cells = this.row.collection,
+            i = 0,
+            index = -1,
+            cell;
+        do index += cell.element.colSpan;
+        while(cell = cells[i++] && cell !== this);
+        return index;*/
+        /*return this.row.collection.reduce(function(res, cell) {
+            res += cell.element.colSpan;
+            return res;
+        }, -1);*/
+        return this.row.collection.indexOf(this);
+    }
+});
+
+Object.defineProperty(ARIAGridCell.prototype, 'column', {
+    enumerable : true,
+    get : function() {
+        return this.grid.cells.filter(function(cell) {
+            return cell.index === this.index;
+        }, this);
     }
 });
 
@@ -209,7 +281,9 @@ ARIAGridCell.prototype.setNavigationMode = function(event) {
 }
 
 ARIAGridCell.prototype.focus = function() {
-    this.element.focus();
+    this.element.hidden && this.span?
+        this.span.element.focus() :
+        this.element.focus();
 }
 
 ARIAGridCell.prototype.onKeyDown = function(event) {
@@ -231,12 +305,19 @@ ARIAGridCell.prototype.onEnterKeyDown = function(event) {
             length = selected.length;
         if(length) {
             var first = selected[0],
-                last = selected[length - 1];
-            selected.forEach(function(cell) {
+                last = selected[selected.length - 1];
+            /*this.grid.slice(first, last).forEach(function(cell) {
                 cell.selected = 'false';
-                cell === first || cell.element.parentElement.removeChild(cell.element);
+                cell.span = first;
+                if(cell !== first) cell.element.hidden = true;
+            });*/
+            selected.forEach(function(cell, i) {
+                cell.selected = 'false';
+                cell.span = first;
+                if(cell !== first) cell.element.hidden = true;
             });
-            first.element.rowSpan = length;
+            first.element.colSpan = last.index - first.index + 1;
+            first.element.rowSpan = last.row.index - first.row.index + 1;
             first.mode = 'actionable';
         } else {
             this.mode = 'actionable';
@@ -257,6 +338,24 @@ ARIAGridCell.prototype.onDoubleClick = function(event) {
 }
 
 ARIAGridCell.prototype.onArrowKeyDown = function(event) {
+    var cell;
+    switch(event.keyCode) {
+        case 37: cell = this.leftSibling; break;
+        case 38: cell = this.topSibling; break;
+        case 39: cell = this.rightSibling; break;
+        case 40: cell = this.bottomSibling; break;
+    }
+    if(cell) {
+        var grid = this.grid;
+        if(grid.multiselectable === 'true') {
+            if(event.shiftKey) this.selected = cell.selected = true;
+            else if(grid.selected.length) grid.unselect();
+        }
+        cell.focus();
+    }
+}
+
+/*ARIAGridCell.prototype.onArrowKeyDown = function(event) {
     var keyCode = event.keyCode,
         direction = keyCode < 39? 'prev' : 'next',
         cell;
@@ -264,7 +363,7 @@ ARIAGridCell.prototype.onArrowKeyDown = function(event) {
         cell = this[direction];
     } else {
         var row = this.row[direction];
-        cell = row && row[this.index];
+        cell = row && row.collection[this.index];
     }
     if(cell) {
         if(this.grid.multiselectable === 'true') {
@@ -273,7 +372,7 @@ ARIAGridCell.prototype.onArrowKeyDown = function(event) {
         }
         cell.focus();
     }
-}
+}*/
 
 ARIAGridCell.role = 'gridcell';
 

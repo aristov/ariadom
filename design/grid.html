@@ -4,7 +4,7 @@
     <meta charset=utf-8>
     <meta name=viewport content="width=device-width,maximum-scale=1,initial-scale=1,user-scalable=0">
 
-    <title>ARIADOM: Yandex style</title>
+    <title>ARIAGrid</title>
 
     <script src=role.js></script>
     <script src=ARIAGrid.js></script>
@@ -23,18 +23,6 @@
         {
             position: relative;
             border-collapse: collapse;
-        }
-        div.grid
-        {
-            display: table;
-        }
-        .grid div.row
-        {
-            display: table-row;
-        }
-        .grid div.gridcell
-        {
-            display: table-cell;
         }
         .grid .gridcell
         {
@@ -70,12 +58,10 @@
             padding: 0;
             width: 100%;
         }
-        .grid .gridcell:hover:not(:focus) .box:not(:focus)
+        .grid .gridcell:hover .box
         {
             box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
         }
-        .grid .gridcell:focus,
-        .grid .gridcell.focus,
         .grid .gridcell:focus .box,
         .grid .gridcell.focus .box
         {
@@ -99,21 +85,10 @@
             border-left: 1px solid transparent;
             border-top: 1px solid transparent;
         }
-
-        .span
-        {
-            border: 1px solid red;
-            position: absolute;
-        }
-
-        /*[hidden]
-        {
-            display: none !important;
-        }*/
     </style>
 </head>
 <body>
-    <!--<table role=grid aria-multiselectable=true class=grid>
+    <table role=grid aria-multiselectable=true class=grid>
         <tr role=row class=row>
             <th role=rowheader class=rowheader>9</th>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
@@ -174,7 +149,7 @@
             <th role=rowheader class=rowheader>23</th>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
         </tr>
-    </table>-->
+    </table>
     <!--<div role=grid aria-multiselectable=true class=grid>
         <div role=row class=row>
             <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
@@ -201,8 +176,44 @@
             <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
         </div>
     </div>-->
-    <table role=grid aria-multiselectable=true class=grid>
+    <!--<table role=grid aria-multiselectable=true class=grid>
         <tr role=row class=row>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+        </tr>
+        <tr role=row class=row>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+        </tr>
+        <tr role=row class=row>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+        </tr>
+        <tr role=row class=row>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+        </tr>
+        <tr role=row class=row>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+        </tr>
+        <tr role=row class=row>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
+        </tr>
+        &lt;!&ndash;<tr role=row class=row>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
@@ -225,80 +236,8 @@
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell colspan=2 rowspan=2><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell hidden><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell hidden><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell hidden><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell colspan=2 rowspan=2><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell hidden><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell hidden><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell hidden><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell colspan=2 rowspan=2><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell hidden><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell hidden><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell hidden><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-        <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-            <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>
-    </table>
+        </tr>&ndash;&gt;
+    </table>-->
     <!--<span class=span></span>
     <script>
         var grid = document.querySelector('.grid'),

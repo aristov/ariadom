@@ -88,7 +88,7 @@
     </style>
 </head>
 <body>
-    <table role=grid aria-multiselectable=true class=grid>
+    <!--<table role=grid aria-multiselectable=true class=grid>
         <tr role=row class=row>
             <th role=rowheader class=rowheader>9</th>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
@@ -149,34 +149,8 @@
             <th role=rowheader class=rowheader>23</th>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
         </tr>
-    </table>
-    <!--<div role=grid aria-multiselectable=true class=grid>
-        <div role=row class=row>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-        </div>
-        <div role=row class=row>
-            <div role=gridcell tabindex=0 class="gridcell start"><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell rowspan=2><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-        </div>
-        <div role=row class=row>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell hidden><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class="gridcell end"><div class=box><span class=text></span></div></div>
-        </div>
-        <div role=row class=row>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-            <div role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></div>
-        </div>
-    </div>-->
-    <!--<table role=grid aria-multiselectable=true class=grid>
+    </table>-->
+    <table role=grid aria-multiselectable=true class=grid>
         <tr role=row class=row>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
@@ -213,7 +187,7 @@
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
         </tr>
-        &lt;!&ndash;<tr role=row class=row>
+        <tr role=row class=row>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
@@ -236,18 +210,7 @@
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
-        </tr>&ndash;&gt;
-    </table>-->
-    <!--<span class=span></span>
-    <script>
-        var grid = document.querySelector('.grid'),
-            start = document.querySelector('.start'),
-            end = document.querySelector('.end'),
-            span = document.querySelector('.span');
-        span.style.left = start.offsetLeft - 1 + 'px';
-        span.style.top = start.offsetTop - 1 + 'px';
-        span.style.right = grid.offsetWidth - (end.offsetLeft + end.offsetWidth) + 'px';
-        span.style.bottom = grid.offsetHeight - (end.offsetTop + end.offsetHeight) + 'px';
-    </script>-->
+        </tr>
+    </table>
 </body>
 </html>

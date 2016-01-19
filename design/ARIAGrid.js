@@ -3,6 +3,8 @@ function ARIAGrid(element) {
     this.element = element;
 }
 
+ARIAGrid.role = 'grid';
+
 ARIAGrid.prototype.active = null;
 ARIAGrid.prototype.selection = null;
 
@@ -79,8 +81,6 @@ ARIAGrid.prototype.slice = function(first, last) {
             return res.concat(row.cells.slice(first.index, last.index + 1));
         }, []);
 }
-
-ARIAGrid.role = 'grid';
 
 ARIAGrid.getGrid = function(element) {
     return element && element.role === this.role?
@@ -162,6 +162,8 @@ function ARIAGridCell(element) {
     element.addEventListener('dblclick', this.onDoubleClick.bind(this));
     element.addEventListener('blur', this.onBlur.bind(this));
 }
+
+ARIAGridCell.role = 'gridcell';
 
 ARIAGridCell.prototype.span = null;
 
@@ -345,7 +347,9 @@ ARIAGridCell.prototype.onEnterKeyDown = function(event) {
                 });
                 grid.unselect();
                 if(merged.length) {
-                    merged.forEach((cell) => cell.unmerge());
+                    merged.forEach(function(cell) {
+                        cell.unmerge();
+                    });
                 } else grid.merge(selected);
             } else this.unmerge();
         } else {
@@ -382,73 +386,58 @@ ARIAGridCell.prototype.onDoubleClick = function(event) {
 }
 
 ARIAGridCell.prototype.onArrowKeyDown = function(event) {
-    var grid = this.grid;
-    if(grid.multiselectable === 'true') {
-        if(event.shiftKey) this.updateSelection(event);
-        else {
-            if(grid.selected.length) grid.unselect();
-            this.moveFocus(event);
-        }
-    } else this.moveFocus(event);
-}
-
-ARIAGridCell.prototype.updateSelection = function(event) {
     var grid = this.grid,
-        selection = grid.selection || this,
+        current = grid.selection || this,
         target;
     switch(event.keyCode) {
-        case 37: target = selection.leftSibling; break;
-        case 38: target = selection.topSibling; break;
-        case 39: target = selection.rightSibling; break;
-        case 40: target = selection.bottomSibling; break;
+        case 37: target = current.leftSibling; break;
+        case 38: target = current.topSibling; break;
+        case 39: target = current.rightSibling; break;
+        case 40: target = current.bottomSibling; break;
     }
     if(target) {
-        grid.unselect();
-        if(target !== this) {
-            var active = grid.active,
-                activeIndex = active.index,
-                activeRowIndex = active.row.index,
-                selectionIndex = target.index,
-                selectionRowIndex = target.row.index,
-                merged = false;
-            grid.rows
-                .slice(
-                    Math.min(activeRowIndex, selectionRowIndex),
-                    Math.max(activeRowIndex, selectionRowIndex) + 1)
-                .forEach(function(row) {
-                    row.cells.slice(
-                        Math.min(activeIndex, selectionIndex),
-                        Math.max(activeIndex, selectionIndex) + 1)
-                            .forEach(function(cell) {
-                                if(cell.span || cell.merged.length) {
-                                    merged = true;
-                                }
-                                cell.selected = 'true';
-                            });
-                });
-            if(merged) {
-                var cells = grid.cells;
-                cells.forEach(function(cell) {
-                    cell.selected = 'true';
-                });
-                grid.selection = cells[cells.length - 1];
-            } else grid.selection = target;
+        if(grid.multiselectable === 'true') {
+            if(event.shiftKey) this.updateSelection(target);
+            else {
+                if(grid.selected.length) grid.unselect();
+                target.focus();
+            }
+        } else target.focus();
+    }
+}
+
+ARIAGridCell.prototype.updateSelection = function(target) {
+    var grid = this.grid;
+    grid.unselect();
+    if(target !== this) {
+        var active = grid.active,
+            rowStart = Math.min(active.row.index, target.row.index),
+            rowEnd = Math.max(active.row.index, target.row.index),
+            colStart = Math.min(active.index, target.index),
+            colEnd = Math.max(active.index, target.index),
+            rows = grid.rows,
+            merged = false,
+            cells, cell, i, j;
+        for(i = rowStart; i <= rowEnd; i++) {
+            cells = rows[i].cells;
+            for(j = colStart; j <= colEnd; j++) {
+                cell = cells[j];
+                if(cell.span || cell.merged.length) {
+                    merged = true;
+                    break;
+                } else cell.selected = true;
+            }
+            if(merged) break;
         }
+        if(merged) {
+            cells = grid.cells;
+            cells.forEach(function(cell) {
+                cell.selected = 'true';
+            });
+            grid.selection = cells[cells.length - 1];
+        } else grid.selection = target;
     }
 }
-
-ARIAGridCell.prototype.moveFocus = function(event) {
-    var cell;
-    switch(event.keyCode) {
-        case 37: cell = this.leftSibling; break;
-        case 38: cell = this.topSibling; break;
-        case 39: cell = this.rightSibling; break;
-        case 40: cell = this.bottomSibling; break;
-    }
-    if(cell) cell.focus();
-}
-
-ARIAGridCell.role = 'gridcell';
 
 ARIAGridCell.getGridCell = function(element) {
     return element && element.role === this.role?

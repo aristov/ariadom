@@ -377,8 +377,13 @@ ARIAGridCell.prototype.unmerge = function() {
 }
 
 ARIAGridCell.prototype.onEscapeKeyDown = function(event) {
-    this.mode = 'navigation';
-    this.element.focus();
+    if(this.mode === 'actionable') {
+        this.mode = 'navigation';
+        this.element.focus();
+    } else {
+        var grid = this.grid;
+        if(grid.selected.length) grid.unselect();
+    }
 }
 
 ARIAGridCell.prototype.onDoubleClick = function(event) {
@@ -387,7 +392,7 @@ ARIAGridCell.prototype.onDoubleClick = function(event) {
 
 ARIAGridCell.prototype.onArrowKeyDown = function(event) {
     var grid = this.grid,
-        current = grid.selection || this,
+        current = event.shiftKey? grid.selection || this : this,
         target;
     switch(event.keyCode) {
         case 37: target = current.leftSibling; break;

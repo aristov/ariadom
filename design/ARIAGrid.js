@@ -75,13 +75,23 @@ ARIAGrid.prototype.merge = function(cells) {
 }
 
 ARIAGrid.prototype.selectAll = function() {
-    cells = this.cells;
-    cells.forEach(function(cell) {
+    var rows = this.rows,
+        firstRowCells = rows[0].cells,
+        lastRowCells = rows[rows.length - 1].cells,
+        topLeftCell = firstRowCells[0],
+        topRightCell = firstRowCells[firstRowCells.length - 1],
+        bottomLeftCell = lastRowCells[0],
+        bottomRightCell = lastRowCells[lastRowCells.length - 1],
+        active = this.active;
+    this.cells.forEach(function(cell) {
         cell.selected = 'true';
     });
-    this.selection = this.active === cells[0]?
-        cells[cells.length - 1] :
-        this.active;
+    this.selection = active === topLeftCell?
+        bottomRightCell :
+        active === bottomRightCell? topLeftCell :
+            active === topRightCell?
+                bottomLeftCell :
+                active === bottomLeftCell? topRightCell : active;
 }
 
 ARIAGrid.prototype.updateSelection = function(target) {
@@ -102,7 +112,7 @@ ARIAGrid.prototype.updateSelection = function(target) {
                 if(cell.span || cell.merged.length) {
                     merged = true;
                     break;
-                } else cell.selected = true;
+                } else cell.selected = 'true';
             }
             if(merged) break;
         }
@@ -351,7 +361,10 @@ ARIAGridCell.prototype.onBlur = function(event) {
 }
 
 ARIAGridCell.prototype.onMouseEnter = function(event) {
-    if(event.buttons === 1) this.grid.updateSelection(this);
+    var grid = this.grid;
+    if(event.buttons === 1 && grid.multiselectable === 'true') {
+        grid.updateSelection(this);
+    }
 }
 
 ARIAGridCell.prototype.onKeyDown = function(event) {

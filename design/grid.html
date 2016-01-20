@@ -22,14 +22,17 @@
         .grid
         {
             border-collapse: collapse;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
         }
         .grid .gridcell
         {
             border: 1px solid rgba(0, 0, 0, 0.2);
             padding: 0;
             outline: none;
-            width: 200px;
-            height: 30px;
+            width: 100px;
+            height: 50px;
             position: relative;
             padding: 5px;
             text-align: center;
@@ -139,30 +142,30 @@
             <td role=gridcell tabindex=0 class=gridcell><div class=box><span class=text></span></div></td>
         </tr>
     </table>-->
-    <table role=grid aria-multiselectable=true class=grid draggable=true>
+    <table role=grid aria-multiselectable=true class=grid>
         <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
+            <td role=gridcell tabindex=0 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 aria-selected=false class=gridcell><span class=text></span></td>
         </tr>
         <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
         </tr>
         <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
         </tr>
         <tr role=row class=row>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
-            <td role=gridcell tabindex=0 class=gridcell draggable=true><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
         </tr>
     </table>
 </body>

@@ -50,7 +50,7 @@ Object.defineProperty(ARIAGrid.prototype, 'selected', {
 });
 
 ARIAGrid.prototype.unselect = function() {
-    this.selected.forEach(function(cell) {
+    this.cells.forEach(function(cell) {
         cell.selected = 'false';
     });
     this.selection = null;
@@ -82,16 +82,17 @@ ARIAGrid.prototype.selectAll = function() {
         topRightCell = firstRowCells[firstRowCells.length - 1],
         bottomLeftCell = lastRowCells[0],
         bottomRightCell = lastRowCells[lastRowCells.length - 1],
-        active = this.active;
-    this.cells.forEach(function(cell) {
-        cell.selected = 'true';
-    });
-    this.selection = active === topLeftCell?
-        bottomRightCell :
-        active === bottomRightCell? topLeftCell :
-            active === topRightCell?
-                bottomLeftCell :
-                active === bottomLeftCell? topRightCell : active;
+        active = this.active,
+        selection;
+    this.cells.forEach(function(cell) { cell.selected = 'true' });
+    switch(active) {
+        case topLeftCell : selection = bottomRightCell; break;
+        case topRightCell : selection = bottomLeftCell; break;
+        case bottomLeftCell : selection = topRightCell; break;
+        case bottomRightCell : selection = topLeftCell; break;
+        default : selection = active;
+    }
+    this.selection = selection;
 }
 
 ARIAGrid.prototype.updateSelection = function(target) {

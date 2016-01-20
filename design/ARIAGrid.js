@@ -1,6 +1,8 @@
 function ARIAGrid(element) {
     element.aria = this;
     this.element = element;
+
+    //element.addEventListener('mouseover', this.onMouseOver.bind(this));
 }
 
 ARIAGrid.role = 'grid';
@@ -49,6 +51,17 @@ Object.defineProperty(ARIAGrid.prototype, 'selected', {
     }
 });
 
+ARIAGrid.prototype.onMouseOver = function(event) {
+    //console.log(event);
+    if(event.buttons === 1) {
+        var target = event.target,
+            cell = ARIAGridCell.getGridCell(target || target.closest('[role=gridcell]'));
+        if(cell) {
+            this.updateSelection(cell);
+        }
+    }
+}
+
 ARIAGrid.prototype.unselect = function() {
     this.selected.forEach(function(cell) {
         cell.selected = 'false';
@@ -80,6 +93,38 @@ ARIAGrid.prototype.slice = function(first, last) {
         .reduce(function(res, row) {
             return res.concat(row.cells.slice(first.index, last.index + 1));
         }, []);
+}
+
+ARIAGrid.prototype.updateSelection = function(target) {
+    var active = this.active;
+    this.unselect();
+    if(active && target !== active) {
+        var rowStart = Math.min(active.row.index, target.row.index),
+            rowEnd = Math.max(active.row.index, target.row.index),
+            colStart = Math.min(active.index, target.index),
+            colEnd = Math.max(active.index, target.index),
+            rows = this.rows,
+            merged = false,
+            cells, cell, i, j;
+        for(i = rowStart; i <= rowEnd; i++) {
+            cells = rows[i].cells;
+            for(j = colStart; j <= colEnd; j++) {
+                cell = cells[j];
+                if(cell.span || cell.merged.length) {
+                    merged = true;
+                    break;
+                } else cell.selected = true;
+            }
+            if(merged) break;
+        }
+        if(merged) {
+            cells = this.cells;
+            cells.forEach(function(cell) {
+                cell.selected = 'true';
+            });
+            this.selection = cells[cells.length - 1];
+        } else this.selection = target;
+    }
 }
 
 ARIAGrid.getGrid = function(element) {
@@ -161,6 +206,7 @@ function ARIAGridCell(element) {
     element.addEventListener('keydown', this.onKeyDown.bind(this));
     element.addEventListener('dblclick', this.onDoubleClick.bind(this));
     element.addEventListener('blur', this.onBlur.bind(this));
+    element.addEventListener('click', this.onClick.bind(this));
 }
 
 ARIAGridCell.role = 'gridcell';
@@ -177,14 +223,14 @@ Object.defineProperty(ARIAGridCell.prototype, 'mode', {
             var element = this.element;
             if(mode === 'navigation') {
                 this.text.textContent = this.input.value;
-                this.box.replaceChild(this.text, this.input);
+                this.element.replaceChild(this.box, this.input);
                 element.classList.remove('focus');
                 element.dataset.mode = mode;
             }
             else if(mode === 'actionable') {
                 var input = this.input;
                 input.value = this.text.textContent;
-                this.box.replaceChild(this.input, this.text);
+                this.element.replaceChild(this.input, this.box);
                 input.focus();
                 element.classList.add('focus');
                 element.dataset.mode = mode;
@@ -308,12 +354,21 @@ ARIAGridCell.prototype.focus = function() {
     this.span? this.span.focus() : this.element.focus();
 }
 
+ARIAGridCell.prototype.onClick = function(event) {
+    this.grid.unselect();
+}
+
 ARIAGridCell.prototype.onFocus = function(event) {
+    this.grid.unselect();
     this.grid.active = this;
 }
 
 ARIAGridCell.prototype.onBlur = function(event) {
     this.grid.active = null;
+}
+
+ARIAGridCell.prototype.onMouseEnter = function(event) {
+    if(event.buttons === 1) this.grid.updateSelection(this);
 }
 
 ARIAGridCell.prototype.onKeyDown = function(event) {
@@ -402,45 +457,12 @@ ARIAGridCell.prototype.onArrowKeyDown = function(event) {
     }
     if(target) {
         if(grid.multiselectable === 'true') {
-            if(event.shiftKey) this.updateSelection(target);
+            if(event.shiftKey) grid.updateSelection(target);
             else {
                 if(grid.selected.length) grid.unselect();
                 target.focus();
             }
         } else target.focus();
-    }
-}
-
-ARIAGridCell.prototype.updateSelection = function(target) {
-    var grid = this.grid;
-    grid.unselect();
-    if(target !== this) {
-        var active = grid.active,
-            rowStart = Math.min(active.row.index, target.row.index),
-            rowEnd = Math.max(active.row.index, target.row.index),
-            colStart = Math.min(active.index, target.index),
-            colEnd = Math.max(active.index, target.index),
-            rows = grid.rows,
-            merged = false,
-            cells, cell, i, j;
-        for(i = rowStart; i <= rowEnd; i++) {
-            cells = rows[i].cells;
-            for(j = colStart; j <= colEnd; j++) {
-                cell = cells[j];
-                if(cell.span || cell.merged.length) {
-                    merged = true;
-                    break;
-                } else cell.selected = true;
-            }
-            if(merged) break;
-        }
-        if(merged) {
-            cells = grid.cells;
-            cells.forEach(function(cell) {
-                cell.selected = 'true';
-            });
-            grid.selection = cells[cells.length - 1];
-        } else grid.selection = target;
     }
 }
 
@@ -454,5 +476,9 @@ ARIAGridCell.attachToDocument = function() {
     document.addEventListener('focus', function(event) {
         var gridCell = this.getGridCell(event.target);
         if(gridCell) gridCell.onFocus(event);
+    }.bind(this), true);
+    document.addEventListener('mouseenter', function(event) {
+        var gridCell = this.getGridCell(event.target);
+        if(gridCell) gridCell.onMouseEnter(event);
     }.bind(this), true);
 }

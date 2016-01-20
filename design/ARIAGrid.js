@@ -65,13 +65,13 @@ ARIAGrid.prototype.merge = function(cells) {
         if(cell !== first) {
             first.merged.push(cell);
             cell.span = first;
-            cell.clear();
+            cell.value = '';
             cell.hidden = 'true';
         }
     });
     first.element.colSpan = last.index - first.index + 1;
     first.element.rowSpan = last.row.index - first.row.index + 1;
-    first.mode = 'actionable';
+    first.mode = 'edit';
 }
 
 ARIAGrid.prototype.selectAll = function() {
@@ -191,16 +191,14 @@ function ARIAGridCell(element) {
 
     this.grid = ARIAGrid.getGrid(element.closest('[role=grid]'));
     this.row = ARIARow.getRow(element.closest('[role=row]'));
-
     this.text = element.querySelector('.text');
-    this.input = this.createInput();
-
+    this.input = this.getInput();
     this.merged = this.getMerged();
 
-    element.addEventListener('keydown', this.onKeyDown.bind(this));
-    element.addEventListener('dblclick', this.onDoubleClick.bind(this));
     element.addEventListener('blur', this.onBlur.bind(this));
     element.addEventListener('click', this.onClick.bind(this));
+    element.addEventListener('dblclick', this.onDoubleClick.bind(this));
+    element.addEventListener('keydown', this.onKeyDown.bind(this));
 }
 
 ARIAGridCell.role = 'gridcell';
@@ -213,22 +211,22 @@ Object.defineProperty(ARIAGridCell.prototype, 'mode', {
         return this.element.dataset.mode;
     },
     set : function(mode) {
-        if(mode !== this.mode && this.readonly === 'false') {
-            var element = this.element;
-            if(mode === 'navigation') {
-                this.text.textContent = this.input.value;
-                this.element.replaceChild(this.text, this.input);
-                element.classList.remove('focus');
-                element.dataset.mode = mode;
-            }
-            else if(mode === 'actionable') {
-                var input = this.input;
-                input.value = this.text.textContent;
-                this.element.replaceChild(this.input, this.text);
+        if(mode !== this.mode && this.readonly !== 'true') {
+            var element = this.element,
+                input = this.input,
+                text = this.text;
+            if(mode === 'edit') {
+                text.hidden = true;
+                input.hidden = false;
                 input.focus();
                 element.classList.add('focus');
-                element.dataset.mode = mode;
+            } else {
+                text.textContent = input.value;
+                input.hidden = true;
+                text.hidden = false;
+                element.classList.remove('focus');
             }
+            element.dataset.mode = mode;
         }
     }
 });
@@ -260,6 +258,16 @@ Object.defineProperty(ARIAGridCell.prototype, 'selected', {
     },
     set : function(value) {
         this.element.setAttribute('aria-selected', String(value));
+    }
+});
+
+Object.defineProperty(ARIAGridCell.prototype, 'value', {
+    enumerable : true,
+    get : function() {
+        return this.input.value;
+    },
+    set : function(value) {
+        this.input.value = this.text.textContent = value;
     }
 });
 
@@ -333,9 +341,15 @@ ARIAGridCell.prototype.getMerged = function() {
     return merged;
 }
 
-ARIAGridCell.prototype.createInput = function() {
-    var input = document.createElement('input');
-    input.setAttribute('role', 'presentation');
+ARIAGridCell.prototype.getInput = function() {
+    var element = this.element,
+        input = element.querySelector('input');
+    if(!input) {
+        input = document.createElement('input');
+        input.setAttribute('role', 'presentation');
+        input.hidden = true;
+        element.appendChild(input);
+    }
     input.addEventListener('blur', this.onInputBlur.bind(this));
     return input;
 }
@@ -393,7 +407,7 @@ ARIAGridCell.prototype.onKeyDown = function(event) {
 }
 
 ARIAGridCell.prototype.onCharacterKeyDown = function(event) {
-    this.mode = 'actionable';
+    this.mode = 'edit';
 }
 
 ARIAGridCell.prototype.onBackspaceKeyDown = function(event) {
@@ -402,14 +416,10 @@ ARIAGridCell.prototype.onBackspaceKeyDown = function(event) {
         event.preventDefault(); // prevent browser navigation
         if(selected.length) {
             selected.forEach(function(cell) {
-                cell.clear();
+                cell.value = '';
             });
-        } else this.clear();
+        } else this.value = '';
     }
-}
-
-ARIAGridCell.prototype.clear = function() {
-    this.text.textContent = '';
 }
 
 ARIAGridCell.prototype.onEnterKeyDown = function(event) {
@@ -430,7 +440,7 @@ ARIAGridCell.prototype.onEnterKeyDown = function(event) {
             } else this.unmerge();
         } else {
             if(selected.length) grid.unselect();
-            this.mode = 'actionable';
+            this.mode = 'edit';
         }
     } else {
         this.mode = 'navigation';
@@ -453,7 +463,7 @@ ARIAGridCell.prototype.unmerge = function() {
 }
 
 ARIAGridCell.prototype.onEscapeKeyDown = function(event) {
-    if(this.mode === 'actionable') {
+    if(this.mode === 'edit') {
         this.mode = 'navigation';
         this.element.focus();
     } else {
@@ -463,7 +473,7 @@ ARIAGridCell.prototype.onEscapeKeyDown = function(event) {
 }
 
 ARIAGridCell.prototype.onDoubleClick = function(event) {
-    this.mode = 'actionable';
+    this.mode = 'edit';
 }
 
 ARIAGridCell.prototype.onArrowKeyDown = function(event) {

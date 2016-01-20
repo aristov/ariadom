@@ -28,10 +28,11 @@
             border: 1px solid rgba(0, 0, 0, 0.2);
             padding: 0;
             outline: none;
-            min-width: 200px;
+            width: 200px;
             height: 30px;
             position: relative;
-            padding: 0 3px;
+            padding: 5px;
+            text-align: center;
         }
         .grid .gridcell::before
         {
@@ -44,32 +45,14 @@
             bottom: 0;
             left: -1px;
         }
-        .grid .gridcell .box
-        {
-            height: 1em;
-            overflow: hidden;
-            position: relative;
-        }
-        .grid .gridcell .text
-        {
-            position: absolute;
-            width: 100%;
-            white-space: nowrap;
-            text-align: center;
-        }
         .grid .gridcell input
         {
             font: inherit;
             border: none;
             padding: 0;
             width: 100%;
-            text-align: center;
-            margin-top: 2px;
+            text-align: inherit;
         }
-        /*.grid .gridcell:hover::before
-        {
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-        }*/
         .grid .gridcell:focus::before,
         .grid .gridcell.focus::before
         {
@@ -77,10 +60,9 @@
             border-color: #ffdb4d;
             box-shadow: 0 0 0 1px #ffdb4d;
         }
-        .grid .gridcell[aria-selected=true]::before/* .box*/
+        .grid .gridcell[aria-selected=true]::before
         {
             display: block;
-            /*border-color: #ffdb4d;*/
             box-shadow: 0 0 0 1px #ffdb4d;
             background: rgba(255, 235, 160, 0.05);
         }

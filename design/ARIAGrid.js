@@ -1,8 +1,6 @@
 function ARIAGrid(element) {
     element.aria = this;
     this.element = element;
-
-    //element.addEventListener('mouseover', this.onMouseOver.bind(this));
 }
 
 ARIAGrid.role = 'grid';
@@ -50,17 +48,6 @@ Object.defineProperty(ARIAGrid.prototype, 'selected', {
         });
     }
 });
-
-ARIAGrid.prototype.onMouseOver = function(event) {
-    //console.log(event);
-    if(event.buttons === 1) {
-        var target = event.target,
-            cell = ARIAGridCell.getGridCell(target || target.closest('[role=gridcell]'));
-        if(cell) {
-            this.updateSelection(cell);
-        }
-    }
-}
 
 ARIAGrid.prototype.unselect = function() {
     this.selected.forEach(function(cell) {
@@ -359,11 +346,11 @@ ARIAGridCell.prototype.onClick = function(event) {
 }
 
 ARIAGridCell.prototype.onFocus = function(event) {
-    this.grid.unselect();
     this.grid.active = this;
 }
 
 ARIAGridCell.prototype.onBlur = function(event) {
+    this.grid.unselect();
     this.grid.active = null;
 }
 

@@ -5,7 +5,6 @@ function ARIAGrid(element) {
 
 ARIAGrid.role = 'grid';
 
-ARIAGrid.prototype.active = null;
 ARIAGrid.prototype.selection = null;
 
 Object.defineProperty(ARIAGrid.prototype, 'rows', {
@@ -46,6 +45,18 @@ Object.defineProperty(ARIAGrid.prototype, 'selected', {
         return this.cells.filter(function(cell) {
             return cell.selected === 'true';
         });
+    }
+});
+
+Object.defineProperty(ARIAGrid.prototype, 'active', {
+    enumerable : true,
+    get : function() {
+        var element = this.element.querySelector('[role=gridcell][tabindex="0"]');
+        return ARIAGridCell.getGridCell(element);
+    },
+    set : function(cell) {
+        this.active.active = false;
+        cell.active = true;
     }
 });
 
@@ -132,7 +143,7 @@ ARIAGrid.attachToDocument = function() {
     ARIAGridCell.attachToDocument();
 }
 
-////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function ARIARow(element) {
     element.aria = this;
@@ -181,7 +192,7 @@ ARIARow.getRow = function(element) {
         null;
 }
 
-////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function ARIAGridCell(element) {
     element.aria = this;
@@ -268,6 +279,16 @@ Object.defineProperty(ARIAGridCell.prototype, 'value', {
     },
     set : function(value) {
         this.input.value = this.text.textContent = value;
+    }
+});
+
+Object.defineProperty(ARIAGridCell.prototype, 'active', {
+    enumerable : true,
+    get : function() {
+        return this.element.tabIndex === 0;
+    },
+    set : function(active) {
+        this.element.tabIndex = active? 0 : -1;
     }
 });
 
@@ -375,7 +396,6 @@ ARIAGridCell.prototype.onFocus = function(event) {
 
 ARIAGridCell.prototype.onBlur = function(event) {
     this.grid.unselect();
-    this.grid.active = null;
 }
 
 ARIAGridCell.prototype.onMouseEnter = function(event) {

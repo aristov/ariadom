@@ -503,11 +503,22 @@ ARIAGridCell.prototype.onArrowKeyDown = function(event) {
     var grid = this.grid,
         current = event.shiftKey? grid.selection || this : this,
         target;
-    switch(event.keyCode) {
-        case 37: target = current.leftSibling; break;
-        case 38: target = current.topSibling; break;
-        case 39: target = current.rightSibling; break;
-        case 40: target = current.bottomSibling; break;
+    if(event.ctrlKey || event.metaKey) {
+        var rowCells = current.row.cells,
+            column = current.column;
+        switch(event.keyCode) {
+            case 37: target = rowCells[0]; break;
+            case 38: target = column[0]; break;
+            case 39: target = rowCells[rowCells.length - 1]; break;
+            case 40: target = column[column.length - 1]; break;
+        }
+    } else {
+        switch(event.keyCode) {
+            case 37: target = current.leftSibling; break;
+            case 38: target = current.topSibling; break;
+            case 39: target = current.rightSibling; break;
+            case 40: target = current.bottomSibling; break;
+        }
     }
     if(target) {
         if(grid.multiselectable === 'true') {

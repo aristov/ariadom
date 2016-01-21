@@ -363,7 +363,10 @@ ARIAGridCell.prototype.focus = function() {
 }
 
 ARIAGridCell.prototype.onClick = function(event) {
-    this.grid.unselect();
+    if(this.mode === 'navigation') {
+        var grid = this.grid;
+        if(grid.selected.length) grid.unselect();
+    }
 }
 
 ARIAGridCell.prototype.onFocus = function(event) {

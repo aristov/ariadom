@@ -22,8 +22,6 @@
         .grid
         {
             border-collapse: collapse;
-            -moz-user-select: none;
-            -webkit-user-select: none;
             -ms-user-select: none;
         }
         .grid .gridcell
@@ -36,17 +34,7 @@
             position: relative;
             padding: 5px;
             text-align: center;
-        }
-        .grid .gridcell::before
-        {
-            content: '';
-            display: none;
-            border: 1px solid transparent;
-            position: absolute;
-            top: -1px;
-            right: 0;
-            bottom: 0;
-            left: -1px;
+            cursor: default;
         }
         .grid .gridcell input
         {
@@ -55,6 +43,18 @@
             padding: 0;
             width: 100%;
             text-align: inherit;
+            outline: none;
+        }
+        .grid .gridcell::before
+        {
+            content: '';
+            display: none;
+            border: 1px solid transparent;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
         }
         .grid .gridcell:focus::before,
         .grid .gridcell.focus::before
@@ -68,6 +68,15 @@
             display: block;
             box-shadow: 0 0 0 1px #ffdb4d;
             background: rgba(255, 235, 160, 0.05);
+        }
+        .grid .gridcell[aria-disabled=true]
+        {
+            color: rgba(0, 0, 0, 0.5);
+        }
+        .grid .gridcell[aria-disabled=true]::before
+        {
+            display: block;
+            background: rgba(0, 0, 0, 0.08);
         }
         .grid .rowheader
         {
@@ -85,6 +94,22 @@
             border-left: 1px solid transparent;
         }
     </style>
+    <script>
+        void function() {
+            if(navigator.userAgent.indexOf('Firefox') > 1) {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '../style/-moz-grid.css';
+                document.head.appendChild(link);
+            }
+            else if(navigator.userAgent.indexOf('WebKit') > 1) {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '../style/-webkit-grid.css';
+                document.head.appendChild(link);
+            }
+        }();
+    </script>
 </head>
 <body>
     <!--<table role=grid aria-multiselectable=true class=grid>
@@ -182,13 +207,13 @@
         </tr>
         <tr role=row>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell rowspan=2 aria-disabled=true aria-selected=false class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
         </tr>
         <tr role=row>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell hidden aria-disabled=true aria-selected=false class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
         </tr>

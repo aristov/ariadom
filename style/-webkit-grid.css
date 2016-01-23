@@ -1,0 +1,8 @@
+.grid
+{
+    -webkit-user-select: none;
+}
+.grid .gridcell
+{
+    border: 1px solid #ccc;
+}

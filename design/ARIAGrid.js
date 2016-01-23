@@ -272,6 +272,16 @@ Object.defineProperty(ARIAGridCell.prototype, 'selected', {
     }
 });
 
+Object.defineProperty(ARIAGridCell.prototype, 'disabled', {
+    enumerable : true,
+    get : function() {
+        return this.element.getAttribute('aria-disabled') || '';
+    },
+    set : function(value) {
+        this.element.setAttribute('aria-disabled', String(value));
+    }
+});
+
 Object.defineProperty(ARIAGridCell.prototype, 'value', {
     enumerable : true,
     get : function() {
@@ -480,8 +490,8 @@ ARIAGridCell.prototype.unmerge = function() {
             cell.span = null;
             cell.hidden = 'false';
         }
-        this.element.rowSpan = 1;
-        this.element.colSpan = 1;
+        element.rowSpan = 1;
+        element.colSpan = 1;
     }
 }
 

@@ -29,8 +29,8 @@
             border: 1px solid rgba(0, 0, 0, 0.2);
             padding: 0;
             outline: none;
-            width: 200px;
-            height: 20px;
+            width: 80px;
+            height: 15px;
             position: relative;
             padding: 5px;
             text-align: center;
@@ -69,41 +69,27 @@
             box-shadow: 0 0 0 1px #ffdb4d;
             background: rgba(255, 235, 160, 0.05);
         }
-        .grid .gridcell[aria-disabled=true]
+        .grid[aria-disabled=true]
         {
             color: rgba(0, 0, 0, 0.5);
-        }
-        .grid .gridcell[aria-disabled=true]::before
-        {
-            display: block;
             background: rgba(0, 0, 0, 0.08);
         }
-        .grid .rowheader
+        .grid[aria-disabled=true] .gridcell
         {
-            padding: 0 15px;
-            height: 30px;
-            border-bottom: 1px solid transparent;
-            border-left: 1px solid transparent;
-            border-top: 1px solid transparent;
-        }
-        .grid .columnheader
-        {
-            padding: 10px 5px;
-            border-top: 1px solid transparent;
-            border-right: 1px solid transparent;
-            border-left: 1px solid transparent;
+            border-color: #fff;
         }
     </style>
     <script>
         void function() {
+            var link;
             if(navigator.userAgent.indexOf('Firefox') > 1) {
-                var link = document.createElement('link');
+                link = document.createElement('link');
                 link.rel = 'stylesheet';
                 link.href = '../style/-moz-grid.css';
                 document.head.appendChild(link);
             }
             else if(navigator.userAgent.indexOf('WebKit') > 1) {
-                var link = document.createElement('link');
+                link = document.createElement('link');
                 link.rel = 'stylesheet';
                 link.href = '../style/-webkit-grid.css';
                 document.head.appendChild(link);
@@ -112,108 +98,32 @@
     </script>
 </head>
 <body>
-    <table role=grid aria-multiselectable=true class=grid>
-        <thead role=rowgroup>
-            <tr>
-                <th></th>
-                <th role=columnheader class=columnheader>Studio</th>
-                <th role=columnheader class=columnheader>Parking</th>
-            </tr>
-        </thead>
-        <tbody role=rowgroup>
-            <tr role=row>
-                <th role=rowheader class=rowheader>9</th>
-                <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>10</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>11</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>12</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>13</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>14</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>15</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>16</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>17</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>18</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>19</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>20</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>21</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>22</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-            <tr role=row>
-                <th role=rowheader class=rowheader>23</th>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-                <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
-            </tr>
-        </tbody>
+    <table role=grid class=grid>
+        <tr role=row>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+        </tr>
+        <tr role=row>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+        </tr>
+        <tr role=row>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+        </tr>
     </table>
-    <!--<table role=grid aria-multiselectable=true class=grid>
+    <br>
+    <table role=grid aria-multiselectable=true class=grid>
         <tr role=row>
             <td role=gridcell tabindex=0 aria-selected=false class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
         </tr>
         <tr role=row>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell tabindex=-1 aria-selected=false rowspan=2 class=gridcell><span class=text></span></td>
-            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
-        </tr>
-        <tr role=row>
-            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell tabindex=-1 aria-selected=false hidden class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
         </tr>
@@ -221,8 +131,25 @@
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
         </tr>
-    </table>-->
+    </table>
+    <br>
+    <table role=grid aria-disabled=true class=grid>
+        <tr role=row>
+            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+        </tr>
+        <tr role=row>
+            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+        </tr>
+        <tr role=row>
+            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+        </tr>
+    </table>
 </body>
 </html>

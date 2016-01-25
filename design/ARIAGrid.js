@@ -349,8 +349,9 @@ Object.defineProperty(ARIAGridCell.prototype, 'column', {
 });
 
 ARIAGridCell.prototype.getMerged = function() {
-    var rowSpan = this.element.rowSpan,
-        colSpan = this.element.colSpan,
+    var element = this.element,
+        rowSpan = element.rowSpan,
+        colSpan = element.colSpan,
         merged = [];
     if(rowSpan > 1 || colSpan > 1) {
         var grid = this.grid,
@@ -432,7 +433,8 @@ ARIAGridCell.prototype.onKeyDown = function(event) {
             this.grid.selectAll();
         }
     }
-    else if((keyCode >= 48 && keyCode <= 57) ||
+    else if(keyCode === 32 ||
+        (keyCode >= 48 && keyCode <= 57) ||
         (keyCode >= 65 && keyCode <= 90) &&
         !event.metaKey && !event.ctrlKey) {
             this.onCharacterKeyDown(event);

@@ -17,7 +17,7 @@
 <!-- attach widget -->
 <script>ARIAButton.attachToDocument();</script>
 
-<!-- write murkup -->
+<!-- write markup -->
 <span role=button tabindex=0 aria-pressed=true class=button>Toggle button</span>
 ```
 And it works!

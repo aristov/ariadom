@@ -72,11 +72,18 @@
         .grid[aria-disabled=true]
         {
             color: rgba(0, 0, 0, 0.5);
-            background: rgba(0, 0, 0, 0.08);
         }
         .grid[aria-disabled=true] .gridcell
         {
-            border-color: #fff;
+            background: rgba(0, 0, 0, 0.08);
+            border-color: transparent;
+        }
+        .grid[aria-label]::before
+        {
+            content: attr(aria-label);
+            display: inline-block;
+            margin-bottom: 5px;
+            cursor: default;
         }
     </style>
     <script>
@@ -98,7 +105,7 @@
     </script>
 </head>
 <body>
-    <table role=grid class=grid>
+    <table role=grid class=grid aria-label=Simple>
         <tr role=row>
             <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
@@ -116,7 +123,7 @@
         </tr>
     </table>
     <br>
-    <table role=grid aria-multiselectable=true class=grid>
+    <table role=grid aria-multiselectable=true aria-label=Multiselectable class=grid>
         <tr role=row>
             <td role=gridcell tabindex=0 aria-selected=false class=gridcell><span class=text></span></td>
             <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
@@ -134,21 +141,21 @@
         </tr>
     </table>
     <br>
-    <table role=grid aria-disabled=true class=grid>
+    <table role=grid aria-disabled=true aria-label=Disabled class=grid>
         <tr role=row>
-            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
         </tr>
         <tr role=row>
-            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
         </tr>
         <tr role=row>
-            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
-            <td role=gridcell aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
         </tr>
     </table>
 </body>

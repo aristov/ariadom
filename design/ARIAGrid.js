@@ -48,6 +48,17 @@ Object.defineProperty(ARIAGrid.prototype, 'selected', {
     }
 });
 
+
+Object.defineProperty(ARIAGrid.prototype, 'disabled', {
+    enumerable : true,
+    get : function() {
+        return this.element.getAttribute('aria-disabled') || '';
+    },
+    set : function(value) {
+        this.element.setAttribute('aria-disabled', String(value));
+    }
+});
+
 Object.defineProperty(ARIAGrid.prototype, 'active', {
     enumerable : true,
     get : function() {
@@ -275,7 +286,9 @@ Object.defineProperty(ARIAGridCell.prototype, 'selected', {
 Object.defineProperty(ARIAGridCell.prototype, 'disabled', {
     enumerable : true,
     get : function() {
-        return this.element.getAttribute('aria-disabled') || '';
+        return this.grid.disabled === 'true'?
+            'true' :
+            this.element.getAttribute('aria-disabled') || '';
     },
     set : function(value) {
         this.element.setAttribute('aria-disabled', String(value));

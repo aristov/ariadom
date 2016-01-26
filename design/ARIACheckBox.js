@@ -1,9 +1,7 @@
 function ARIACheckBox(element) {
     element.aria = this;
     this.element = element;
-
     this.input = this.getInput();
-
     element.addEventListener('click', this.onClick.bind(this));
     element.addEventListener('keydown', this.onKeyDown.bind(this));
     element.addEventListener('keyup', this.onKeyUp.bind(this));
@@ -17,7 +15,6 @@ Object.defineProperty(ARIACheckBox.prototype, 'checked', {
     set : function(value) {
         var element = this.element,
             checked = String(value);
-
         element.setAttribute('aria-checked', checked);
         checked === 'true'?
             element.appendChild(this.input) :
@@ -33,12 +30,11 @@ Object.defineProperty(ARIACheckBox.prototype, 'disabled', {
     set : function(value) {
         var element = this.element,
             disabled = String(value);
-
         element.setAttribute('aria-disabled', disabled);
-        if(this.input.disabled = disabled === 'true')
+        if(this.input.disabled = disabled === 'true') {
             element.removeAttribute('tabindex');
-        else
-            element.setAttribute('tabindex', '0');
+        }
+        else element.tabIndex = 0;
     }
 });
 
@@ -55,22 +51,12 @@ Object.defineProperty(ARIACheckBox.prototype, 'value', {
 ARIACheckBox.prototype.getInput = function() {
     var element = this.element,
         input = element.querySelector('input');
-
     if(!input) {
         var dataset = element.dataset;
-
         input = document.createElement('input');
-        input.setAttribute('type', 'hidden');
-
-        if(dataset.name) {
-            input.name = dataset.name;
-            delete dataset.name;
-        }
-        if(dataset.value) {
-            input.value = dataset.value;
-            delete dataset.value;
-        }
-
+        input.type = 'hidden';
+        input.name = dataset.name || '';
+        input.value = dataset.value || '';
         if(this.checked) element.appendChild(input);
     }
     return input;
@@ -86,7 +72,6 @@ ARIACheckBox.prototype.onKeyDown = function(event) {
 ARIACheckBox.prototype.onKeyUp = function(event) {
     if(event.keyCode === 32) {
         var element = this.element;
-
         element.classList.remove('active');
         element.dispatchEvent(new Event('click'));
     }
@@ -104,7 +89,7 @@ ARIACheckBox.prototype.onClick = function(event) {
 ARIACheckBox.role = 'checkbox';
 
 ARIACheckBox.getCheckBox = function(element) {
-    return element.role === this.role?
+    return element && element.role === this.role?
         element.aria || new this(element) :
         null;
 }

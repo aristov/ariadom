@@ -55,7 +55,12 @@ Object.defineProperty(ARIAGrid.prototype, 'disabled', {
         return this.element.getAttribute('aria-disabled') || '';
     },
     set : function(value) {
-        this.element.setAttribute('aria-disabled', String(value));
+        var disabled = String(value);
+        this.element.setAttribute('aria-disabled', disabled);
+        this.cells.forEach(function(cell, i) {
+            if(disabled === 'true') cell.element.removeAttribute('tabindex');
+            else if(cell.disabled !== 'true') cell.element.tabIndex = i? -1 : 0;
+        });
     }
 });
 
@@ -291,7 +296,11 @@ Object.defineProperty(ARIAGridCell.prototype, 'disabled', {
             this.element.getAttribute('aria-disabled') || '';
     },
     set : function(value) {
-        this.element.setAttribute('aria-disabled', String(value));
+        var element = this.element,
+            disabled = String(value);
+        element.setAttribute('aria-disabled', disabled);
+        if(disabled === 'true') element.removeAttribute('tabindex');
+        else element.tabIndex = -1;
     }
 });
 

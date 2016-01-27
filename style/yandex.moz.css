@@ -1,7 +1,3 @@
-.grid
-{
-    -moz-user-select: none;
-}
 .grid .gridcell::before
 {
     top: -1px;

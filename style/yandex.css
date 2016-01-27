@@ -287,6 +287,82 @@ body
     outline: none;
 }
 
+/* grid */
+
+.grid
+{
+    border-collapse: collapse;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+.grid .gridcell
+{
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 0;
+    outline: none;
+    width: 80px;
+    height: 16px;
+    position: relative;
+    padding: 5px;
+    text-align: center;
+    cursor: default;
+}
+.grid .gridcell input
+{
+    font: inherit;
+    border: none;
+    padding: 0;
+    width: 100%;
+    text-align: inherit;
+    outline: none;
+}
+.grid .gridcell::before
+{
+    content: '';
+    display: none;
+    border: 1px solid transparent;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+.grid .gridcell:focus::before,
+.grid .gridcell.focus::before
+{
+    display: block;
+    border-color: #ffdb4d;
+    box-shadow: 0 0 0 1px #ffdb4d;
+}
+.grid .gridcell[aria-selected=true]::before
+{
+    display: block;
+    box-shadow: 0 0 0 1px #ffdb4d;
+    background: rgba(255, 235, 160, 0.05);
+}
+.grid[aria-disabled=true],
+.grid .gridcell[aria-disabled=true]
+{
+    color: rgba(0, 0, 0, 0.5);
+}
+.grid[aria-disabled=true] .gridcell,
+.grid .gridcell[aria-disabled=true]
+{
+    background: rgba(0, 0, 0, 0.08);
+}
+.grid[aria-disabled=true] .gridcell
+{
+    border-color: transparent;
+}
+.grid[aria-label]::before
+{
+    content: attr(aria-label);
+    display: inline-block;
+    margin-bottom: 5px;
+    cursor: default;
+}
+
 /* buttongroup */
 
 .buttongroup

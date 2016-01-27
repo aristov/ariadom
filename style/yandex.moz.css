@@ -1,0 +1,10 @@
+.grid .gridcell::before
+{
+    top: -1px;
+    left: -1px;
+}
+.grid[aria-disabled=true] .gridcell::before
+{
+    display: block;
+    box-shadow: 0 0 0 1px #fff;
+}

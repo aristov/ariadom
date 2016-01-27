@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <meta name=viewport content="width=device-width,maximum-scale=1,initial-scale=1,user-scalable=0">
+
+    <title>ARIAGrid</title>
+
+    <script src=role.js></script>
+    <script src=ARIAGrid.js></script>
+    <script>
+        ARIAGrid.attachToDocument();
+    </script>
+    <style>
+        body
+        {
+            font: 13px Arial;
+            margin: 20px;
+        }
+    </style>
+    <style>
+        .grid
+        {
+            border-collapse: collapse;
+            -ms-user-select: none;
+        }
+        .grid .gridcell
+        {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            padding: 0;
+            outline: none;
+            width: 80px;
+            height: 16px;
+            position: relative;
+            padding: 5px;
+            text-align: center;
+            cursor: default;
+        }
+        .grid .gridcell input
+        {
+            font: inherit;
+            border: none;
+            padding: 0;
+            width: 100%;
+            text-align: inherit;
+            outline: none;
+        }
+        .grid .gridcell::before
+        {
+            content: '';
+            display: none;
+            border: 1px solid transparent;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+        .grid .gridcell:focus::before,
+        .grid .gridcell.focus::before
+        {
+            display: block;
+            border-color: #ffdb4d;
+            box-shadow: 0 0 0 1px #ffdb4d;
+        }
+        .grid .gridcell[aria-selected=true]::before
+        {
+            display: block;
+            box-shadow: 0 0 0 1px #ffdb4d;
+            background: rgba(255, 235, 160, 0.05);
+        }
+        .grid[aria-disabled=true],
+        .grid .gridcell[aria-disabled=true]
+        {
+            color: rgba(0, 0, 0, 0.5);
+        }
+        .grid[aria-disabled=true] .gridcell,
+        .grid .gridcell[aria-disabled=true]
+        {
+            background: rgba(0, 0, 0, 0.08);
+        }
+        .grid[aria-disabled=true] .gridcell
+        {
+            border-color: transparent;
+        }
+        .grid[aria-label]::before
+        {
+            content: attr(aria-label);
+            display: inline-block;
+            margin-bottom: 5px;
+            cursor: default;
+        }
+    </style>
+    <script>
+        void function() {
+            var link;
+            if(navigator.userAgent.indexOf('Firefox') > 1) {
+                link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '../style/-moz-grid.css';
+                document.head.appendChild(link);
+            }
+            else if(navigator.userAgent.indexOf('WebKit') > 1) {
+                link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '../style/-webkit-grid.css';
+                document.head.appendChild(link);
+            }
+        }();
+    </script>
+</head>
+<body>
+    <table role=grid class=grid aria-label=Simple>
+        <tr role=row>
+            <td role=gridcell tabindex=0 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+        </tr>
+        <tr role=row>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+        </tr>
+        <tr role=row>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 class=gridcell><span class=text></span></td>
+        </tr>
+    </table>
+    <br>
+    <table role=grid aria-multiselectable=true aria-label=Multiselectable class=grid>
+        <tr role=row>
+            <td role=gridcell tabindex=0 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
+        </tr>
+        <tr role=row>
+            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
+        </tr>
+        <tr role=row>
+            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
+            <td role=gridcell tabindex=-1 aria-selected=false class=gridcell><span class=text></span></td>
+        </tr>
+    </table>
+    <br>
+    <table role=grid aria-disabled=true aria-label=Disabled class=grid>
+        <tr role=row>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+        </tr>
+        <tr role=row>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+        </tr>
+        <tr role=row>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+            <td role=gridcell class=gridcell><span class=text></span></td>
+        </tr>
+    </table>
+</body>
+</html>

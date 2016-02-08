@@ -2,19 +2,22 @@ function ARIAListBox(element) {
     element.aria = this;
     this.element = element;
 
-    this.forEach.call(
-        element.querySelectorAll('[role=option]'),
-        function(element) {
-            this.push(ARIAOption.getOption(element));
-        }, this);
-
     this.input = element.querySelector('input') || document.createElement('input');
 
     element.addEventListener('keydown', this.onKeyDown.bind(this));
     element.addEventListener('keyup', this.onKeyUp.bind(this));
 }
 
-ARIAListBox.prototype = new Array();
+Object.defineProperty(ARIAListBox.prototype, 'options', {
+    enumerable : true,
+    get : function() {
+        return Array.prototype.map.call(
+            this.element.querySelectorAll('[role=option]'),
+            function(element) {
+                return ARIAOption.getOption(element);
+            });
+    }
+});
 
 Object.defineProperty(ARIAListBox.prototype, 'hidden', {
     enumerable : true,
@@ -22,15 +25,14 @@ Object.defineProperty(ARIAListBox.prototype, 'hidden', {
         return String(this.element.hidden);
     },
     set : function(value) {
-        value = String(value);
-        this.element.hidden = value === 'true';
+        this.element.hidden = String(value) === 'true';
     }
 });
 
 Object.defineProperty(ARIAListBox.prototype, 'selected', {
     enumerable : true,
     get : function() {
-        return this.filter(function(option) {
+        return this.options.filter(function(option) {
             return option.selected === 'true';
         });
     }
@@ -39,7 +41,7 @@ Object.defineProperty(ARIAListBox.prototype, 'selected', {
 Object.defineProperty(ARIAListBox.prototype, 'checked', {
     enumerable : true,
     get : function() {
-        return this.filter(function(option) {
+        return this.options.filter(function(option) {
             return option.checked === 'true';
         });
     },
@@ -111,14 +113,15 @@ ARIAListBox.prototype.onKeyDown = function(event) {
 
 ARIAListBox.prototype.onArrowKeyDown = function(event) {
     var direction = event.keyCode < 39? -1 : 1,
+        options = this.options,
         selected = this.selected[0],
-        next = this.indexOf(selected) + direction;
+        next = options.indexOf(selected) + direction;
 
-    if(next === this.length) next = 0;
-    if(next < 0) next = this.length - 1;
+    if(next === options.length) next = 0;
+    if(next < 0) next = options.length - 1;
 
     this.unselect();
-    this[next].selected = true;
+    options[next].selected = true;
 }
 
 ARIAListBox.prototype.onSpaceKeyDown = function(event) {
@@ -139,7 +142,7 @@ ARIAListBox.prototype.onKeyUp = function(event) {
 }
 
 ARIAListBox.prototype.onFocus = function(event) {
-    if(!this.selected.length) this[0].selected = 'true';
+    if(!this.selected.length) this.options[0].selected = 'true';
 }
 
 ARIAListBox.role = 'listbox';

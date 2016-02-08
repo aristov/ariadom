@@ -2,16 +2,19 @@ function ARIARadioGroup(element) {
     element.aria = this;
     this.element = element;
 
-    this.forEach.call(
-        element.querySelectorAll('[role=radio]'),
-        function(element) {
-            this.push(ARIARadio.getRadio(element));
-        }, this);
-
     this.input = element.querySelector('input') || document.createElement('input');
 }
 
-ARIARadioGroup.prototype = new Array();
+Object.defineProperty(ARIARadioGroup.prototype, 'radios', {
+    enumerable : true,
+    get : function() {
+        return Array.prototype.map.call(
+            this.element.querySelectorAll('[role=radio]'),
+            function(element) {
+                return ARIARadio.getRadio(element);
+            });
+    }
+});
 
 Object.defineProperty(ARIARadioGroup.prototype, 'disabled', {
     enumerable : true,
@@ -21,23 +24,24 @@ Object.defineProperty(ARIARadioGroup.prototype, 'disabled', {
     set : function(value) {
         var element = this.element,
             disabled = String(value),
+            radios = this.radios,
             checked;
 
         if(disabled === 'true') {
             element.setAttribute('aria-disabled', 'true');
             this.input.disabled = true;
-            this.forEach(function(radio) {
+            radios.forEach(function(radio) {
                 radio.element.removeAttribute('tabindex');
             });
         } else {
             element.removeAttribute('aria-disabled');
             this.input.disabled = false;
-            this.forEach(function(radio) {
+            radios.forEach(function(radio) {
                 radio.element.tabIndex = -1;
                 if(radio.checked === 'true') checked = radio;
             });
             if(checked) checked.element.tabIndex = 0;
-            else this[0].element.tabIndex = 0;
+            else radios[0].element.tabIndex = 0;
         }
     }
 });
@@ -53,7 +57,7 @@ Object.defineProperty(ARIARadioGroup.prototype, 'value', {
 });
 
 ARIARadioGroup.prototype.uncheck = function() {
-    this.forEach(function(radio) {
+    this.radios.forEach(function(radio) {
         radio.checked = 'false';
     });
 }
@@ -169,14 +173,15 @@ ARIARadio.prototype.onKeyUp = function(event) {
 ARIARadio.prototype.onArrowKeyDown = function(event) {
     var direction = event.keyCode < 39? -1 : 1,
         group = this.group,
-        index = group.indexOf(this) + direction;
+        radios = group.radios,
+        index = radios.indexOf(this) + direction;
 
-    if(index === group.length) index = 0;
-    if(index < 0) index = group.length - 1;
+    if(index === radios.length) index = 0;
+    if(index < 0) index = radios.length - 1;
 
     group.uncheck();
-    group[index].checked = true;
-    group[index].element.focus();
+    radios[index].checked = true;
+    radios[index].element.focus();
 }
 
 ARIARadio.role = 'radio';
